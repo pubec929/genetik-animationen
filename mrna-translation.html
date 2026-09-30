@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Sieh, wie Ribosomen und tRNAs die Basensequenz einer mRNA in eine Aminosäurekette übersetzen.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>mRNA-Translation · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html" aria-current="page">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Translation</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Detailansicht</p><h1>mRNA-Translation</h1><p>Sieh, wie Ribosomen und tRNAs die Basensequenz einer mRNA in eine Aminosäurekette übersetzen.</p></div><span class="page-number" aria-hidden="true">02 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: mRNA-Translation">
+<noscript>Zum Abspielen dieser Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="translation-view">
+  
+  <div class="viz-controls">
+    <button id="tr-play" type="button" class="btn btn-primary">Pause</button>
+    <label class="form-label" for="tr-speed">Tempo
+      <select id="tr-speed" class="form-select">
+        <option value="0.5">Langsam</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">Schnell</option>
+      </select>
+    </label>
+    <span class="text-small">Mitbewegte Ansicht</span>
+    <span id="tr-phase" aria-live="polite"></span>
+  </div>
+  <svg id="tr-scene" role="img" aria-labelledby="tr-title tr-desc"></svg>
+  <div class="tr-legend text-small" id="tr-aa-legend" aria-label="Aminosäuren im Beispiel"></div>
+  <div class="viz-controls" id="tr-terms" aria-label="Begriffe erklären"></div>
+  <div id="tr-detail" aria-live="polite"></div>
+</div>
+<style>
+  #translation-view { color:var(--foreground); }
+  #translation-view #tr-scene { display:block; width:100%; height:472px; }
+  #translation-view svg text { fill:var(--foreground); font-family:inherit; }
+  #translation-view .tr-legend { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin:8px 0 16px; }
+  #translation-view .tr-legend>span { display:inline-flex; align-items:center; gap:5px; }
+  #translation-view #tr-detail { min-height:4em; margin-top:14px; }
+</style>
+<script>
+(() => {
+  'use strict';
+  const root=document.getElementById('translation-view');
+  const scene=root.querySelector('#tr-scene');
+  const play=root.querySelector('#tr-play');
+  const speed=root.querySelector('#tr-speed');
+  const phaseLabel=root.querySelector('#tr-phase');
+  const detail=root.querySelector('#tr-detail');
+  const terms=root.querySelector('#tr-terms');
+
+  // A deliberately short eukaryotic example, read from 5′ to 3′.
+  const codons=['AUG','GCU','UUU','GGU','UAA'];
+  const amino=[
+    {letter:'M',name:'Methionin',color:'var(--blue)',shape:'circle'},
+    {letter:'A',name:'Alanin',color:'var(--green)',shape:'hexagon'},
+    {letter:'F',name:'Phenylalanin',color:'var(--purple)',shape:'diamond'},
+    {letter:'G',name:'Glycin',color:'var(--red)',shape:'square'}
+  ];
+  const baseColor={A:'var(--green)',U:'var(--red)',G:'var(--orange)',C:'var(--blue)'};
+  const complement={A:'U',U:'A',G:'C',C:'G'};
+  const definitions={
+    E:['E-Stelle','E = Exit: Nach der Translokation liegt hier die entladene tRNA. Sie verlässt das Ribosom und kann später erneut mit einer Aminosäure beladen werden.'],
+    P:['P-Stelle','P = Peptidyl: Hier sitzt vor der Peptidbindung die tRNA mit der wachsenden Kette. Die Initiator-tRNA bindet zu Beginn direkt an die P-Stelle.'],
+    A:['A-Stelle','A = Aminoacyl: Hier bindet die nächste beladene tRNA mit passendem Anticodon. Nach der Peptidbindung trägt ihre tRNA die gesamte verlängerte Kette.'],
+    tRNA:['tRNA & Anticodon','Die tRNA bringt eine Aminosäure. Ihr Anticodon bindet komplementär und antiparallel an ein mRNA-Codon: zum Beispiel 5′-AUG-3′ an 3′-UAC-5′.'],
+    bond:['Peptidbindung','Das Peptidyltransferasezentrum der großen Untereinheit überträgt die Kette von der P-tRNA auf die Aminosäure der A-tRNA. Die katalytische Aktivität stammt von rRNA.'],
+    stop:['Stoppcodon','UAA, UAG und UGA sind Stoppcodons. Ein Freisetzungsfaktor (RF) bindet in der A-Stelle und fördert die hydrolytische Ablösung der Polypeptidkette von der P-tRNA.']
+  };
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const smooth=v=>{v=clamp(v); return v*v*(3-2*v);};
+  const mix=(a,b,t)=>a+(b-a)*t;
+  const initDuration=5,cycleDuration=12,terminationStart=41,totalDuration=55;
+  let time=0.9,rate=1,playing=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let previous=0,raf=0,selected=null,parts=[];
+  const ink='var(--foreground)',ribosomeColor='var(--orange)',trnaColor='var(--blue)';
+
+  function line(x,y,x2,y2,color=ink,width=1.5,extra='') {
+    parts.push(`<path d="M${x},${y}L${x2},${y2}" fill="none" stroke="${color}" stroke-width="${width}" ${extra}/>`);
+  }
+  function text(x,y,value,anchor='start') {
+    parts.push(`<text x="${x}" y="${y}" text-anchor="${anchor}" class="text-small">${value}</text>`);
+  }
+  function arrow(x,y,x2,y2,color=ink) {
+    line(x,y,x2,y2,color);
+    const angle=Math.atan2(y2-y,x2-x),r=6;
+    line(x2,y2,x2-r*Math.cos(angle-0.55),y2-r*Math.sin(angle-0.55),color);
+    line(x2,y2,x2-r*Math.cos(angle+0.55),y2-r*Math.sin(angle+0.55),color);
+  }
+  function puzzlePath(base,width) {
+    const h=width/2,r=Math.min(3,width*0.22),sign=base==='A'||base==='G'?1:-1;
+    const edge=base==='G'||base==='C'
+      ?`V${10+3.5*sign}H${-r}V10`
+      :`C${r},${10+5*sign} ${-r},${10+5*sign} ${-r},10`;
+    return `M${-h},-10H${h}V10H${r}${edge}H${-h}Z`;
+  }
+  function base(x,y,value,width,face) {
+    parts.push(`<path d="${puzzlePath(value,width)}" transform="translate(${x} ${y}) scale(1 ${face})" fill="${baseColor[value]}" fill-opacity="0.35" stroke="var(--muted-foreground)" stroke-width="0.5"/>`);
+    text(x,y+4,value,'middle');
+  }
+  function aminoShape(i,x,y,r=10) {
+    const a=amino[i];
+    if(a.shape==='circle') return `<circle cx="${x}" cy="${y}" r="${r}"`;
+    if(a.shape==='square') return `<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" rx="2"`;
+    const n=a.shape==='hexagon'?6:4;
+    const pts=Array.from({length:n},(_,k)=>{
+      const theta=-Math.PI/2+2*Math.PI*k/n;
+      return `${x+r*Math.cos(theta)},${y+r*Math.sin(theta)}`;
+    }).join(' ');
+    return `<polygon points="${pts}"`;
+  }
+  function aa(i,x,y) {
+    parts.push(`${aminoShape(i,x,y)} fill="${amino[i].color}" fill-opacity="0.55" stroke="${amino[i].color}" stroke-width="1.2"/>`);
+    text(x,y+4,amino[i].letter,'middle');
+  }
+  function chain(count,x,y,showN=true) {
+    const points=Array.from({length:count},(_,i)=>{
+      const back=count-1-i;
+      return [x-22*back,y-13*back];
+    });
+    for(let i=1;i<points.length;i++)line(...points[i-1],...points[i],ink,2);
+    points.forEach((p,i)=>aa(i,...p));
+    if(showN&&count>1)text(points[0][0]-12,points[0][1]-12,'N','middle');
+  }
+  // The tRNA is deliberately spread out rather than shown in molecular 3D.
+  function trna(x,y,codon,nucleotideSpacing,opacity=1,ends=false) {
+    const width=Math.min(17,nucleotideSpacing-2);
+    parts.push(`<g opacity="${opacity}"><path d="M-10,-12L-11,-45Q-16,-68 -34,-77Q-47,-87 -31,-96L-15,-95L-10,-115L2,-110L18,-128Q34,-140 37,-125L29,-101Q22,-95 24,-76L12,-43L10,-12Z" transform="translate(${x} ${y})" fill="${trnaColor}" fill-opacity="0.62" stroke="${trnaColor}" stroke-width="1.7"/>`);
+    line(x-nucleotideSpacing,y-12,x+nucleotideSpacing,y-12,trnaColor,3);
+    [...codon].forEach((b,j)=>base(x+(j-1)*nucleotideSpacing,y,complement[b],width,1));
+    if(ends){text(x-nucleotideSpacing-10,y+4,'3′','end');text(x+nucleotideSpacing+8,y+4,'5′');}
+    parts.push('</g>');
+  }
+  function attachment(x,y=317) { line(x+17,y-130,x+17,y-149,trnaColor,2); }
+  function releaseFactor(x,y,opacity=1) {
+    parts.push(`<g opacity="${opacity}"><path d="M-16,43Q-23,19 -17,6Q-37,-14 -17,-36Q-3,-53 13,-34Q40,-22 24,0Q19,18 15,43Z" transform="translate(${x} ${y})" fill="var(--purple)" fill-opacity="0.5" stroke="var(--purple)" stroke-width="1.7"/>`);
+    text(x,y+3,'RF','middle');parts.push('</g>');
+  }
+  function stateAt(t) {
+    if(t<initDuration) return {kind:'init',title:'Initiation · Startcodon AUG',detail:'Die Initiator-tRNA mit Methionin bindet an AUG in der P-Stelle; die große Untereinheit lagert sich an.',offset:0};
+    if(t<terminationStart) {
+      const n=Math.floor((t-initDuration)/cycleDuration)+1;
+      const p=(t-initDuration)%cycleDuration;
+      const move=smooth((p-6)/3);
+      if(p<4)return {kind:'elong',n,p,move,offset:n-1,title:'Elongation · Codonerkennung',detail:'Eine beladene tRNA bindet mit passendem Anticodon in der A-Stelle. Elongationsfaktoren nutzen dabei GTP.'};
+      if(p<6)return {kind:'elong',n,p,move,offset:n-1,title:'Elongation · Peptidbindung',detail:'Die Kette wird von der P-tRNA auf die Aminosäure der A-tRNA übertragen und wächst am C-Ende.'};
+      if(p<9)return {kind:'elong',n,p,move,offset:n-1+move,title:'Elongation · Translokation',detail:'Das Ribosom rückt um ein Codon in Richtung 3′ weiter: A-tRNA → P-Stelle, entladene P-tRNA → E-Stelle.'};
+      return {kind:'elong',n,p,move:1,offset:n,title:'Elongation · tRNA verlässt E',detail:'Die entladene tRNA verlässt die E-Stelle. Die verlängerte Kette sitzt wieder an der P-tRNA.'};
+    }
+    const p=t-terminationStart;
+    if(p<3)return {kind:'end',p,offset:3,title:'Termination · Stoppcodon UAA',detail:'UAA erreicht die A-Stelle. Ein Freisetzungsfaktor bindet anstelle einer beladenen tRNA.'};
+    if(p<6)return {kind:'end',p,offset:3,title:'Termination · Kette wird frei',detail:'Die Bindung zwischen Polypeptid und P-tRNA wird hydrolysiert. Das fertige Polypeptid wird freigesetzt.'};
+    return {kind:'end',p,offset:3,title:p<9?'Ribosomen-Recycling':'Fertiges Polypeptid · Wiederholung folgt',detail:'Ribosomenuntereinheiten, mRNA und tRNA werden getrennt und können erneut verwendet werden.'};
+  }
+  function describe(s) {
+    if(phaseLabel.textContent!==s.title)phaseLabel.textContent=s.title;
+    const d=selected?definitions[selected][1]:s.detail;
+    if(detail.textContent!==d)detail.textContent=d;
+  }
+  function draw() {
+    const w=Math.max(280,root.getBoundingClientRect().width);
+    const P=w*0.46,gap=clamp(w*0.125,58,90),E=P-gap,A=P+gap;
+    const ns=Math.min(19,(gap-12)/3),nucWidth=Math.min(17,ns-2),antiY=317;
+    const left=18,right=w-18;
+    const s=stateAt(time),p=s.p||0;
+    const disassembly=s.kind==='end'?smooth((p-6)/3):0;
+    const assembly=s.kind==='init'?smooth((time-2.3)/2):1;
+    const largeDY=-(1-assembly)*64-disassembly*42;
+    const largeDX=disassembly*34;
+    const smallDY=disassembly*29,smallDX=-disassembly*22;
+    const fade=time>54?1-smooth(time-54):time<0.65?smooth(time/0.65):1;
+    parts=[`<title id="tr-title">Translation der mRNA: ${s.title}</title><desc id="tr-desc">Orangefarbenes Ribosom mit E-, P- und A-Stelle von links nach rechts. Blaue tRNAs tragen farbige Aminosäuren. Codons werden von 5′ nach 3′ gelesen. Die Beispielsequenz AUG GCU UUU GGU UAA ergibt Methionin, Alanin, Phenylalanin und Glycin. Am Stoppcodon wird das Polypeptid durch einen Freisetzungsfaktor gelöst.</desc><defs><clipPath id="tr-clip"><rect x="${left}" y="4" width="${right-left}" height="415"/></clipPath></defs>`];
+    text(left,19,'Polypeptid wächst: N → C');
+    if(w>540)text(right,19,'Vereinfachtes Eukaryotenmodell','end');
+    parts.push(`<g opacity="${fade}" clip-path="url(#tr-clip)">`);
+    const largePath=`M${E-38},332C${E-58},310 ${E-57},269 ${E-46},236C${E-39},177 ${P-54},144 ${P+8},151C${A+49},146 ${A+62},212 ${A+44},284Q${A+55},321 ${A+24},334Q${P+35},326 ${E-38},332Z`;
+    parts.push(`<g transform="translate(${largeDX} ${largeDY})" opacity="${assembly*(1-disassembly*0.42)}"><path d="${largePath}" fill="${ribosomeColor}" fill-opacity="0.27" stroke="${ribosomeColor}" stroke-width="2"/></g>`);
+    const smallPath=`M${E-34},363Q${P},353 ${A+33},362Q${A+53},379 ${A+28},392Q${P+28},414 ${E-24},397Q${E-52},383 ${E-34},363Z`;
+    parts.push(`<path d="${smallPath}" transform="translate(${smallDX} ${smallDY})" fill="${ribosomeColor}" fill-opacity="0.27" stroke="${ribosomeColor}" stroke-width="2"/>`);
+    if(disassembly<0.4) {
+      for(const [label,x] of [['E',E],['P',P],['A',A]])text(x,387,label,'middle');
+    }
+    const mrnaY=x=>{
+      const d=x<E-45?(E-45-x)/35:x>A+45?(x-A-45)/35:0;
+      return 352+Math.sin(d)*Math.min(10,d*7);
+    };
+    let strand=`M${left},${mrnaY(left)}`;
+    for(let x=left+5;x<=right;x+=5)strand+=`L${x},${mrnaY(x)}`;
+    parts.push(`<path d="${strand}" fill="none" stroke="var(--green)" stroke-width="4"/>`);
+    for(let j=-5;j<10;j++) {
+      const codon=j>=0&&j<codons.length?codons[j]:j<0?'CCA':'ACU';
+      const cx=P+(j-s.offset)*gap;
+      if(cx<left-30||cx>right+30)continue;
+      const y=mrnaY(cx);
+      parts.push(`<g opacity="${j>=0&&j<codons.length?1:0.48}">`);
+      [...codon].forEach((b,k)=>{
+        const x=cx+(k-1)*ns;
+        line(x,y,x,y-6,'var(--green)',2);
+        base(x,y-15,b,nucWidth,-1);
+      });
+      parts.push('</g>');
+      if(j===4&&s.kind==='end')text(cx,365,'Stopp','middle');
+    }
+    if(s.kind==='init') {
+      const q=smooth((time-0.3)/2.3),x=P-34*(1-q),y=antiY-75*(1-q);
+      trna(x,y,codons[0],ns,1,true);attachment(x,y);aa(0,x+17,y-149);
+    }else if(s.kind==='elong') {
+      const n=s.n;
+      if(p<6) {
+        const entering=smooth(p/3),ax=A+Math.min(58,w-A-24)*(1-entering),ay=antiY-82*(1-entering);
+        trna(P,antiY,codons[n-1],ns);
+        trna(ax,ay,codons[n],ns,1,p<4);
+        attachment(ax,ay);aa(n,ax+17,ay-149);
+        if(p<4) {attachment(P);chain(n,P+17,antiY-149);}
+        else {
+          const transfer=smooth((p-4)/2),x=mix(P+17,A+17-22,transfer),y=mix(antiY-149,antiY-149-13,transfer);
+          if(transfer<0.04)attachment(P);
+          chain(n,x,y);
+          if(transfer>0.7)line(x,y,A+17,antiY-149,ink,2,`opacity="${(transfer-0.7)/0.3}"`);
+          if(w>480)text((P+A)/2,99,'Peptidbindung','middle');
+        }
+      }else if(p<9) {
+        const d=s.move*gap,px=P-d,ax=A-d;
+        trna(px,antiY,codons[n-1],ns);
+        trna(ax,antiY,codons[n],ns);attachment(ax);chain(n+1,ax+17,antiY-149);
+        arrow(A,286,P+4,286);
+      }else {
+        const out=smooth((p-9)/2.6);
+        trna(E-52*out,antiY-70*out,codons[n-1],ns,1-out);
+        trna(P,antiY,codons[n],ns);attachment(P);chain(n+1,P+17,antiY-149);
+      }
+    }else {
+      const rfIn=smooth(p/2.5),rfOut=smooth((p-6)/3);
+      const exit=smooth((p-6)/3);
+      trna(P-55*exit,antiY-80*exit,codons[3],ns,1-exit);
+      if(p<6)releaseFactor(A+38*(1-rfIn),265-64*(1-rfIn),rfIn);
+      else if(p<9)releaseFactor(A+46*rfOut,265-62*rfOut,1-rfOut);
+      const release=smooth((p-3)/3);
+      if(release<0.03)attachment(P);
+      chain(4,P+17+32*release,antiY-149-65*release);
+      if(release>0.95)text(P+26,37,'Freies Polypeptid','middle');
+    }
+    parts.push('</g>');
+    text(5,355,'5′');text(w-5,355,'3′','end');
+    text(left,438,'mRNA');
+    if(s.kind==='init'&&time>2.6)text(P,438,'Start: AUG','middle');
+    if(s.kind==='elong'&&(p<4||(p>=6&&p<9)))text(right,438,'GTP → GDP + Pᵢ','end');
+    text(w/2,461,'Ribosom → · Leserichtung 5′ → 3′','middle');
+    scene.setAttribute('viewBox',`0 0 ${w} 472`);
+    scene.innerHTML=parts.join('');describe(s);
+  }
+
+  root.querySelector('#tr-aa-legend').innerHTML=amino.map((a,i)=>`<span><svg width="26" height="26" aria-hidden="true">${aminoShape(i,13,13,10)} fill="${a.color}" fill-opacity="0.55" stroke="${a.color}" stroke-width="1.2"/><text x="13" y="17" text-anchor="middle" class="text-small">${a.letter}</text></svg>${a.name}</span>`).join('');
+  for(const [key,value] of Object.entries(definitions)) {
+    const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=value[0];b.dataset.term=key;b.setAttribute('aria-pressed','false');
+    b.addEventListener('click',()=>{
+      selected=selected===key?null:key;
+      terms.querySelectorAll('button').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.term===selected)));
+      describe(stateAt(time));
+    });terms.appendChild(b);
+  }
+  function frame(now) {
+    if(!playing)return;
+    if(previous&&!document.hidden)time=(time+Math.min(now-previous,90)/1000*rate)%totalDuration;
+    previous=now;draw();raf=requestAnimationFrame(frame);
+  }
+  function playLabel(){play.textContent=playing?'Pause':'Weiterlaufen';}
+  play.addEventListener('click',()=>{playing=!playing;previous=0;cancelAnimationFrame(raf);if(playing)raf=requestAnimationFrame(frame);playLabel();});
+  speed.addEventListener('change',()=>{rate=Number(speed.value);});
+  document.addEventListener('visibilitychange',()=>{previous=0;});
+  new ResizeObserver(draw).observe(root);
+  playLabel();draw();if(playing)raf=requestAnimationFrame(frame);
+})();
+</script>
+
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Die Schritte im Ribosom sind verlangsamt; Molekülgrößen und Sequenzen sind schematisch.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="dna-replikation.html"><span>← Zurück</span>DNA-Replikation</a><a href="rna-spleissen.html"><span>Weiter →</span>RNA-Spleißen</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>

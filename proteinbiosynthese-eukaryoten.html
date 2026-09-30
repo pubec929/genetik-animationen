@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Begleite die Expression eines Gens vom Zellkern über die RNA-Reifung bis zum freien Polypeptid.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>Proteinbiosynthese bei Eukaryoten · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html" aria-current="page">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Eukaryoten</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Eukaryoten</p><h1>Proteinbiosynthese bei Eukaryoten</h1><p>Begleite die Expression eines Gens vom Zellkern über die RNA-Reifung bis zum freien Polypeptid.</p></div><span class="page-number" aria-hidden="true">05 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: Proteinbiosynthese bei Eukaryoten">
+<noscript>Zum Abspielen dieser Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="eukaryoten-expression">
+  
+  <div class="viz-controls">
+    <button id="eu-play" class="btn btn-primary" type="button">Pause</button>
+    <label class="form-label" for="eu-speed">Tempo
+      <select id="eu-speed" class="form-select">
+        <option value="0.5">Langsam</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">Schnell</option>
+      </select>
+    </label>
+    <span id="eu-phase" aria-live="polite"></span>
+  </div>
+  <svg id="eu-scene" role="img" aria-labelledby="eu-title eu-desc"></svg>
+  <div class="eu-legend text-small">
+    <span><i style="background:var(--purple)"></i>RNA-Polymerase II</span>
+    <span><i style="background:var(--green)"></i>Exons</span>
+    <span><i style="background:var(--red)"></i>Intron</span>
+    <span><i style="background:var(--orange)"></i>Ribosom</span>
+  </div>
+  <div class="viz-controls">
+    <label class="form-label" for="eu-term">Erklärung
+      <select id="eu-term" class="form-select">
+        <option value="">Zum aktuellen Ablauf</option>
+      </select>
+    </label>
+  </div>
+  <div id="eu-detail" aria-live="polite"></div>
+</div>
+<style>
+  #eukaryoten-expression { color:var(--foreground); }
+  #eukaryoten-expression #eu-scene { display:block; width:100%; height:670px; }
+  #eukaryoten-expression #eu-scene text { fill:var(--foreground); font-family:inherit; }
+  #eukaryoten-expression .eu-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:6px 0 14px; }
+  #eukaryoten-expression .eu-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #eukaryoten-expression .eu-legend i { display:inline-block; width:16px; height:6px; border-radius:3px; }
+  #eukaryoten-expression #eu-detail { margin-top:12px; min-height:4em; }
+</style>
+<script>
+(() => {
+  'use strict';
+  const root=document.getElementById('eukaryoten-expression');
+  const scene=root.querySelector('#eu-scene'),play=root.querySelector('#eu-play');
+  const speed=root.querySelector('#eu-speed'),phase=root.querySelector('#eu-phase');
+  const term=root.querySelector('#eu-term'),detail=root.querySelector('#eu-detail');
+
+  // One continuous scene and one RNA molecule. A typical intron-containing,
+  // polyadenylated eukaryotic gene is the model; lengths and timing are schematic.
+  // Capping starts during transcription. Other processing steps are spread out
+  // for visibility; in cells they can overlap with transcription and each other.
+  // Exons include untranslated regions. Only AUG-to-stop is translated.
+  // The export curve carries every RNA point through the same nuclear pore.
+  // Sources:
+  // https://pdb101.rcsb.org/motm/245 (spliceosome and intron lariat)
+  // https://pdb101.rcsb.org/motm/230 (cap-dependent translation initiation)
+  // https://www.ncbi.nlm.nih.gov/books/NBK9864/ (RNA processing and export)
+  // https://pmc.ncbi.nlm.nih.gov/articles/PMC2032019/ (poly(A) polymerase)
+  const definitions={
+    tx:['Transkription', 'Transkriptionsfaktoren helfen RNA-Polymerase II, am Promotor zu starten. Sie liest den DNA-Matrizenstrang 3′ → 5′; die prä-mRNA wächst am 3′-Ende, also 5′ → 3′. Die DNA bleibt im Zellkern.'],
+    cap:['5′-Cap', 'Schon während der Transkription erhält das 5′-Ende eine Kappe aus modifiziertem Guanosin (m⁷G). Sie schützt die mRNA und hilft bei Verarbeitung, Export und Start der Translation.'],
+    poly:['Poly(A)-Schwanz', 'Nach dem Schnitt am zukünftigen 3′-Ende fügt Poly(A)-Polymerase viele Adenosin-Nukleotide an. Dieser Schwanz ist nicht von der DNA abgeschrieben. Er unterstützt Stabilität und Translation.'],
+    splice:['Spleißen', 'Das Spleißosom aus snRNAs und Proteinen entfernt das Intron als Lariat (Lassoschlinge) und verbindet die Exons. Das Intron wird später abgebaut. Auch nicht übersetzte Abschnitte können zu Exons gehören.'],
+    export:['Kernexport', 'Die verarbeitete mRNA gelangt mit gebundenen Proteinen durch einen Kernporenkomplex ins Cytoplasma. Transkription im Zellkern und Translation im Cytoplasma sind räumlich getrennt.'],
+    initiation:['Start der Translation', 'Initiationsfaktoren erkennen das Cap und rekrutieren die kleine 40S-Untereinheit mit Initiator-tRNA. Sie sucht das Startcodon AUG. Dort kommt die 60S-Untereinheit hinzu: Das vollständige Ribosom heißt 80S.'],
+    elongation:['Translation und tRNA', 'Das 80S-Ribosom liest Codons von 5′ nach 3′. Beladene tRNAs liefern passende Aminosäuren; Peptidbindungen verknüpfen sie zur Kette. Die erste Aminosäure ist Methionin. tRNA-Beladung und Einzelschritte sind vereinfacht.'],
+    stop:['Stopp und Polypeptid', 'Am Stoppcodon UAA bindet ein Freisetzungsfaktor statt einer tRNA. Das Polypeptid wird freigesetzt, das Ribosom zerlegt sich in Untereinheiten. Cap, untranslatierte Bereiche und Poly(A)-Schwanz werden nicht in Aminosäuren übersetzt.'],
+    model:['Zum Modell', 'Ein Gen mit zwei Exons und einem Intron steht hier für den Grundablauf. Viele Verarbeitungsschritte können sich zeitlich überlappen. Längen, Sequenzen und Geschwindigkeiten sind schematisch. Weitere Ribosomen können dieselbe mRNA erneut übersetzen.']
+  };
+  const C={ink:'var(--foreground)',muted:'var(--muted-foreground)',rna:'var(--green)',intron:'var(--red)',pol:'var(--purple)',ribo:'var(--orange)',blue:'var(--blue)'};
+  const baseColors={A:'var(--green)',T:'var(--purple)',U:'var(--red)',G:'var(--orange)',C:'var(--blue)'};
+  const complements={A:'T',T:'A',G:'C',C:'G'};
+  const aaColors=[C.blue,C.rna,C.pol,C.intron,C.ribo,C.rna,C.blue,C.intron,C.pol,C.ribo,C.rna,C.blue];
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const smooth=v=>{v=clamp(v);return v*v*(3-2*v);};
+  const mix=(a,b,t)=>a+(b-a)*t;
+  const blend=(a,b,t)=>[mix(a[0],b[0],t),mix(a[1],b[1],t)];
+  const duration=77;
+  let time=0.8,rate=1,selected='',parts=[];
+  let playing=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let previous=null,raf=0;
+
+  function status(t){
+    if(t<4)return ['Transkription startet','Im Zellkern helfen Transkriptionsfaktoren der RNA-Polymerase II, am Promotor zu starten.'];
+    if(t<8)return ['Die prä-mRNA entsteht','RNA-Polymerase II öffnet die DNA lokal und schreibt das Gen in prä-mRNA um. Diese enthält zunächst Exons und ein Intron.'];
+    if(t<12)return ['Das 5′-Ende erhält ein Cap','Bereits die entstehende prä-mRNA bekommt eine schützende 5′-Kappe (m⁷G-Cap). Die Polymerase schreibt weiter.'];
+    if(t<20)return ['Das Gen wird abgeschrieben','Die prä-mRNA wächst weiter in Richtung 5′ → 3′. Ihr 3′-Ende ist noch mit der RNA-Polymerase II verbunden.'];
+    if(t<23)return ['Das 3′-Ende wird gebildet','Die prä-mRNA wird am zukünftigen 3′-Ende geschnitten. Die RNA-Polymerase II beendet die Transkription etwas weiter stromabwärts.'];
+    if(t<27)return ['Der Poly(A)-Schwanz wächst','Poly(A)-Polymerase hängt Adenosin-Nukleotide an das neue 3′-Ende. Das Spleißosom bringt die Grenzen des Introns zusammen.'];
+    if(t<31)return ['Das Intron wird entfernt','Das Spleißosom entfernt das Intron als Lassoschlinge und verbindet die beiden Exons. Cap und Poly(A)-Schwanz bleiben erhalten.'];
+    if(t<36)return ['Die reife mRNA ist bereit','Die reife mRNA enthält die verbundenen Exons, ein 5′-Cap und den Poly(A)-Schwanz. Das entfernte Intron wird abgebaut.'];
+    if(t<47)return ['Die mRNA verlässt den Zellkern','Die reife mRNA wird durch eine Kernpore ins Cytoplasma transportiert. Die DNA bleibt im Zellkern.'];
+    if(t<51)return ['Das Startcodon wird gesucht','Initiationsfaktoren rekrutieren am Cap die 40S-Untereinheit mit Initiator-tRNA. Sie wandert bis AUG; dann bindet die 60S-Untereinheit.'];
+    if(t<65)return ['Das Polypeptid wächst','Das 80S-Ribosom liest die mRNA ab AUG in Richtung 3′. tRNAs liefern Aminosäuren, die zu einer Polypeptidkette verknüpft werden.'];
+    if(t<71)return ['Das Polypeptid wird freigesetzt','Am Stoppcodon UAA löst ein Freisetzungsfaktor die fertige Polypeptidkette. Das Ribosom zerfällt in seine Untereinheiten.'];
+    if(t<74)return ['Vom Gen zum Polypeptid','Das Gen wurde exprimiert: Seine Information steckt jetzt in der Aminosäurefolge des Polypeptids. Faltung und weitere Verarbeitung können folgen.'];
+    return ['Nächster Durchlauf','Ein neuer Durchlauf beginnt. In der Zelle kann dieselbe mRNA mehrfach übersetzt werden.'];
+  }
+  function text(x,y,value,anchor='start'){parts.push(`<text x="${x}" y="${y}" text-anchor="${anchor}" class="text-small">${value}</text>`);}
+  function path(d,color=C.ink,width=1.5,extra=''){parts.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`);}
+  function line(x,y,x2,y2,color=C.ink,width=1.5,extra=''){path(`M${x},${y}L${x2},${y2}`,color,width,extra);}
+  function dot(x,y,r,color,opacity=0.7){parts.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" fill-opacity="${opacity}"/>`);}
+  function pointsPath(points,color,width=4,extra=''){if(points.length>1)path(points.map((p,i)=>(i?'L':'M')+p.join(',')).join(''),color,width,extra);}
+  function sampled(fn,a=0,b=1,n=50){return Array.from({length:n+1},(_,i)=>fn(mix(a,b,i/n)));}
+  function base(x,y,b,width,face){
+    const h=width/2,r=Math.min(2.6,width/5),sign=b==='A'||b==='G'?1:-1;
+    const edge=b==='G'||b==='C'?`V${9+3*sign}H${-r}V9`:`C${r},${9+4*sign} ${-r},${9+4*sign} ${-r},9`;
+    parts.push(`<path d="M${-h},-9H${h}V9H${r}${edge}H${-h}Z" transform="translate(${x} ${y}) scale(1 ${face})" fill="${baseColors[b]}" fill-opacity="0.24" stroke="${C.muted}" stroke-width="0.55"/>`);
+    text(x,y+4,b,'middle');
+  }
+  function enzyme(x,y,color,scale=1){
+    parts.push(`<path d="M-30,-16C-38,-35 -15,-43 3,-34C22,-43 40,-23 32,-4C40,18 18,36 -1,30C-24,39 -41,16 -30,-3Z" transform="translate(${x} ${y}) scale(${scale})" fill="${color}" fill-opacity="0.42" stroke="${color}" stroke-width="1.6"/>`);
+  }
+  function cap(p,amount=1){
+    const x=p[0]-9,y=p[1];
+    parts.push(`<g opacity="${amount}">`);line(x,y,p[0],y,C.blue,2.5);
+    parts.push(`<path d="M${x},${y-8}L${x+7},${y-4}L${x+7},${y+4}L${x},${y+8}L${x-7},${y+4}L${x-7},${y-4}Z" fill="${C.blue}" fill-opacity="0.55" stroke="${C.blue}" stroke-width="1.2"/></g>`);
+  }
+  function smallSubunit(x,y,opacity=1){
+    parts.push(`<ellipse cx="${x}" cy="${y+11}" rx="25" ry="12" fill="${C.ribo}" fill-opacity="${0.36*opacity}" stroke="${C.ribo}" stroke-opacity="${opacity}" stroke-width="1.4"/>`);
+  }
+  function largeSubunit(x,y,r=27,opacity=1){
+    parts.push(`<path d="M${x-r},${y-5}C${x-r-8},${y-29} ${x-r+2},${y-53} ${x+3},${y-50}C${x+r+12},${y-50} ${x+r+10},${y-21} ${x+r},${y-5}Z" fill="${C.ribo}" fill-opacity="${0.46*opacity}" stroke="${C.ribo}" stroke-opacity="${opacity}" stroke-width="1.5"/>`);
+  }
+  function trna(x,y,loaded,aa,opacity=1){
+    parts.push(`<g opacity="${opacity}" transform="translate(${x} ${y})"><path d="M-4,14L-5,4L-12,-3L-9,-10L-3,-8L0,-19L7,-16L8,-4L4,4L4,14Z" fill="${C.blue}" fill-opacity="0.65" stroke="${C.blue}" stroke-width="1.1"/>`);
+    for(let k=-1;k<=1;k++)line(k*4,14,k*4,19,C.blue,1.5);
+    if(loaded){line(4,-16,4,-23,C.blue,1.2);dot(4,-27,4.5,aaColors[aa%aaColors.length]);}
+    parts.push('</g>');
+  }
+  function chainShape(amount,x,y){
+    return Array.from({length:Math.ceil(amount)},(_,i)=>{
+      const back=Math.max(0,amount-1-i);return [x-1.9*back+10*Math.sin(back*0.82),y-5.6*back];
+    });
+  }
+  function chain(points,amount=12){
+    pointsPath(points,C.ink,1.7);
+    points.forEach((p,i)=>dot(...p,4.5*(i<Math.floor(amount)?1:Math.max(0.1,amount%1)),aaColors[i%aaColors.length],0.82));
+  }
+
+  function geometry(w){
+    const promoter=clamp(w*0.16,83,135),end=w-46,tx=clamp((time-4)/16);
+    return {w,promoter,px:mix(promoter,end,tx)+14*smooth((time-20)/2.5),tx,
+      preL:w-112,join:smooth((time-27)/4),poreX:w*0.53,rnaY:267,cytoY:523};
+  }
+  function nascent(s,g){
+    const u=clamp(s/Math.max(0.001,g.tx)),grow=smooth((time-4)/4);
+    const start=blend([g.px-5,176],[40,g.rnaY],grow),bend=[g.px-27,start[1]],end=[g.px-6,176];
+    if(u<=0.72)return blend(start,bend,u/0.72);
+    const v=(u-0.72)/0.28;
+    return [Math.pow(1-v,2)*bend[0]+2*(1-v)*v*end[0]+v*v*end[0],Math.pow(1-v,2)*bend[1]+2*(1-v)*v*bend[1]+v*v*end[1]];
+  }
+  function prePoint(s,g){
+    const relaxed=smooth((time-20)/2.3),flat=[40+g.preL*s,g.rnaY];
+    if(time<22.3)return blend(nascent(s,g),flat,relaxed);
+    if(s<0.36)return flat;
+    if(s>0.64)return [flat[0]-g.preL*0.28*g.join,g.rnaY];
+    const u=(s-0.36)/0.28,loop=smooth((time-23)/4);
+    return [40+g.preL*0.36+g.preL*0.28*(1-g.join)*u+20*loop*Math.sin(2*Math.PI*u),g.rnaY-57*loop*Math.sin(Math.PI*u)];
+  }
+  function exportPoint(s,g){
+    const body=0.80,bodyU=clamp(s/body),tailU=clamp((s-body)/(1-body));
+    const original=[40+g.preL*0.72*bodyU+52*tailU,g.rnaY];
+    const target=[40+(g.w-128)*bodyU+52*tailU,g.cytoY];
+    const q=clamp((time-36)/11),travel=clamp((q-s*0.45)/0.55);
+    if(travel<0.32)return blend(original,[g.poreX,331],smooth(travel/0.32));
+    if(travel<0.66)return [g.poreX, mix(331,417,smooth((travel-0.32)/0.34))];
+    return blend([g.poreX,417],target,smooth((travel-0.66)/0.34));
+  }
+  function drawRNA(g){
+    if(time<=4)return;
+    if(time>=36){
+      pointsPath(sampled(s=>exportPoint(s,g),0,0.8,100),C.rna,4.4,'data-rna="exons"');
+      pointsPath(sampled(s=>exportPoint(s,g),0.8,1,30),C.rna,2.2,'data-rna="poly-a"');
+      for(let i=0;i<=4;i++){const p=exportPoint(0.82+i*0.042,g);dot(...p,2.5,C.rna,0.65);}
+      cap(exportPoint(0,g));
+      if(time>=47){
+        text(23,g.cytoY+38,'5′-Cap');text(g.w-29,g.cytoY+4,'3′','end');
+        if(time>=51)text(g.w-36,g.cytoY+38,'Poly(A)','end');
+        const start=40+(g.w-128)*0.21,stop=40+(g.w-128)*0.79;
+        text(start,g.cytoY+57,'AUG','middle');
+        line(start,g.cytoY+28,start,g.cytoY+42,C.muted,1);
+        if(time>=51){text(stop,g.cytoY+57,'UAA','middle');line(stop,g.cytoY+28,stop,g.cytoY+42,C.muted,1);}
+        for(let i=1;i<Math.floor((g.w-128)/12);i++){const x=40+i*12;line(x,g.cytoY,x,g.cytoY-6,baseColors['AUGC'[i%4]],2);}
+      }
+      return;
+    }
+    const tx=g.tx,cut=smooth((time-30)/1.3);
+    for(const [a,b,color,key] of [[0,0.36,C.rna,'exon-1'],[0.36,0.64,C.intron,'intron'],[0.64,1,C.rna,'exon-2']]){
+      if(tx<=a)continue;
+      if(key==='intron')parts.push(`<g opacity="${1-cut}">`);
+      pointsPath(sampled(s=>prePoint(s,g),a,Math.min(tx,b),40),color,4.4,`data-rna="${key}"`);
+      if(key==='intron')parts.push('</g>');
+    }
+    const capAmount=smooth((time-8)/1.5),first=prePoint(0,g);
+    if(capAmount>0)cap([first[0],first[1]-24*(1-capAmount)],capAmount);
+    if(time>10&&time<35){text(25,g.rnaY+40,'5′-Cap');}
+    if(time>7&&time<20){const end=prePoint(tx,g);text(end[0]+10,end[1]+4,'3′');}
+    if(time>10&&time<20)text(g.w/2,337,'prä-mRNA wächst 5′ → 3′','middle');
+    if(time>=22.3&&time<31){
+      text(40+g.preL*0.18,292,'Exon 1','middle');
+      text(40+g.preL*(0.82-0.28*g.join),292,'Exon 2','middle');
+    }
+    const tail=smooth((time-23)/4),end=prePoint(1,g);
+    if(tail>0){
+      line(...end,end[0]+52*tail,end[1],C.rna,2.2);
+      for(let i=1;i<=Math.floor(tail*5);i++)text(end[0]+i*9,end[1]+4,'A','middle');
+      if(time>=26)text(end[0]+52,307,'Poly(A)','end');
+    }
+    if(time>=23&&time<27.5){
+      const visible=smooth((time-23)/0.6)*(1-smooth((time-27)/0.5));
+      parts.push(`<g opacity="${visible}">`);enzyme(end[0]+52*tail,end[1]-15,C.ribo,0.58);
+      text(g.w-12,211,'Poly(A)-Polymerase','end');parts.push('</g>');
+    }
+    if(time>=22.5&&time<32){
+      const bind=smooth((time-22.5)/1.3),leave=smooth((time-30.5)/1.5),cx=40+g.preL*(0.5-0.14*g.join);
+      parts.push(`<g opacity="${bind*(1-leave)}">`);
+      for(const [dx,dy,r] of [[-23,-2,17],[21,-4,20],[0,-26,18],[0,8,16]]){
+        parts.push(`<ellipse cx="${cx+dx}" cy="${249+dy-22*(1-bind)-20*leave}" rx="${r}" ry="${r*0.78}" fill="${C.blue}" fill-opacity="0.15" stroke="${C.blue}" stroke-width="1.3"/>`);
+      }
+      text(clamp(cx,53,g.w-58),193,'Spleißosom','middle');parts.push('</g>');
+    }
+    if(time>=30&&time<36){
+      const drift=smooth((time-30)/3),opacity=cut*(1-smooth((time-34)/2));
+      const cx=40+g.preL*0.36+24*drift,cy=239-13*drift;
+      parts.push(`<g opacity="${opacity}" data-rna="removed-intron">`);
+      path(`M${cx+13},${cy+15}C${cx+30},${cy-2} ${cx+12},${cy-28} ${cx-8},${cy-16}C${cx-28},${cy-3} ${cx-8},${cy+20} ${cx+13},${cy+15}L${cx+31},${cy+28}`,C.intron,3.8);
+      if(time>32)text(cx,198,'Intron','middle');parts.push('</g>');
+    }
+    if(time>=20&&time<27)text(g.w/2,337,'prä-mRNA wird verarbeitet','middle');
+    else if(time>=27&&time<31)text(g.w/2,337,'Intron heraus · Exons verbinden','middle');
+    else if(time>=31){text(g.w/2,337,'Reife mRNA · Exons verbunden','middle');text(end[0]+62,271,'3′');}
+  }
+  function drawTranslation(g){
+    const smallRest=[g.w*0.27,568],largeRest=[g.w*0.68,598];
+    if(time<47){
+      smallSubunit(...smallRest);largeSubunit(...largeRest);
+      text(smallRest[0],smallRest[1]+15,'40S','middle');
+      text(largeRest[0],largeRest[1]-24,'60S','middle');
+      text(g.w/2,635,'Ribosomen-Untereinheiten','middle');
+      return;
+    }
+    const start=40+(g.w-128)*0.21,stop=40+(g.w-128)*0.79,scan=smooth((time-47)/3);
+    const travel=clamp((time-51)/14),x=time<51?mix(56,start,scan):mix(start,stop,travel),y=g.cytoY;
+    if(time<51){
+      const dock=smooth((time-47)/1),small=blend(smallRest,[x,y],dock);
+      smallSubunit(...small);text(small[0],small[1]+15,'40S','middle');
+      trna(small[0]+2,small[1]-20,true,0,smooth((time-47)/1.2));
+      const join=smooth((time-50)/1),large=blend(largeRest,[x,y],join);
+      largeSubunit(...large);text(large[0],large[1]-24,'60S','middle');
+      return;
+    }
+    const depart=smooth((time-65.5)/2.3),release=smooth((time-65)/4);
+    if(depart<1){
+      smallSubunit(x-15*depart,y+33*depart,1-depart);largeSubunit(x+18*depart,y-40*depart,27,1-depart);
+      if(depart<0.4)text(x,y-23,'80S','middle');
+    }
+    if(time<65){
+      const amount=1+travel*11,pts=chainShape(amount,x+8,y-50);chain(pts,amount);
+      const q=((time-51)/1.7)%1;
+      if(q<0.60){const a=smooth(q/0.60);trna(mix(Math.min(g.w-24,x+52),x+15,a),mix(y-75,y-19,a),true,Math.floor(amount));}
+      else{const a=smooth((q-0.6)/0.4);trna(mix(x-11,x-31,a),y-19-4*a,false,0,(1-a)*0.7);}
+      if(time>53)text(pts[0][0]-18,pts[0][1]+3,'Polypeptid','end');
+    }else{
+      if(time<66.5){
+        const a=smooth((time-65)/0.35)*(1-smooth((time-66)/0.5));
+        parts.push(`<g opacity="${a}">`);enzyme(x+15,y-15,C.pol,0.4);text(g.w/2,619,'Freisetzungsfaktor','middle');parts.push('</g>');
+      }
+      const pts=chainShape(12,stop+8,y-50),finalX=g.w*0.55,finalY=620;
+      const free=pts.map((p,i)=>blend(p,[finalX-56+i*10,finalY+12*Math.sin(i*0.68)],release));chain(free);
+      if(release>0.8)text(finalX,652,'Freies Polypeptid','middle');
+    }
+  }
+  function describe(){
+    const s=status(time);if(phase.textContent!==s[0])phase.textContent=s[0];
+    const value=selected?definitions[selected][1]:s[1];if(detail.textContent!==value)detail.textContent=value;
+  }
+  function draw(){
+    const w=Math.max(280,scene.getBoundingClientRect().width||root.getBoundingClientRect().width),g=geometry(w),s=status(time);
+    const fade=time>74?1-smooth((time-74)/3):smooth(time/0.7),dock=smooth(time/2.5),ended=smooth((time-21)/2.5);
+    const bubble=x=>smooth((time-1.5)/2)*(1-ended)*Math.exp(-Math.pow((x-g.px)/34,4));
+    parts=[`<title id="eu-title">Genexpression bei Eukaryoten: ${s[0]}</title><desc id="eu-desc">Eine durchgehende Szene vom Gen im Zellkern bis zum freien Polypeptid im Cytoplasma. RNA-Polymerase II transkribiert DNA zu prä-mRNA. Ein 5′-Cap wird angefügt. Nach dem 3′-Schnitt ergänzt Poly(A)-Polymerase den Poly(A)-Schwanz. Das blaue Spleißosom entfernt das rote Intron und verbindet die grünen Exons. Dieselbe reife mRNA wandert durch die Kernpore in der Kernhülle. Im Cytoplasma findet die kleine Ribosomenuntereinheit AUG; das vollständige 80S-Ribosom liest bis UAA. tRNAs bringen Aminosäuren. Die wachsende Kette wird am Stoppcodon als Polypeptid freigesetzt. Verarbeitungsabläufe können sich in der Zelle zeitlich überlappen. Sequenzen, Größen und Zeitverhältnisse sind schematisch.</desc>`];
+    text(8,24,'Zellkern');text(8,415,'Cytoplasma');
+    // The envelope is structural, with an actual gap for RNA export.
+    for(const y of [367,383]){line(8,y,g.poreX-24,y,C.muted,1.5);line(g.poreX+24,y,w-8,y,C.muted,1.5);}
+    parts.push(`<path d="M${g.poreX-24},361Q${g.poreX-13},375 ${g.poreX-24},389M${g.poreX+24},361Q${g.poreX+13},375 ${g.poreX+24},389" fill="none" stroke="${C.pol}" stroke-width="5" stroke-linecap="round"/>`);
+    text(8,357,'Kernhülle');text(g.poreX+33,409,'Kernpore');
+    parts.push(`<g opacity="${fade}">`);
+    text(8,94,'DNA');text(g.promoter,94,'Promotor','middle');
+    let top='',bottom='';
+    for(let x=27;x<=w-26;x+=3){const b=bubble(x);top+=(x===27?'M':'L')+`${x},${112-15*b}`;bottom+=(x===27?'M':'L')+`${x},${152+15*b}`;}
+    path(top,C.muted,2);path(bottom,C.muted,2);
+    const seq='ATGCGTACGTACGATGCA',count=Math.floor((w-64)/23);
+    for(let i=0;i<count;i++){const x=38+i*23,b=bubble(x),v=seq[i%seq.length];base(x,123-15*b,v,18,1);base(x,141+15*b,complements[v],18,-1);}
+    text(7,128,'5′');text(7,150,'3′');text(w-6,128,'3′','end');text(w-6,150,'5′','end');
+    drawRNA(g);
+    if(ended<1){
+      const py=133-(1-dock)*32-ended*30;
+      parts.push(`<g opacity="${dock*(1-ended)}">`);enzyme(g.px,py,C.pol,1.1);
+      const labelX=clamp(g.px,80,w-86);text(labelX,62,'RNA-Polymerase II','middle');line(labelX,71,g.px,py-45,C.muted,1);parts.push('</g>');
+      if(time<5.8){
+        const tf=dock*(1-smooth((time-4)/1.8));parts.push(`<g opacity="${tf}">`);
+        dot(g.promoter-28,160,8,C.blue,0.65);dot(g.promoter-15,174,8,C.blue,0.65);dot(g.promoter-2,161,8,C.blue,0.65);
+        text(8,208,'Transkriptionsfaktoren');parts.push('</g>');
+      }
+    }
+    drawTranslation(g);
+    parts.push('</g>');
+    scene.setAttribute('viewBox',`0 0 ${w} 670`);scene.innerHTML=parts.join('');describe();
+  }
+  for(const [key,entry] of Object.entries(definitions)){
+    const option=document.createElement('option');option.value=key;option.textContent=entry[0];term.appendChild(option);
+  }
+  term.addEventListener('change',()=>{selected=term.value;describe();});
+  speed.addEventListener('change',()=>{rate=clamp(Number(speed.value)||1,0.25,2);});
+  function frame(now){
+    if(!playing)return;
+    if(previous!==null&&!document.hidden)time=(time+Math.min(now-previous,100)/1000*rate)%duration;
+    previous=now;draw();raf=requestAnimationFrame(frame);
+  }
+  function playLabel(){play.textContent=playing?'Pause':'Weiterlaufen';}
+  play.addEventListener('click',()=>{playing=!playing;previous=null;cancelAnimationFrame(raf);playLabel();if(playing)raf=requestAnimationFrame(frame);});
+  document.addEventListener('visibilitychange',()=>{previous=null;});
+  const resize=new ResizeObserver(draw);resize.observe(scene);
+  playLabel();draw();if(playing)raf=requestAnimationFrame(frame);
+})();
+</script>
+
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Ein Gen mit zwei Exons und einem Intron als Modell. RNA-Verarbeitung und Transkription können sich zeitlich überlappen.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="proteinbiosynthese-prokaryoten.html"><span>← Zurück</span>Proteinbiosynthese bei Prokaryoten</a><a href="index.html"><span>Weiter →</span>Zur Übersicht</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>

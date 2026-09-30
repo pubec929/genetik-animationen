@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Beobachte, wie das Spleißosom Introns entfernt und die verbleibenden Exons miteinander verbindet.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>RNA-Spleißen · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html" aria-current="page">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Spleißen</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Eukaryoten</p><h1>RNA-Spleißen</h1><p>Beobachte, wie das Spleißosom Introns entfernt und die verbleibenden Exons miteinander verbindet.</p></div><span class="page-number" aria-hidden="true">03 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: RNA-Spleißen">
+<noscript>Zum Abspielen dieser Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="rna-splicing-view">
+  
+  <div class="viz-controls">
+    <button id="sp-play" class="btn btn-primary" type="button">Pause</button>
+    <label class="form-label" for="sp-speed">Tempo
+      <select id="sp-speed" class="form-select">
+        <option value="0.5">Langsam</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">Schnell</option>
+      </select>
+    </label>
+    <span id="sp-phase" aria-live="polite"></span>
+  </div>
+  <svg id="sp-scene" role="img" aria-labelledby="sp-title sp-desc"></svg>
+  <div class="sp-legend text-small" aria-label="Farblegende">
+    <span><i style="background:var(--green)"></i>Exons</span>
+    <span><i style="background:var(--orange)"></i>Intron</span>
+    <span><i style="background:var(--purple)"></i>Proteine</span>
+    <span><i style="background:var(--blue)"></i>snRNA</span>
+  </div>
+  <div id="sp-terms" class="viz-controls" aria-label="Fachbegriffe erklären"></div>
+  <div id="sp-detail" aria-live="polite"></div>
+</div>
+<style>
+  #rna-splicing-view { color:var(--foreground); }
+  #rna-splicing-view #sp-scene { display:block; width:100%; height:458px; }
+  #rna-splicing-view #sp-scene text { fill:var(--foreground); font-family:inherit; }
+  #rna-splicing-view .sp-legend { display:flex; flex-wrap:wrap; gap:8px 20px; margin:4px 0 16px; }
+  #rna-splicing-view .sp-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #rna-splicing-view .sp-legend i { display:inline-block; width:17px; height:6px; border-radius:3px; }
+  #rna-splicing-view #sp-detail { min-height:4em; margin-top:14px; }
+</style>
+<script>
+(() => {
+  'use strict';
+  const root = document.getElementById('rna-splicing-view');
+  const scene = root.querySelector('#sp-scene');
+  const play = root.querySelector('#sp-play');
+  const speed = root.querySelector('#sp-speed');
+  const phase = root.querySelector('#sp-phase');
+  const detail = root.querySelector('#sp-detail');
+  const terms = root.querySelector('#sp-terms');
+
+  // Grundlage: das hochgeladene Arbeitsblatt "1. Genetik.pdf", Seite 1.
+  // Ein Intron ist stellvertretend dargestellt; Abstände, Basensequenz und
+  // zeitlicher Ablauf sind schematisch. Cap und Poly(A)-Schwanz sind ausgelassen.
+  // Fachliche Ergänzung: zwei Spleißreaktionen und Lariat am Verzweigungs-A.
+  // Fachlicher Hintergrund: https://www.ncbi.nlm.nih.gov/books/NBK9864/
+  // Lariat-Nachweis: https://pubmed.ncbi.nlm.nih.gov/6206566/
+  // Die GU/AG-Signale stehen für einen typischen Fall, nicht für alle Introns.
+  // Die Proteine und snRNAs sind symbolisch, keine einzelnen U-snRNP-Modelle.
+  const definitions = {
+    precursor: ['prä-mRNA', 'Die zunächst transkribierte RNA enthält noch Introns. Im Zellkern wird sie prozessiert; dazu gehört das Spleißen.'],
+    pieces: ['Exon / Intron', 'Exons bleiben in dieser reifen mRNA erhalten. Das dazwischenliegende Intron wird entfernt; die Reihenfolge der Exons bleibt gleich.'],
+    signals: ['Spleißsignale', 'Kurze Nukleotidsequenzen kennzeichnen die Spleißstellen. Der übrige Intron-Abschnitt kann sehr unterschiedlich sein; GU und AG zeigen einen typischen Fall.'],
+    machine: ['Spleißosom', 'Der RNA-Proteinkomplex führt das Spleißen aus. Zu seinen Bausteinen gehören snRNPs: kleine Kern-RNAs (snRNAs) mit Proteinen.'],
+    pairing: ['Basenpaarung', 'snRNAs helfen, Spleißsignale zu erkennen: A paart mit U, G mit C. Die RNA-Stränge liegen antiparallel; gezeigt ist nur ein Signalausschnitt.'],
+    lariat: ['Lariat', 'Das 5′-Ende des Introns bindet an ein Adenosin (A) im Intron. So entsteht die Lassoform mit einer besonderen 2′–5′-Bindung.'],
+    mature: ['Reife mRNA', 'Nach dem Spleißen sind die Exons verbunden. Ist die gesamte Prozessierung abgeschlossen, kann die mRNA den Zellkern verlassen.']
+  };
+  const stages = [
+    { end:4, title:'1 · prä-mRNA im Zellkern', text:'Zwischen zwei Exons liegt ein Intron. Kurze Signalsequenzen markieren die Spleißstellen.' },
+    { end:10, title:'2 · Signale erkennen', text:'RNA-Proteinkomplexe erkennen die Spleißsignale. snRNA bindet über komplementäre Basenpaarung.' },
+    { end:17, title:'3 · Spleißosom und Schleife', text:'Weitere Bestandteile lagern sich an. Das Spleißosom bringt die Reaktionsstellen zusammen; die RNA faltet sich.' },
+    { end:23, title:'4 · Erste Spleißreaktion', text:'Die 5′-Spleißstelle wird gelöst. Das 5′-Ende des Introns bindet an das Verzweigungs-A; Exon 1 wird dort frei.' },
+    { end:29, title:'5 · Zweite Spleißreaktion', text:'Exon 1 wird mit Exon 2 verknüpft. Dabei wird die 3′-Spleißstelle gelöst und das Intron als Lariat frei.' },
+    { end:37, title:'6 · Reife mRNA', text:'Die Exons sind verbunden, das Intron ist entfernt. Die gespleißte RNA ist dadurch kürzer.' },
+    { end:40, title:'Nächste prä-mRNA · Wiederholung', text:'Ein neues Beispiel beginnt. Das entfernte Intron wird nicht wieder in die reife mRNA eingesetzt.' }
+  ];
+  const color = { exon:'var(--green)', intron:'var(--orange)', protein:'var(--purple)', snrna:'var(--blue)', ink:'var(--foreground)' };
+  const baseColor = { A:'var(--green)', U:'var(--red)', G:'var(--orange)', C:'var(--blue)' };
+  const clamp = (v, a=0, b=1) => Math.max(a, Math.min(b, v));
+  const smooth = v => { v=clamp(v); return v*v*(3-2*v); };
+  const mix = (a,b,p) => a+(b-a)*p;
+  const pointMix = (a,b,p) => [mix(a[0],b[0],p), mix(a[1],b[1],p)];
+  const totalDuration = 40;
+  let time = 0.8, rate = 1, selected = null, parts = [];
+  let playing = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let previous = null, raf = 0;
+
+  function currentStage() { return stages.find(s => time < s.end) || stages[0]; }
+  function label(x,y,value,anchor='start') {
+    parts.push(`<text x="${x}" y="${y}" text-anchor="${anchor}" class="text-small">${value}</text>`);
+  }
+  function path(d,stroke=color.ink,width=1.4,extra='') {
+    parts.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`);
+  }
+  function line(x1,y1,x2,y2,stroke=color.ink,width=1.4,extra='') {
+    path(`M${x1},${y1}L${x2},${y2}`,stroke,width,extra);
+  }
+  function cubic(a,b,c,d,t) {
+    const u=1-t;
+    return [0,1].map(k => u*u*u*a[k]+3*u*u*t*b[k]+3*u*t*t*c[k]+t*t*t*d[k]);
+  }
+  function pointsPath(points) { return points.map((p,i)=>(i?'L':'M')+p.join(',')).join(''); }
+
+  // The puzzle contours of complementary bases share exactly the same edge.
+  function nucleotide(x,y,b,width,face=1,opacity=1) {
+    const h=width/2, r=Math.min(3,width*0.2), sign=(b==='A'||b==='G')?1:-1;
+    const edge=(b==='G'||b==='C')
+      ?`V${10+3.4*sign}H${-r}V10`
+      :`C${r},${10+5*sign} ${-r},${10+5*sign} ${-r},10`;
+    const d=`M${-h},-10H${h}V10H${r}${edge}H${-h}Z`;
+    parts.push(`<g opacity="${opacity}"><path d="${d}" transform="translate(${x} ${y}) scale(1 ${face})" fill="${baseColor[b]}" fill-opacity="0.3" stroke="var(--muted-foreground)" stroke-width="0.65"/>`);
+    label(x,y+4,b,'middle'); parts.push('</g>');
+  }
+  function exon(x,y,width,number) {
+    const bases=number===1?'ACUGCA':'GAUCAG';
+    const n=Math.min(6,Math.floor(width/18));
+    line(x,y,x+width,y,color.exon,5);
+    for(let i=0;i<n;i++) {
+      const bx=x+(i+0.5)*width/n;
+      line(bx,y,bx,y-4,color.exon,1.8);
+      nucleotide(bx,y-14,bases[i],Math.min(17,width/n-2),-1);
+    }
+    parts.push(`<rect x="${x}" y="${y+10}" width="${width}" height="23" rx="5" fill="${color.exon}" fill-opacity="0.15"/>`);
+    label(x+width/2,y+26,`Exon ${number}`,'middle');
+  }
+  function particle(x,y,opacity=1,size=1) {
+    parts.push(`<g transform="translate(${x} ${y}) scale(${size})" opacity="${opacity}"><path d="M-34,-8C-46,-24 -26,-43 -11,-32C3,-51 23,-36 22,-25C46,-27 49,-4 32,4C42,26 14,35 3,27C-12,41 -35,22 -30,9C-47,4 -47,-8 -34,-8Z" fill="${color.protein}" fill-opacity="0.29" stroke="${color.protein}" stroke-width="1.5"/>`);
+    path('M-25,2C-31,-17 -14,-15 -17,-2C-18,12 -1,13 -2,-3C-3,-23 18,-16 16,1C13,17 30,11 29,-2',color.snrna,2.4);
+    parts.push('</g>');
+  }
+  function recognitionInset(cx,donorX,opacity) {
+    parts.push(`<g opacity="${opacity}">`);
+    label(cx,115,'Komplementäre Basenpaarung','middle');
+    label(cx-66,157,'snRNA','end');
+    label(cx-66,181,'prä-mRNA','end');
+    label(cx-47,157,'3′','middle'); label(cx+46,157,'5′','middle');
+    label(cx-47,181,'5′','middle'); label(cx+46,181,'3′','middle');
+    nucleotide(cx-13,153,'C',22,1); nucleotide(cx+13,153,'A',22,1);
+    nucleotide(cx-13,173,'G',22,-1); nucleotide(cx+13,173,'U',22,-1);
+    label(cx,211,'5′-Spleißstelle · Ausschnitt','middle');
+    path(`M${cx-20},224Q${donorX},239 ${donorX},264`,'var(--muted-foreground)',1);
+    parts.push('</g>');
+  }
+  function describe() {
+    const s=currentStage();
+    if(phase.textContent!==s.title) phase.textContent=s.title;
+    const d=selected ? definitions[selected][1] : s.text;
+    if(detail.textContent!==d) detail.textContent=d;
+  }
+
+  function draw() {
+    const w=Math.max(280,scene.getBoundingClientRect().width || root.getBoundingClientRect().width);
+    const c=w/2, y=298, exW=clamp(w*0.18,53,130);
+    const donor0=30+exW, acceptor0=w-30-exW;
+    const fold=smooth((time-10)/6), cut=smooth((time-17.5)/2.5);
+    const join=smooth((time-23)/3.2), lift=smooth((time-23)/5.8);
+    const assemble=smooth((time-9.5)/4), dismantle=smooth((time-28.5)/4);
+    const bind=smooth((time-4)/3.5), fadeIn=smooth(time/0.8);
+    const outgoing=smooth((time-37)/3), opacity=fadeIn*(1-outgoing);
+    const donor=mix(donor0,c-43,fold), acceptor=mix(acceptor0,c+43,fold);
+    const leftEnd=mix(donor,c,join), rightStart=mix(acceptor,c,join);
+    const branch0=[mix(donor0,acceptor0,0.80),y];
+    const branch=pointMix(branch0,[c+9,y-19],fold);
+    const start=pointMix([c-43,y],[c+9,y-19],cut);
+    const loop=[];
+    const count=64;
+    for(let i=0;i<=count;i++) {
+      const t=i/count;
+      const straight=[mix(donor0,branch0[0],t),y];
+      const shaped=t<0.5
+        ?cubic(start,[c-83,y-78],[c-87,127],[c-7,127],t*2)
+        :cubic([c-7,127],[c+74,127],[c+87,y-80],[c+9,y-19],(t-0.5)*2);
+      loop.push(pointMix(straight,shaped,fold));
+    }
+    const tail=[];
+    for(let i=0;i<=16;i++) {
+      const t=i/16;
+      tail.push(cubic(branch,[branch[0]+9,branch[1]+16*fold],[acceptor-7,y],[acceptor,y],t));
+    }
+    const allPoints=loop.concat(tail.slice(1));
+    const s=currentStage();
+    parts=[`<title id="sp-title">RNA-Spleißen: ${s.title}</title><desc id="sp-desc">Ein Intron zwischen zwei Exons wird im Zellkern entfernt. RNA-Proteinkomplexe erkennen Spleißsignale und bilden das Spleißosom. Die RNA bildet eine Schleife. In zwei Reaktionen entsteht ein Lariat und die Exons werden verbunden. Die kürzere mRNA bleibt übrig. Schematisches Modell mit einem Intron; Cap und Poly(A)-Schwanz sind nicht dargestellt.</desc>`];
+    label(8,25,'Zellkern');
+    label(w-8,25,'Ein Intron · schematisch','end');
+    parts.push(`<g opacity="${opacity}" transform="translate(${outgoing*75} 0)">`);
+
+    // Protein/snRNA machinery, drawn behind the RNA substrate.
+    const earlyOpacity=bind*(1-assemble);
+    if(earlyOpacity>0.001) {
+      particle(donor+12,357+(1-bind)*43,earlyOpacity,0.8);
+      particle(branch[0],357+(1-bind)*43,earlyOpacity,0.8);
+      line(donor+12,321,donor+12,302,color.snrna,2.2,`opacity="${earlyOpacity}"`);
+      line(branch[0],321,branch[0],302,color.snrna,2.2,`opacity="${earlyOpacity}"`);
+    }
+    if(assemble>0 && dismantle<1) {
+      const left=c-86, right=c+86;
+      parts.push(`<path d="M${left},303C${left-16},272 ${left+22},252 ${c-21},267C${c+13},244 ${right-8},262 ${right},294C${right+25},328 ${right-5},380 ${c+23},378C${c-8},397 ${left-23},367 ${left},335Z" fill="${color.protein}" fill-opacity="${0.14*assemble*(1-dismantle)}" stroke="${color.protein}" stroke-opacity="${0.6*assemble*(1-dismantle)}" stroke-width="1.5"/>`);
+      particle(c-42-48*dismantle,340+26*dismantle,assemble*(1-dismantle),0.72);
+      particle(c+42+48*dismantle,340+26*dismantle,assemble*(1-dismantle),0.72);
+      particle(c,369+40*dismantle,assemble*(1-dismantle),0.68);
+    }
+
+    // One continuous intron becomes a branched lariat, still joined to exon 2
+    // after the first reaction and released only during the second reaction.
+    parts.push(`<g transform="translate(0 ${-70*lift})">`);
+    path(pointsPath(allPoints),color.intron,5);
+    const letters='GUACUGCUACUAGCUACUGCUAG';
+    for(let i=1;i<allPoints.length-1;i+=3) {
+      const p=allPoints[i], before=allPoints[i-1], after=allPoints[i+1];
+      const dx=after[0]-before[0], dy=after[1]-before[1], len=Math.hypot(dx,dy)||1;
+      const b=letters[Math.floor(i/3)%letters.length];
+      line(p[0],p[1],p[0]+dy/len*8,p[1]-dx/len*8,baseColor[b],2.4);
+    }
+    if(fold<0.55) {
+      const motifOpacity=1-clamp(fold/0.55);
+      parts.push(`<g opacity="${motifOpacity}">`);
+      label(donor+5,y-24,'GU'); label(acceptor-5,y-24,'AG','end');
+      label(c,y+29,'Intron','middle');
+      parts.push('</g>');
+    }
+    if(fold>0.35) {
+      parts.push(`<g opacity="${clamp((fold-0.35)/0.4)}">`);
+      label(c,191,'Intron','middle');
+      if(cut>0.95) label(c,211,'Lariat','middle');
+      parts.push('</g>');
+    }
+    // The branch adenosine remains within the intron, including the released lariat.
+    if(time>=7) {
+      const ao=smooth((time-7)/1.5);
+      parts.push(`<g opacity="${ao}"><circle cx="${branch[0]}" cy="${branch[1]}" r="10" fill="var(--background)"/><circle cx="${branch[0]}" cy="${branch[1]}" r="10" fill="${baseColor.A}" fill-opacity="0.35" stroke="${color.intron}" stroke-width="1.4"/>`);
+      label(branch[0],branch[1]+4,'A','middle'); parts.push('</g>');
+    }
+    if(cut>0.1 && cut<1) {
+      const at=loop[0];
+      parts.push(`<circle cx="${at[0]}" cy="${at[1]}" r="4" fill="${color.intron}"/>`);
+    }
+    parts.push('</g>');
+
+    // Exons translate without reversing order or shortening their own sequences.
+    exon(leftEnd-exW,y,exW,1); exon(rightStart,y,exW,2);
+    label(leftEnd-exW-9,y+4,'5′','end'); label(rightStart+exW+9,y+4,'3′');
+    if(join>0.93) {
+      line(c-8,y,c+8,y,color.exon,5);
+      parts.push(`<circle cx="${c}" cy="${y}" r="3" fill="${color.ink}"/>`);
+    }
+    if(time<4) {
+      label(c,86,'prä-mRNA','middle');
+      label(donor,369,'5′-Spleißstelle','end');
+      label(acceptor,396,'3′-Spleißstelle');
+      line(donor,354,donor,y+10,'var(--muted-foreground)',1);
+      line(acceptor,379,acceptor,y+10,'var(--muted-foreground)',1);
+    }
+    if(time>=4 && time<11) {
+      recognitionInset(c+20,donor+15,smooth((time-4)/1.5)*(1-smooth((time-9.5)/1.5)));
+    }
+    if(time>=7 && time<10) {
+      label(branch[0],253,'Verzweigungs-A','middle');
+      line(branch[0],259,branch[0],y-12,'var(--muted-foreground)',1);
+    }
+    if(time>=10 && time<17) label(c,84,'RNA faltet sich zur Schleife','middle');
+    if(time>=17 && time<23) {
+      label(c,84,'5′-Ende des Introns → A','middle');
+      if(cut>0.65) {
+        label(leftEnd-15,y-47,'3′-OH frei','end');
+        line(leftEnd-10,y-40,leftEnd-1,y-6,'var(--muted-foreground)',1);
+      }
+    }
+    if(time>=23 && time<29) label(c,46,'Exons verbinden · Intron freisetzen','middle');
+    if(time>=29) {
+      label(c,46,'Entferntes Intron','middle');
+      label(c,363,'Reife mRNA','middle');
+      label(c,388,'Exon 1 + Exon 2','middle');
+      line(c,341,c,y+7,'var(--muted-foreground)',1);
+    }
+    if(time>=4 && time<10) label(c,428,'RNA-Proteinkomplexe','middle');
+    if(time>=10 && time<29) label(c,428,'Spleißosom · snRNA + Proteine','middle');
+    if(time>=29 && time<37) label(c,429,'Nach vollständiger Reifung: Export möglich','middle');
+    parts.push('</g>');
+    label(w/2,452,'Cap und Poly(A)-Schwanz nicht gezeigt','middle');
+    scene.setAttribute('viewBox',`0 0 ${w} 458`);
+    scene.innerHTML=parts.join(''); describe();
+  }
+
+  for(const [key,entry] of Object.entries(definitions)) {
+    const button=document.createElement('button');
+    button.type='button'; button.className='btn'; button.textContent=entry[0];
+    button.dataset.term=key; button.setAttribute('aria-pressed','false');
+    button.addEventListener('click',()=>{
+      selected=selected===key ? null : key;
+      terms.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.term===selected)));
+      describe();
+    });
+    terms.appendChild(button);
+  }
+  function frame(now) {
+    if(!playing) return;
+    if(previous!==null && !document.hidden) time=(time+Math.min(now-previous,100)/1000*rate)%totalDuration;
+    previous=now; draw(); raf=requestAnimationFrame(frame);
+  }
+  function playLabel() { play.textContent=playing?'Pause':'Weiterlaufen'; }
+  play.addEventListener('click',()=>{
+    playing=!playing; previous=null; cancelAnimationFrame(raf);
+    playLabel(); if(playing) raf=requestAnimationFrame(frame);
+  });
+  speed.addEventListener('change',()=>{ rate=clamp(Number(speed.value)||1,0.25,2); });
+  document.addEventListener('visibilitychange',()=>{ previous=null; });
+  new ResizeObserver(draw).observe(scene);
+  playLabel(); draw(); if(playing) raf=requestAnimationFrame(frame);
+})();
+</script>
+
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Vereinfachtes Modell eines Spleißvorgangs. Wähle unten einen Fachbegriff für die passende Erklärung.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="mrna-translation.html"><span>← Zurück</span>mRNA-Translation</a><a href="proteinbiosynthese-prokaryoten.html"><span>Weiter →</span>Proteinbiosynthese bei Prokaryoten</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>

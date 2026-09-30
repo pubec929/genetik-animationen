@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Eine durchgehende Szene: Transkription und Translation laufen im Bakterium gleichzeitig ab.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>Proteinbiosynthese bei Prokaryoten · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html" aria-current="page">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Prokaryoten</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Prokaryoten · Bakterienmodell</p><h1>Proteinbiosynthese bei Prokaryoten</h1><p>Eine durchgehende Szene: Transkription und Translation laufen im Bakterium gleichzeitig ab.</p></div><span class="page-number" aria-hidden="true">04 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: Proteinbiosynthese bei Prokaryoten">
+<noscript>Zum Abspielen dieser Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="protein-one-scene">
+  
+  <div class="viz-controls">
+    <button id="po-play" class="btn btn-primary" type="button">Pause</button>
+    <label class="form-label" for="po-speed">Tempo
+      <select id="po-speed" class="form-select">
+        <option value="0.5">Langsam</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">Schnell</option>
+      </select>
+    </label>
+    <span id="po-phase" aria-live="polite"></span>
+  </div>
+  <svg id="po-scene" role="img" aria-labelledby="po-title po-desc"></svg>
+  <div class="po-legend text-small">
+    <span><i style="background:var(--purple)"></i>RNA-Polymerase</span>
+    <span><i style="background:var(--green)"></i>mRNA</span>
+    <span><i style="background:var(--orange)"></i>Ribosom</span>
+    <span><i style="background:var(--blue)"></i>tRNA</span>
+  </div>
+  <div class="viz-controls">
+    <label class="form-label" for="po-term">Erklärung
+      <select id="po-term" class="form-select">
+        <option value="">Zum aktuellen Ablauf</option>
+      </select>
+    </label>
+  </div>
+  <div id="po-detail" aria-live="polite"></div>
+</div>
+<style>
+  #protein-one-scene { color:var(--foreground); }
+  #protein-one-scene #po-scene { display:block; width:100%; height:558px; }
+  #protein-one-scene #po-scene text { fill:var(--foreground); font-family:inherit; }
+  #protein-one-scene .po-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:6px 0 14px; }
+  #protein-one-scene .po-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #protein-one-scene .po-legend i { display:inline-block; width:16px; height:6px; border-radius:3px; }
+  #protein-one-scene #po-detail { margin-top:12px; min-height:4em; }
+</style>
+<script>
+(() => {
+  'use strict';
+  const root=document.getElementById('protein-one-scene');
+  const scene=root.querySelector('#po-scene'),play=root.querySelector('#po-play');
+  const speed=root.querySelector('#po-speed'),phase=root.querySelector('#po-phase');
+  const term=root.querySelector('#po-term'),detail=root.querySelector('#po-detail');
+
+  // One persistent molecular scene, without a separate overview or detail panel.
+  // Bacteria are the model. DNA sequences, lengths and speeds are schematic.
+  // Amino-acid beads stand for a greatly shortened depiction of a longer chain.
+  // Both ribosomes translate the same coding region and produce the same protein.
+  // Sources retained from the original version:
+  // https://pdb101.rcsb.org/motm/253 (coupled transcription and translation)
+  // https://pdb101.rcsb.org/motm/16 (aminoacyl-tRNA synthetases)
+  // https://pdb101.rcsb.org/motm/40 (RNA polymerase)
+  const definitions={
+    tx:['Transkription', 'Die RNA-Polymerase liest den DNA-Matrizenstrang 3′ → 5′. Die mRNA wächst komplementär dazu am 3′-Ende, also in Richtung 5′ → 3′.'],
+    pol:['RNA-Polymerase / σ', 'Der σ-Faktor hilft der bakteriellen RNA-Polymerase, den Promotor zu erkennen. Die Polymerase öffnet die DNA lokal; hinter ihr schließt sich die Doppelhelix wieder.'],
+    tr:['Translation', 'Ein 70S-Ribosom liest mRNA-Codons von 5′ nach 3′. tRNAs liefern passende Aminosäuren, die zur Polypeptidkette verknüpft werden.'],
+    coupling:['Kopplung / Polysom', 'Ribosomen beginnen bereits auf der noch entstehenden mRNA. Mehrere Ribosomen auf derselben mRNA heißen Polysom; jedes bildet eine eigene Polypeptidkette.'],
+    trna:['tRNA und Aminosäuren', 'tRNAs werden zuvor durch Aminoacyl-tRNA-Synthetasen mit Aminosäuren beladen. Dabei wird ATP verbraucht. Die Beladung und die Abläufe im Ribosom sind hier vereinfacht.'],
+    stop:['Terminator / Stoppcodon', 'Der Terminator beendet die Transkription. Das Stoppcodon UAA beendet die Translation: Ein Freisetzungsfaktor löst die fertige Polypeptidkette.'],
+    protein:['Faltung zum Protein', 'Die Polypeptidkette faltet sich, oft mithilfe von Chaperonen. Faltung kann schon während der Translation beginnen; weitere Verarbeitungsschritte können folgen.'],
+    model:['Bakterienmodell', 'Gezeigt ist ein Bakterium ohne Zellkern. Archaeen unterscheiden sich in einigen Details. Sequenzen, Längen und Zeitverhältnisse sind stark vereinfacht.']
+  };
+  const C={ink:'var(--foreground)',muted:'var(--muted-foreground)',rna:'var(--green)',pol:'var(--purple)',ribo:'var(--orange)',trna:'var(--blue)'};
+  const baseColors={A:'var(--green)',T:'var(--purple)',U:'var(--red)',G:'var(--orange)',C:'var(--blue)'};
+  const pair={A:'T',T:'A',G:'C',C:'G'};
+  const aaColors=['var(--blue)','var(--green)','var(--purple)','var(--red)','var(--orange)','var(--green)','var(--blue)','var(--red)','var(--purple)','var(--orange)','var(--green)','var(--blue)'];
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const smooth=v=>{v=clamp(v);return v*v*(3-2*v);};
+  const mix=(a,b,t)=>a+(b-a)*t;
+  const duration=56;
+  let time=0.8,rate=1,selected='',parts=[];
+  let playing=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let previous=null,raf=0;
+
+  function status(t){
+    if(t<4)return ['Transkription startet','RNA-Polymerase und σ-Faktor binden am Promotor. Die DNA wird an dieser Stelle geöffnet.'];
+    if(t<12)return ['Die mRNA entsteht','Die RNA-Polymerase bewegt sich an der DNA entlang. Die grüne mRNA wächst aus ihr heraus.'];
+    if(t<21)return ['Die Translation beginnt','Ein Ribosom startet bei AUG auf der noch entstehenden mRNA. tRNAs bringen Aminosäuren für die wachsende Kette.'];
+    if(t<28)return ['Transkription und Translation gleichzeitig','Zwei Ribosomen übersetzen dieselbe mRNA, während die RNA-Polymerase sie noch verlängert.'];
+    if(t<31)return ['Die Transkription endet','Am Terminator löst sich die RNA-Polymerase. Die fertige mRNA bleibt erhalten und wird weiter übersetzt.'];
+    if(t<34)return ['Die Translation läuft weiter','Die Ribosomen bewegen sich Richtung 3′-Ende der mRNA. Ihre Polypeptidketten werden länger.'];
+    if(t<43)return ['Die erste Kette wird freigesetzt','Am Stoppcodon UAA wird die erste Polypeptidkette frei und faltet sich. Das zweite Ribosom übersetzt weiter.'];
+    if(t<50)return ['Ein weiteres Protein entsteht','Auch das zweite Ribosom erreicht UAA. Seine Kette wird freigesetzt und faltet sich zum gleichen Protein.'];
+    if(t<53)return ['Mehrere Proteine aus einer mRNA','Beide Ribosomen haben denselben Bauplan übersetzt. Die mRNA kann für weitere Translationen genutzt werden.'];
+    return ['Nächster Durchlauf','Die Animation beginnt mit einem neuen Synthesevorgang.'];
+  }
+  function text(x,y,value,anchor='start'){parts.push(`<text x="${x}" y="${y}" text-anchor="${anchor}" class="text-small">${value}</text>`);}
+  function path(d,color=C.ink,width=1.5,extra=''){parts.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`);}
+  function line(x,y,x2,y2,color=C.ink,width=1.5,extra=''){path(`M${x},${y}L${x2},${y2}`,color,width,extra);}
+  function dot(x,y,r,color,opacity=0.7){parts.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" fill-opacity="${opacity}"/>`);}
+  function base(x,y,b,width,face){
+    const h=width/2,r=Math.min(2.6,width/5),sign=b==='A'||b==='G'?1:-1;
+    const edge=b==='G'||b==='C'?`V${10+3*sign}H${-r}V10`:`C${r},${10+4*sign} ${-r},${10+4*sign} ${-r},10`;
+    parts.push(`<path d="M${-h},-10H${h}V10H${r}${edge}H${-h}Z" transform="translate(${x} ${y}) scale(1 ${face})" fill="${baseColors[b]}" fill-opacity="0.24" stroke="${C.muted}" stroke-width="0.55"/>`);
+    text(x,y+4,b,'middle');
+  }
+  function polymerase(x,y,opacity=1){
+    parts.push(`<g opacity="${opacity}"><path d="M-36,-20C-44,-42 -16,-52 4,-40C24,-50 45,-29 37,-5C47,20 21,45 -1,36C-27,49 -48,19 -36,-4Z" transform="translate(${x} ${y})" fill="${C.pol}" fill-opacity="0.43" stroke="${C.pol}" stroke-width="1.6"/></g>`);
+  }
+  function ribosome(x,y,r,depart,opacity){
+    parts.push(`<g opacity="${opacity}">`);
+    const dy=-depart*42,dx=depart*15;
+    parts.push(`<path d="M${x-r},${y-5}C${x-r-9},${y-29} ${x-r+1},${y-54} ${x+3},${y-51}C${x+r+13},${y-51} ${x+r+10},${y-23} ${x+r},${y-5}Z" transform="translate(${dx} ${dy})" fill="${C.ribo}" fill-opacity="0.47" stroke="${C.ribo}" stroke-width="1.5"/>`);
+    parts.push(`<ellipse cx="${x-dx}" cy="${y+11+depart*30}" rx="${r+2}" ry="11" fill="${C.ribo}" fill-opacity="0.32" stroke="${C.ribo}" stroke-width="1.3"/>`);
+    if(depart<0.4)text(x+1,y-22,'70S','middle');
+    parts.push('</g>');
+  }
+  function tinyTrna(x,y,loaded,aa,opacity=1){
+    parts.push(`<g opacity="${opacity}" transform="translate(${x} ${y})"><path d="M-4,14L-5,4L-12,-3L-9,-10L-3,-8L0,-19L7,-16L8,-4L4,4L4,14Z" fill="${C.trna}" fill-opacity="0.6" stroke="${C.trna}" stroke-width="1.1"/>`);
+    for(let k=-1;k<=1;k++)line(k*4,14,k*4,19,C.trna,1.5);
+    if(loaded){line(4,-16,4,-24,C.trna,1.4);dot(4,-28,4.3,aaColors[aa%aaColors.length]);}
+    parts.push('</g>');
+  }
+  function chainShape(amount,x,y){
+    const count=Math.ceil(amount),points=[];
+    for(let i=0;i<count;i++){
+      const back=Math.max(0,amount-1-i);
+      points.push([x-2.1*back+10*Math.sin(back*0.68),y-7.8*back]);
+    }
+    return points;
+  }
+  function drawChain(points,amount=12){
+    path(points.map((p,i)=>(i?'L':'M')+p.join(',')).join(''),C.ink,1.8);
+    points.forEach((p,i)=>dot(...p,4.6*(i<Math.floor(amount)?1:Math.max(0.1,amount%1)),aaColors[i%aaColors.length],0.8));
+  }
+  function translatingRibosome(w,start,finish,index,geometry){
+    if(time<start)return;
+    const {rnaY,startX,stopX,r}=geometry,elapsed=time-start;
+    const progress=clamp(elapsed/(finish-start)),arrival=smooth(elapsed/1.1);
+    const leave=smooth((time-finish-0.5)/2.1),rx=mix(startX,stopX,progress),ry=rnaY+33*(1-arrival);
+    const release=smooth((time-finish)/2.5),fold=smooth((time-finish-2.5)/4);
+    if(leave<1)ribosome(rx,ry,r,leave,arrival*(1-leave));
+    if(time<finish){
+      const amount=1+progress*11,pts=chainShape(amount,rx+7,ry-51);
+      drawChain(pts,amount);
+      const q=(elapsed/2)%1;
+      if(elapsed>1.4){
+        if(q<0.58){const a=smooth(q/0.58);tinyTrna(mix(Math.min(w-22,rx+47),rx+15,a),mix(rnaY+93,rnaY-8,a),true,Math.floor(amount),arrival);}
+        else{const a=smooth((q-0.58)/0.42);tinyTrna(mix(rx-12,rx-37,a),mix(rnaY,rnaY+80,a),false,0,(1-a)*0.8);}
+      }
+      if(index===0&&elapsed>3&&time<28){
+        const p=pts[0];text(clamp(p[0],56,w-60),Math.max(210,p[1]-19),'Polypeptid','middle');
+      }
+    }else{
+      const original=chainShape(12,stopX+7,rnaY-51);
+      const targetX=w*(index===0?0.73:0.38),targetY=470;
+      const points=original.map((p,i)=>{
+        const freeX=p[0]+(targetX-stopX)*release,freeY=p[1]+190*release;
+        const angle=-1.2+i*0.94,radius=14+10*Math.sin(i*0.7)**2;
+        return [mix(freeX,targetX+radius*Math.cos(angle),fold),mix(freeY,targetY+radius*Math.sin(angle),fold)];
+      });
+      drawChain(points);
+      if(release>0.6)text(targetX,514,fold>0.85?'Protein':'Polypeptid','middle');
+    }
+  }
+  function describe(){
+    const s=status(time);if(phase.textContent!==s[0])phase.textContent=s[0];
+    const value=selected?definitions[selected][1]:s[1];if(detail.textContent!==value)detail.textContent=value;
+  }
+  function draw(){
+    const w=Math.max(280,scene.getBoundingClientRect().width||root.getBoundingClientRect().width);
+    const promoter=clamp(w*0.18,82,148),terminator=w-45;
+    const tx=clamp((time-4)/24),px=mix(promoter,terminator,tx),dock=smooth(time/2.3);
+    const ended=smooth((time-28)/3),sigmaOut=smooth((time-4)/2);
+    const rnaY=342,r=clamp(w*0.04,23,30),free5=34;
+    const rnaEndX=px-34,finalEndX=terminator-34,startX=free5+r+6,stopX=finalEndX-28;
+    const grow=smooth((time-4)/6),fade=time>53?1-smooth((time-53)/3):smooth(time/0.7);
+    const opened=smooth((time-1.3)/2)*(1-ended);
+    const bubble=x=>opened*Math.exp(-Math.pow((x-px)/40,4));
+    const s=status(time);
+    parts=[`<title id="po-title">Proteinbiosynthese: ${s[0]}</title><desc id="po-desc">Eine einzige zusammenhängende Szene im Bakterium. Oben wandert RNA-Polymerase vom Promotor zum Terminator auf der DNA. Die entstehende grüne mRNA hängt direkt mit ihrem 3′-Ende an der Polymerase. Zwei Ribosomen starten nacheinander am Startcodon und übersetzen gleichzeitig die mRNA. Blaue tRNAs liefern Aminosäuren. An jedem Ribosom wächst eine eigene Polypeptidkette. Nach Ende der Transkription lösen sich die Ribosomen am Stoppcodon; ihre Ketten werden frei und falten sich zu gleichen Proteinen. Alles bleibt in derselben Ansicht. Längen, Zeit und Sequenzen sind schematisch.</desc>`];
+    text(8,24,'Bakterium · kein Zellkern');
+    parts.push(`<g opacity="${fade}">`);
+    text(8,95,'DNA');text(promoter,95,'Promotor','middle');text(terminator-4,95,'Terminator','middle');
+    parts.push(`<rect x="${promoter-22}" y="108" width="44" height="80" rx="6" fill="${C.pol}" fill-opacity="0.08"/>`);
+    let top='',bottom='';
+    for(let x=26;x<=w-26;x+=3){const b=bubble(x);top+=(x===26?'M':'L')+`${x},${124-18*b}`;bottom+=(x===26?'M':'L')+`${x},${172+18*b}`;}
+    path(top,C.muted,2);path(bottom,C.muted,2);
+    const seq='ATGCGTACGTACGATGCA',spacing=23,count=Math.floor((w-64)/spacing);
+    for(let j=0;j<count;j++){
+      const x=38+j*spacing,b=bubble(x),v=seq[j%seq.length];
+      base(x,138-18*b,v,18,1);base(x,158+18*b,pair[v],18,-1);
+    }
+    text(7,142,'5′');text(7,164,'3′');text(w-6,142,'3′','end');text(w-6,164,'5′','end');
+
+    // The new RNA and both ribosomes share this one physical drawing throughout.
+    if(time>4){
+      const sx=mix(px-8,free5,grow),sy=mix(193,rnaY,grow),ex=px-8-ended*4,ey=193+ended*24;
+      path(`M${sx},${sy}L${rnaEndX},${sy}Q${px-5},${sy} ${ex},${ey}`,C.rna,4.2);
+      if(grow>0.6){
+        for(let x=free5+8;x<rnaEndX-5;x+=12){const baseIndex=Math.floor((x-free5)/12);line(x,sy,x,sy-7,baseColors['AUGC'[baseIndex%4]],2.1);}
+      }
+      if(grow>0.85){text(free5-12,rnaY+4,'5′','end');text(8,rnaY+31,'mRNA');}
+      if(time>7)text(ex+11,ey+4,'3′');
+      if(time>=11){text(startX,rnaY+50,'AUG','middle');line(startX,rnaY+28,startX,rnaY+36,C.muted,1);}
+      if(rnaEndX>stopX+13){text(stopX,rnaY+50,'UAA','middle');line(stopX,rnaY+28,stopX,rnaY+36,C.muted,1);}
+    }
+    if(ended<1){
+      const py=151-(1-dock)*47-ended*61;
+      polymerase(px,py,dock*(1-ended));
+      if(time<6){dot(px-27-sigmaOut*13,py-21+sigmaOut*21,11,C.trna,0.7*(1-sigmaOut));if(sigmaOut<0.85)text(px-27-sigmaOut*13,py-17+sigmaOut*21,'σ','middle');}
+      parts.push(`<g opacity="${1-ended}">`);
+      const labelX=clamp(px,77,w-79);text(labelX,63,'RNA-Polymerase','middle');
+      line(labelX,72,px,py-47,C.muted,1);parts.push('</g>');
+    }
+    const geometry={rnaY,startX,stopX,r};
+    translatingRibosome(w,12,34,0,geometry);
+    translatingRibosome(w,21,43,1,geometry);
+    if(time>14&&time<34){
+      text(w/2,469,time<21?'Translation auf der entstehenden mRNA':'Zwei Ribosomen · ein Polysom','middle');
+    }
+    parts.push('</g>');
+    text(w/2,549,'Zeit, Sequenzen und Längen schematisch','middle');
+    scene.setAttribute('viewBox',`0 0 ${w} 558`);scene.innerHTML=parts.join('');describe();
+  }
+  for(const [key,entry] of Object.entries(definitions)){
+    const option=document.createElement('option');option.value=key;option.textContent=entry[0];term.appendChild(option);
+  }
+  term.addEventListener('change',()=>{selected=term.value;describe();});
+  speed.addEventListener('change',()=>{rate=clamp(Number(speed.value)||1,0.25,2);});
+  function frame(now){
+    if(!playing)return;
+    if(previous!==null&&!document.hidden)time=(time+Math.min(now-previous,100)/1000*rate)%duration;
+    previous=now;draw();raf=requestAnimationFrame(frame);
+  }
+  function playLabel(){play.textContent=playing?'Pause':'Weiterlaufen';}
+  play.addEventListener('click',()=>{playing=!playing;previous=null;cancelAnimationFrame(raf);playLabel();if(playing)raf=requestAnimationFrame(frame);});
+  document.addEventListener('visibilitychange',()=>{previous=null;});
+  new ResizeObserver(draw).observe(scene);
+  playLabel();draw();if(playing)raf=requestAnimationFrame(frame);
+})();
+</script>
+
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Bakterienmodell ohne Zellkern. Mehrere Ribosomen können gleichzeitig dieselbe mRNA übersetzen.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="rna-spleissen.html"><span>← Zurück</span>RNA-Spleißen</a><a href="proteinbiosynthese-eukaryoten.html"><span>Weiter →</span>Proteinbiosynthese bei Eukaryoten</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>

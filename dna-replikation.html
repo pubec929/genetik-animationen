@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Verfolge die Replikationsgabel und das Zusammenspiel von Helikase, Polymerasen und Ligase.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>DNA-Replikation · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html" aria-current="page">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Replikation</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Bakterienmodell</p><h1>DNA-Replikation</h1><p>Verfolge die Replikationsgabel und das Zusammenspiel von Helikase, Polymerasen und Ligase.</p></div><span class="page-number" aria-hidden="true">01 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: DNA-Replikation">
+<noscript>Zum Abspielen der Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="dna-continuous">
+
+<div class="viz-controls"><button class="btn btn-primary" type="button" id="dc-play">Pause</button><label class="form-label" for="dc-speed">Tempo <select class="form-select" id="dc-speed"><option value="0.5">Langsam</option><option value="1" selected>Normal</option><option value="1.5">Schnell</option></select></label><span class="text-small">Mitbewegte Ansicht · Bakterienmodell</span></div>
+<svg id="dc-scene" role="img" aria-labelledby="dc-title dc-desc" viewBox="0 0 736 425"></svg>
+<div class="dc-base-legend text-small" id="dc-bases" aria-label="Farben der Basen"></div>
+<div class="dc-strands text-small">
+<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--muted-foreground)" stroke-width="3"/></svg>Alter Strang</span>
+<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--foreground)" stroke-width="3"/></svg>Neue DNA</span>
+<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--viz-series-2)" stroke-width="6" stroke-dasharray="3 3"/></svg>RNA-Primer</span>
+</div>
+<div class="viz-controls" id="dc-proteins" aria-label="Enzyme und Gleitklammer auswählen"></div><div id="dc-detail" aria-live="polite"></div>
+</div>
+<style>
+#dna-continuous {color:var(--foreground);}
+#dna-continuous #dc-scene {display:block;width:100%;height:425px;}
+#dna-continuous svg text {fill:var(--foreground);font-family:inherit;}
+#dna-continuous .dc-base-legend,#dna-continuous .dc-strands {display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:10px 0 14px;}
+#dna-continuous .dc-base-legend>span,#dna-continuous .dc-strands>span {display:inline-flex;align-items:center;gap:5px;}
+#dna-continuous #dc-detail {margin-top:12px;min-height:4em;}
+</style>
+<script>
+(() => {
+const root=document.getElementById('dna-continuous'),scene=root.querySelector('#dc-scene'),play=root.querySelector('#dc-play'),speed=root.querySelector('#dc-speed'),details=root.querySelector('#dc-detail'),legend=root.querySelector('#dc-proteins');
+const protein={
+H:{name:'Helikase',c:'var(--viz-series-1)',detail:'H · Helikase: Öffnet die Doppelhelix mithilfe von ATP und trennt die Wasserstoffbrücken zwischen den Basen; das Zucker-Phosphat-Rückgrat bleibt erhalten.'},
+R:{name:'Primase / RNA-Polymerase',c:'var(--viz-series-2)',detail:'R · Primase: Eine spezialisierte RNA-Polymerase. Sie bildet kurze RNA-Primer mit einem freien 3′-OH-Ende, an dem eine DNA-Polymerase starten kann.'},
+III:{name:'DNA-Polymerase III',c:'var(--viz-series-3)',detail:'III · DNA-Polymerase III: Verlängert einen vorhandenen Strang am 3′-Ende. Sie liest die Vorlage 3′ → 5′ und baut neue DNA immer 5′ → 3′ auf.'},
+K:{name:'Gleitklammerprotein',c:'var(--viz-series-4)',detail:'K · Gleitklammerprotein: Die bakterielle β-Klammer umschließt die DNA als Ring und hält die Polymerase daran. Sie erhöht die Prozessivität; selbst baut sie keine DNA auf.'},
+I:{name:'DNA-Polymerase I',c:'var(--viz-series-5)',detail:'I · DNA-Polymerase I: Entfernt im Bakterienmodell RNA-Primer und ersetzt sie durch DNA. RNase H unterstützt die Primerentfernung und ist hier nicht eingezeichnet.'},
+L:{name:'Ligase',c:'var(--viz-series-6)',detail:'L · DNA-Ligase: Schließt nach dem Primerersatz den letzten Nick durch eine Phosphodiesterbindung zwischen benachbarten DNA-Abschnitten.'}
+};
+const baseColors={A:'var(--viz-series-3)',T:'var(--viz-series-6)',G:'var(--viz-series-2)',C:'var(--viz-series-1)',U:'var(--viz-series-4)'},baseNames={A:'Adenin',T:'Thymin',G:'Guanin',C:'Cytosin',U:'Uracil · RNA'};
+const sequence='ATGCAATCGTACGCTAGCATATGC',complementary={A:'T',T:'A',G:'C',C:'G'},clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+let selected=null,time=4,playing=!window.matchMedia('(prefers-reduced-motion: reduce)').matches,last=0,raf=0,rate=1,parts=[];
+const old='var(--muted-foreground)',fresh='var(--foreground)',bg='var(--background)',cycle=12,primeEnd=1.8,copyEnd=7,replaceStart=19.2,replaceEnd=21.2,sealEnd=23;
+function line(x,y,X,Y,c,w=2,extra=''){parts.push(`<path d="M${x},${y}L${X},${Y}" fill="none" stroke="${c}" stroke-width="${w}" ${extra}/>`);}
+function txt(x,y,t,anchor='start'){parts.push(`<text class="text-small" x="${x}" y="${y}" text-anchor="${anchor}">${t}</text>`);}
+function arrow(x,X,y){line(x,y,X,y,fresh,1.5);const s=X>x?1:-1;parts.push(`<path d="M${X-s*5},${y-4}L${X},${y}L${X-s*5},${y+4}" fill="none" stroke="${fresh}" stroke-width="1.5"/>`);}
+function basePath(b,size){
+const h=size/2,r=Math.min(3.3,size*0.23),d=b==='A'||b==='G'?1:-1;
+return `M${-h+2},-10H${h-2}Q${h},-10 ${h},-8V8Q${h},10 ${h-2},10L${r},10${b==='G'||b==='C'?`V${10+4*d}H${-r}V10`:`C${r},${10+5.5*d} ${-r},${10+5.5*d} ${-r},10`}L${-h+2},10Q${-h},10 ${-h},8V-8Q${-h},-10 ${-h+2},-10Z`;
+}
+function tile(x,y,b,size=17,rna=false,face=1){parts.push(`<path d="${basePath(b,size)}" transform="translate(${x} ${y}) scale(1 ${face})" fill="${baseColors[b]}" fill-opacity="0.32" stroke="var(--muted-foreground)" stroke-opacity="0.55" stroke-width="0.6"/>`);txt(x,y+4,b,'middle');if(rna)line(x-size/2,y-face*11,x+size/2,y-face*11,protein.R.c,2,'stroke-dasharray="2 2"');}
+function marker(type,x,y,opacity=1){
+const c=protein[type].c,w=selected===type?3:1.5;parts.push(`<g opacity="${opacity}" data-protein="${type}"><title>${protein[type].name}</title>`);
+if(type==='K'){parts.push(`<ellipse cx="${x}" cy="${y}" rx="9" ry="32" fill="${c}" fill-opacity="0.09" stroke="${c}" stroke-width="${selected===type?6:4}"/>`);txt(x,y<200?y-39:y+47,'K','middle');}
+else {let shape=type==='H'?`<path d="M${x-22},${y}L${x-11},${y-20}H${x+11}L${x+22},${y}L${x+11},${y+20}H${x-11}Z"`:type==='L'?`<rect x="${x-17}" y="${y-16}" width="34" height="32" rx="6"`:`<ellipse cx="${x}" cy="${y}" rx="${type==='III'?23:18}" ry="18"`;parts.push(`${shape} fill="${bg}"/>`,`${shape} fill="${c}" fill-opacity="0.28" stroke="${c}" stroke-width="${w}"/>`);txt(x,y+4,type,'middle');}parts.push('</g>');
+}
+function syncDescription(){const p=time%cycle;const active=p<primeEnd?'Primase: Ein neuer RNA-Primer entsteht am Folgestrang.':p<copyEnd?'DNA-Polymerase III verlängert ein Okazaki-Fragment; die Gleitklammer hält sie an der DNA.':p<7.2?'DNA-Polymerase III löst sich vom fertigen Fragment und wechselt zum nächsten Startpunkt.':p<9.2?'DNA-Polymerase I ersetzt einen älteren RNA-Primer durch DNA.':p<11?'Die Ligase schließt den verbleibenden Nick im älteren DNA-Abschnitt.':'Die Polymerase wechselt zum nächsten Primer; der Leitstrang wächst weiter.';const message=selected?protein[selected].detail:active;if(details.textContent!==message)details.textContent=message;}
+function refreshDetail(){syncDescription();legend.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.protein===selected)));}
+legend.innerHTML='';
+for(const [key,v] of Object.entries(protein)){const button=document.createElement('button');button.type='button';button.className='btn';button.dataset.protein=key;button.setAttribute('aria-pressed','false');button.innerHTML=`<svg width="32" height="26" aria-hidden="true"><${key==='K'?'ellipse cx="16" cy="13" rx="12" ry="9"':'rect x="1" y="1" width="30" height="24" rx="8"'} fill="${v.c}" fill-opacity="0.22" stroke="${v.c}" stroke-width="${key==='K'?3:1}"/><text x="16" y="17" text-anchor="middle" class="text-small">${key}</text></svg> ${v.name}`;button.addEventListener('click',()=>{selected=selected===key?null:key;refreshDetail();draw();});legend.appendChild(button);}
+root.querySelector('#dc-bases').innerHTML=Object.entries(baseNames).map(([b,name])=>`<span><svg width="25" height="30" aria-hidden="true"><path d="${basePath(b,21)}" transform="translate(12.5 12)" fill="${baseColors[b]}" fill-opacity="0.32" stroke="var(--muted-foreground)" stroke-opacity="0.55" stroke-width="0.6"/><text x="12.5" y="16" text-anchor="middle" class="text-small">${b}</text></svg>${name}</span>`).join('');
+function draw(){
+const width=Math.max(280,root.getBoundingClientRect().width),left=24,right=width-24,flat=width*0.68,fork=width*0.81,birth=flat-24,lead=flat-18;
+const length=clamp((birth-left)/3.2,76,140),spacing=length/5,velocity=length/cycle,primer=spacing,tileSize=Math.min(18,spacing-3),top=96,topNew=144,bottomNew=300,bottom=348,current=Math.floor(time/cycle),phase=time-current*cycle,fragments=[];
+for(let j=current-8;j<=current;j++){const age=time-j*cycle,b=birth-velocity*age,a=b-length,priming=clamp(age/primeEnd),growth=clamp((age-primeEnd)/(copyEnd-primeEnd)),primerLeft=b-primer*priming,front=primerLeft-(primerLeft-a)*growth,replacement=clamp((age-replaceStart)/(replaceEnd-replaceStart));fragments.push({j,age,a,b,front,primerLeft,replacement,nick:b-primer*replacement,sealed:age>=sealEnd});}
+const yTemplate=(x,upper)=>{const z=clamp((x-flat)/(fork-flat)),e=z*z*(3-2*z);return upper?top+(215-top)*e:bottom+(263-bottom)*e;};
+parts=[`<title id="dc-title">Kontinuierliche DNA-Replikation mit farbigen Basen und Proteinen</title><desc id="dc-desc">Vereinfachte laufende Replikation bei Bakterien. Die Ansicht folgt der Gabel nach rechts, die DNA wandert daher im Bild nach links. Oben entsteht der Leitstrang durchgehend. Unten werden RNA-Primer gebildet, Okazaki-Fragmente nach links verlängert, Primer durch DNA ersetzt und Nicks durch Ligase geschlossen. Gleitklammern umschließen den entstehenden Doppelstrang. Komplementäre Basen greifen als symbolische Puzzleteile ineinander.</desc><defs><clipPath id="dc-clip"><rect x="${left}" y="48" width="${right-left}" height="326"/></clipPath></defs>`];
+txt(left,19,'Gabelbewegung →');if(width>=500)txt(right,19,'Ausschnitt folgt der Gabel','end');txt(left,43,'Leitstrang · durchgehend');arrow(Math.max(left+20,lead-78),lead+10,63);txt(left,392,'Folgestrang · Okazaki-Fragmente');txt(left,414,'← Synthese je Fragment · immer 5′ → 3′');parts.push('<g clip-path="url(#dc-clip)">');
+for(const upper of [true,false]){const curve=Array.from({length:25},(_,i)=>{const x=flat+(fork-flat)*i/24;return `L${x},${yTemplate(x,upper)}`;}).join('');parts.push(`<path d="M${left},${upper?top:bottom}H${flat}${curve}H${right}" fill="none" stroke="${old}" stroke-width="3"/>`);}
+line(left,topNew,lead,topNew,fresh,3);
+for(const f of fragments){if(f.b<left||f.front>right)continue;line(f.front,bottomNew,f.b,bottomNew,fresh,3);const remainingEnd=f.b-primer*f.replacement;if(f.primerLeft<remainingEnd)line(f.primerLeft,bottomNew,remainingEnd,bottomNew,protein.R.c,6,'stroke-dasharray="3 3"');}
+const offset=velocity*time,first=Math.floor((left-birth+offset)/spacing)-1,lastBase=Math.ceil((right-birth+offset)/spacing)+1;
+for(let k=first;k<=lastBase;k++){const x=birth+(k+0.5)*spacing-offset,base=sequence[((k%sequence.length)+sequence.length)%sequence.length],comp=complementary[base],yt=yTemplate(x,true),yb=yTemplate(x,false);tile(x,yt+14,base,tileSize,false,1);tile(x,yb-14,comp,tileSize,false,-1);if(x<lead-6)tile(x,topNew-14,comp,tileSize,false,-1);const f=fragments.find(f=>x>=f.front&&x<=f.b);if(f){const isRNA=x>=f.primerLeft&&x<f.b-primer*f.replacement;tile(x,bottomNew+14,isRNA&&base==='T'?'U':base,tileSize,isRNA);}}
+for(const f of fragments){if(f.age>=cycle+copyEnd&&!f.sealed&&f.nick>left+2)line(f.nick-2,bottomNew,f.nick+2,bottomNew,bg,8);}
+const active=fragments[fragments.length-1];
+if(phase<primeEnd){marker('R',active.front,bottomNew);txt(active.b+7,bottomNew-25,'5′');}
+else if(phase<copyEnd){marker('K',active.front+Math.min(20,(active.b-active.front)/2),324);marker('III',active.front,bottomNew);txt(active.front-7,bottomNew-25,'3′','end');txt(active.b+4,bottomNew-25,'5′');arrow(active.front+36,active.front-10,252);}
+else {const q=clamp((phase-copyEnd)/(cycle-copyEnd)),sx=birth-velocity*phase-length,tx=birth,shuttleX=sx+(tx-sx)*q,shuttleY=bottomNew-42*Math.sin(Math.PI*q);marker('III',shuttleX,shuttleY,0.35);}
+for(const f of fragments){if(f.age>=replaceStart&&f.age<replaceEnd)marker('I',f.nick,bottomNew);else if(f.age>=replaceEnd&&f.age<sealEnd)marker('L',f.nick,bottomNew);}
+marker('K',lead-23,120);marker('III',lead,topNew);const incoming=(lead-6-birth+offset)/spacing-0.5,particle=incoming-Math.floor(incoming),pk=Math.floor(incoming)+1,bp=sequence[((pk%sequence.length)+sequence.length)%sequence.length];tile(lead-42+36*particle,190-60*particle,complementary[bp],tileSize,false,-1);marker('H',fork-5,239);parts.push('</g>');
+txt(left-7,top+4,'3′','end');txt(left-7,topNew+4,'5′','end');txt(left-7,bottomNew+4,'3′','end');txt(left-7,bottom+4,'5′','end');txt(right+7,219,'5′');txt(right+7,267,'3′');txt(lead+4,180,'3′','middle');if(width>=500){txt(right,190,'Eltern-DNA','end');txt(left,214,'Links: je ein alter + ein neuer Strang');}scene.setAttribute('viewBox',`0 0 ${width} 425`);scene.innerHTML=parts.join('');syncDescription();
+}
+function frame(now){if(!playing)return;if(last&&!document.hidden)time+=Math.min(now-last,80)/1000*rate;last=now;draw();raf=requestAnimationFrame(frame);}
+function updatePlay(){play.textContent=playing?'Pause':'Weiterlaufen';}
+play.addEventListener('click',()=>{playing=!playing;last=0;cancelAnimationFrame(raf);if(playing)raf=requestAnimationFrame(frame);updatePlay();});speed.addEventListener('change',()=>{rate=Number(speed.value);});document.addEventListener('visibilitychange',()=>{last=0;});new ResizeObserver(draw).observe(root);refreshDetail();updatePlay();draw();play.disabled=false;speed.disabled=false;if(playing)raf=requestAnimationFrame(frame);
+})();
+</script>
+
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Bakterienmodell mit Leitstrang, Folgestrang und komplementären Basen als Puzzleteile.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="index.html"><span>← Zurück</span>Zur Übersicht</a><a href="mrna-translation.html"><span>Weiter →</span>mRNA-Translation</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>
