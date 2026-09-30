@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
 const pages = ['index.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
 
@@ -99,4 +101,46 @@ test('theme changes synchronize between tabs', async ({ page, context }) => {
   await expect(other.locator('html')).toHaveAttribute('data-theme', 'dark');
   await other.getByRole('button', { name: 'Dunkelmodus' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
+test('theme switch initializes when its script runs after DOMContentLoaded', async ({ page }) => {
+  const source = await fs.readFile(path.join(__dirname, '../assets/theme.js'), 'utf8');
+  await page.route('**/assets/theme.js*', route => route.fulfill({
+    contentType: 'text/javascript',
+    body: `window.addEventListener('load', () => { ${source}\n });`,
+  }));
+  await page.goto('/rna-spleissen.html');
+  const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+});
+
+test('restored pages reread the saved theme and keep the switch usable', async ({ page }) => {
+  await page.goto('/');
+  // Model another page changing storage while this document is in the history cache.
+  await page.evaluate(() => {
+    localStorage.setItem('genetik-theme', 'dark');
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByRole('button', { name: 'Dunkelmodus' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
+test('actual links preserve choices from home to every animation and back', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Dunkelmodus' }).click();
+  for (const file of pages.slice(1)) {
+    await page.locator(`.animation-card[href="${file}"]`).click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    const toggle = page.getByRole('button', { name: 'Dunkelmodus' });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await toggle.click();
+    await page.locator('.brand').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.getByRole('button', { name: 'Dunkelmodus' })).toBeVisible();
+  }
 });
