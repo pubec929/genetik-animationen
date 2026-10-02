@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Übe Transkription und Translation: Schreibe mRNA zu einem DNA-Matrizenstrang und bestimme die Polypeptidkette. Prüfe deine Lösung mit Feedback.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>Vom DNA-Strang zum Polypeptid · Übung · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/styles/site.css">
+  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/exercises/proteinbiosynthese-uebung.js" defer></script>
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="103d1b3c-c3d6-4189-a997-11245b2e7e52"></script>
+  <link rel="stylesheet" href="assets/styles/exercises/proteinbiosynthese-uebung.css">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Dunkelmodus" aria-pressed="false" hidden><svg class="theme-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><svg class="theme-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-modell.html">DNA-Modell</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li><li><a href="proteinbiosynthese-uebung.html" aria-current="page">Übung</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main exercise-page" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html">Übersicht</a><span aria-hidden="true">/</span><span>Übung</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Jetzt bist du dran</p><h1>Vom DNA-Strang<br>zum Polypeptid.</h1><p>Übertrage die genetische Information selbst – erst in mRNA, dann in eine Aminosäurekette. Am Ende erhältst du Feedback zu beiden Schritten.</p></div><span class="page-number" aria-hidden="true">DNA → RNA → Protein</span></div>
+<noscript><p class="exercise-panel">Bitte aktiviere JavaScript, um diese Übung zu bearbeiten und deine Lösung zu prüfen.</p></noscript>
+<div id="exercise" class="exercise-panel" hidden>
+<section class="exercise-step task-panel" aria-labelledby="task-title">
+<div class="exercise-heading"><div><p class="eyebrow" id="task-number"></p><h2 id="task-title">Deine Vorlage</h2></div><button class="btn" id="new-task" type="button">Andere Aufgabe ↻</button></div>
+<p>Gegeben ist der <strong>DNA-Matrizenstrang (codogener Strang)</strong>. Lies ihn von <strong>3′ nach 5′</strong>, hier von links nach rechts.</p>
+<div class="strand" aria-label="DNA-Matrizenstrang von 3 Strich nach 5 Strich"><span class="strand-end">3′</span><div id="dna-sequence" class="sequence"></div><span class="strand-end">5′</span></div>
+<p class="exercise-caption">Vereinfachter, intronfreier Ausschnitt: Das erste Triplett ergibt das Startcodon, das letzte ein Stoppcodon. Wir verwenden den Standard-Code.</p>
+</section>
+<form id="exercise-form" novalidate>
+<section class="exercise-step" aria-labelledby="transcription-title">
+<div class="exercise-heading"><div><p class="eyebrow">Schritt 01 · Transkription</p><h2 id="transcription-title">Schreibe die mRNA.</h2></div><span class="direction">5′ → 3′</span></div>
+<p id="rna-help">Schreibe die gesamte komplementäre mRNA-Sequenz von 5′ nach 3′. Verwende A, U, G und C. Leerzeichen sind optional; jeweils drei Basen bilden ein Codon.</p>
+<div class="answer-cell rna-sequence-field">
+<label for="rna-sequence">Deine mRNA-Sequenz (5′ → 3′)</label>
+<textarea id="rna-sequence" rows="2" maxlength="120" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="rna-help rna-grouped rna-feedback-summary"></textarea>
+<p id="rna-grouped" class="exercise-caption"></p>
+<p id="rna-feedback-summary" class="field-feedback"></p>
+<ul id="rna-feedback-list" class="rna-feedback-list" hidden></ul>
+</div>
+<section class="rna-preview" aria-labelledby="rna-preview-title">
+<div class="peptide-heading"><h3 id="rna-preview-title">Dein mRNA-Strang</h3><span class="direction">5′ → 3′</span></div>
+<p class="exercise-caption">Neue Basen gleiten von oben auf das Zucker-Phosphat-Rückgrat. Die Formen und Farben kennst du aus dem DNA-Modell; hier steht U statt T.</p>
+<div id="rna-drawing" tabindex="0" role="region" aria-label="mRNA-Strang, seitlich scrollbar"></div>
+<p class="exercise-caption rna-legend"><span><span class="rna-legend-sugar" aria-hidden="true">Z</span> Ribose (Zucker)</span><span><span class="rna-legend-phosphate" aria-hidden="true">P</span> Phosphat</span><span>↔ Strang seitlich verschieben</span></p>
+<p id="rna-status" class="exercise-caption" role="status"></p>
+</section>
+<details class="exercise-help"><summary>Hilfe zur Basenpaarung</summary><p>Vom Matrizenstrang zur mRNA: <strong>A → U, T → A, G → C, C → G.</strong> Die Stränge sind antiparallel. RNA enthält Uracil (U) statt Thymin (T).</p></details>
+</section>
+<section class="exercise-step" aria-labelledby="translation-title">
+<div class="exercise-heading"><div><p class="eyebrow">Schritt 02 · Translation</p><h2 id="translation-title">Bestimme die Aminosäuren.</h2></div><span class="direction">N → C</span></div>
+<p id="aa-help">Lies deine mRNA ab dem ersten Codon in 5′→3′-Richtung. Wähle zu jedem Codon die Aminosäure oder „Stopp“. Stopp beendet die Translation und gehört nicht zur Polypeptidkette.</p>
+<div id="aa-fields" class="answer-grid"></div>
+<section class="peptide-preview" aria-labelledby="peptide-title">
+<div class="peptide-heading"><h3 id="peptide-title">Deine Polypeptidkette</h3><span class="direction">N → C</span></div>
+<p class="exercise-caption">Aus deiner Auswahl entsteht live eine Kette. Gleiche Aminosäuren haben die gleiche Farbe.</p>
+<div id="peptide-drawing"></div>
+<p id="peptide-status" class="exercise-caption" role="status"></p>
+</section>
+<details class="exercise-help"><summary>Codontabelle öffnen</summary><p>Suche dein <strong>mRNA-Codon (5′→3′)</strong>. AUG codiert hier die erste Aminosäure Methionin (Met).</p><div class="codon-table-wrap"><table class="codon-table"><caption>Standard-Code · mRNA-Codons</caption><thead><tr><th scope="col">Aminosäure</th><th scope="col">Kürzel</th><th scope="col">Codons</th></tr></thead><tbody id="codon-table"></tbody></table></div><p class="exercise-caption">Quelle: <a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1" target="_blank" rel="noopener noreferrer">NCBI – Standard Genetic Code</a>. In dieser Tabelle steht U anstelle des dort verwendeten T.</p></details>
+</section>
+<div class="exercise-actions"><button class="btn btn-primary" type="submit">Lösung prüfen</button><button class="btn" type="button" id="reset-answers">Eingaben leeren</button><span id="completion" class="exercise-caption" aria-live="polite"></span></div>
+<section id="feedback" class="feedback" role="status" tabindex="-1" hidden></section>
+<details id="solution" class="exercise-help" hidden><summary>Musterlösung ansehen</summary><div id="solution-content"></div></details>
+</form>
+</div>
+<nav class="page-pagination" aria-label="Weiterlernen"><a href="mrna-translation.html"><span>Zum Nachschauen</span>mRNA-Translation</a><a href="index.html"><span>Zurück →</span>Zur Übersicht</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle sechs Animationen ansehen</a></div></footer>
+</body>
+</html>

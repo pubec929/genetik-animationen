@@ -7,7 +7,7 @@ const { createHash } = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist');
-const pages = ['index.html', 'dna-modell.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
+const pages = ['index.html', 'proteinbiosynthese-uebung.html', 'dna-modell.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
 
 before(() => execFileSync(process.execPath, ['scripts/build.js'], { cwd: root }));
 
@@ -34,10 +34,10 @@ test('every local asset exists and carries a version matching its contents', asy
   }
 });
 
-test('animation scripts initialize after parsing and before analytics', async () => {
+test('interactive scripts initialize after parsing and before analytics', async () => {
   for (const page of pages.slice(1)) {
     const html = await fs.readFile(path.join(output, page), 'utf8');
-    const script = html.match(/<script src="assets\/js\/animations\/[^" ]+" defer><\/script>/);
+    const script = html.match(/<script src="assets\/js\/(?:animations|exercises)\/[^" ]+" defer><\/script>/);
     assert.ok(script, `Missing deferred animation script in ${page}`);
     assert.ok(html.indexOf(script[0]) < html.indexOf('https://cloud.umami.is/script.js'));
   }
