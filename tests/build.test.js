@@ -7,7 +7,7 @@ const { createHash } = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist');
-const pages = ['index.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
+const pages = ['index.html', 'dna-modell.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
 
 before(() => execFileSync(process.execPath, ['scripts/build.js'], { cwd: root }));
 

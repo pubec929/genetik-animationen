@@ -1,6 +1,6 @@
 # Genetik in Bewegung
 
-A static, German-language learning website with five interactive SVG animations.
+A static, German-language learning website with six interactive SVG learning pages.
 
 ## Project layout
 

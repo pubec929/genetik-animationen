@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 
-const pages = ['index.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
+const pages = ['index.html', 'dna-modell.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
 
 test.beforeEach(async ({ page, context }) => {
   await context.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' }));
@@ -25,7 +25,7 @@ for (const file of pages) {
     await expect(page.locator('.site-header')).toHaveCSS('background-color', 'rgba(18, 18, 18, 0.96)');
     await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#121212');
     await page.screenshot({ path: test.info().outputPath('dark-mode.png'), fullPage: true });
-    if (file !== 'index.html') {
+    if (file !== 'index.html' && file !== 'dna-modell.html') {
       const scene = page.locator('svg[id$="scene"]');
       await expect(scene).toBeVisible();
       await expect(scene.locator('text').first()).toHaveCSS('fill', 'rgb(238, 238, 238)');
