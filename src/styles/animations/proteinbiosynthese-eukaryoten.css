@@ -1,0 +1,7 @@
+#eukaryoten-expression { color:var(--foreground); }
+  #eukaryoten-expression #eu-scene { display:block; width:100%; height:670px; }
+  #eukaryoten-expression #eu-scene text { fill:var(--foreground); font-family:inherit; }
+  #eukaryoten-expression .eu-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:6px 0 14px; }
+  #eukaryoten-expression .eu-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #eukaryoten-expression .eu-legend i { display:inline-block; width:16px; height:6px; border-radius:3px; }
+  #eukaryoten-expression #eu-detail { margin-top:12px; min-height:4em; }

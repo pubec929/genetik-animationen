@@ -4,7 +4,8 @@ const path = require('node:path');
 
 const pages = ['index.html', 'dna-replikation.html', 'mrna-translation.html', 'rna-spleissen.html', 'proteinbiosynthese-prokaryoten.html', 'proteinbiosynthese-eukaryoten.html'];
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+  await context.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' }));
   await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
 });
 
@@ -104,8 +105,8 @@ test('theme changes synchronize between tabs', async ({ page, context }) => {
 });
 
 test('theme switch initializes when its script runs after DOMContentLoaded', async ({ page }) => {
-  const source = await fs.readFile(path.join(__dirname, '../assets/theme.js'), 'utf8');
-  await page.route('**/assets/theme.js*', route => route.fulfill({
+  const source = await fs.readFile(path.join(__dirname, '../../src/js/theme.js'), 'utf8');
+  await page.route('**/assets/js/theme.js*', route => route.fulfill({
     contentType: 'text/javascript',
     body: `window.addEventListener('load', () => { ${source}\n });`,
   }));

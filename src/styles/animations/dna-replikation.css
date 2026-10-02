@@ -1,0 +1,6 @@
+#dna-continuous {color:var(--foreground);}
+#dna-continuous #dc-scene {display:block;width:100%;height:425px;}
+#dna-continuous svg text {fill:var(--foreground);font-family:inherit;}
+#dna-continuous .dc-base-legend,#dna-continuous .dc-strands {display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:10px 0 14px;}
+#dna-continuous .dc-base-legend>span,#dna-continuous .dc-strands>span {display:inline-flex;align-items:center;gap:5px;}
+#dna-continuous #dc-detail {margin-top:12px;min-height:4em;}

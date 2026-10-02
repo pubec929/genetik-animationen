@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Begleite die Expression eines Gens vom Zellkern über die RNA-Reifung bis zum freien Polypeptid.">
+  <meta name="theme-color" content="#f7f8f5">
+  <title>Proteinbiosynthese bei Eukaryoten · Genetik in Bewegung</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <script src="assets/js/theme.js"></script>
+  <link rel="stylesheet" href="assets/styles/site.css">
+  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/animations/proteinbiosynthese-eukaryoten.js" defer></script>
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="103d1b3c-c3d6-4189-a997-11245b2e7e52"></script>
+  <link rel="stylesheet" href="assets/styles/animations/proteinbiosynthese-eukaryoten.css">
+</head>
+<body>
+<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+<header class="site-header"><div class="wrap header-inner">
+  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Dunkelmodus" aria-pressed="false" hidden><svg class="theme-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><svg class="theme-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html" aria-current="page">Eukaryoten</a></li></ul></nav>
+</div></header>
+<main class="wrap page-main" id="main-content">
+<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Eukaryoten</span></nav>
+<div class="page-heading"><div><p class="eyebrow">Eukaryoten</p><h1>Proteinbiosynthese bei Eukaryoten</h1><p>Begleite die Expression eines Gens vom Zellkern über die RNA-Reifung bis zum freien Polypeptid.</p></div><span class="page-number" aria-hidden="true">05 / 05</span></div>
+<section class="animation-surface" aria-label="Interaktive Animation: Proteinbiosynthese bei Eukaryoten">
+<noscript>Zum Abspielen dieser Animation muss JavaScript im Browser aktiviert sein.</noscript>
+<div id="eukaryoten-expression">
+  
+  <div class="viz-controls">
+    <button id="eu-play" class="btn btn-primary" type="button">Pause</button>
+    <label class="form-label" for="eu-speed">Tempo
+      <select id="eu-speed" class="form-select">
+        <option value="0.5">Langsam</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.5">Schnell</option>
+      </select>
+    </label>
+    <span id="eu-phase" aria-live="polite"></span>
+  </div>
+  <svg id="eu-scene" role="img" aria-labelledby="eu-title eu-desc"></svg>
+  <div class="eu-legend text-small">
+    <span><i style="background:var(--purple)"></i>RNA-Polymerase II</span>
+    <span><i style="background:var(--green)"></i>Exons</span>
+    <span><i style="background:var(--red)"></i>Intron</span>
+    <span><i style="background:var(--orange)"></i>Ribosom</span>
+  </div>
+  <div class="viz-controls">
+    <label class="form-label" for="eu-term">Erklärung
+      <select id="eu-term" class="form-select">
+        <option value="">Zum aktuellen Ablauf</option>
+      </select>
+    </label>
+  </div>
+  <div id="eu-detail" aria-live="polite"></div>
+</div>
+</section>
+<p class="animation-note"><span aria-hidden="true"></span>Ein Gen mit zwei Exons und einem Intron als Modell. RNA-Verarbeitung und Transkription können sich zeitlich überlappen.</p>
+<nav class="page-pagination" aria-label="Weitere Animationen"><a href="proteinbiosynthese-prokaryoten.html"><span>← Zurück</span>Proteinbiosynthese bei Prokaryoten</a><a href="index.html"><span>Weiter →</span>Zur Übersicht</a></nav>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
+</body>
+</html>

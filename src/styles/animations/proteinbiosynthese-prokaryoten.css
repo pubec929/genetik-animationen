@@ -1,0 +1,7 @@
+#protein-one-scene { color:var(--foreground); }
+  #protein-one-scene #po-scene { display:block; width:100%; height:558px; }
+  #protein-one-scene #po-scene text { fill:var(--foreground); font-family:inherit; }
+  #protein-one-scene .po-legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:6px 0 14px; }
+  #protein-one-scene .po-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #protein-one-scene .po-legend i { display:inline-block; width:16px; height:6px; border-radius:3px; }
+  #protein-one-scene #po-detail { margin-top:12px; min-height:4em; }

@@ -1,0 +1,7 @@
+#rna-splicing-view { color:var(--foreground); }
+  #rna-splicing-view #sp-scene { display:block; width:100%; height:458px; }
+  #rna-splicing-view #sp-scene text { fill:var(--foreground); font-family:inherit; }
+  #rna-splicing-view .sp-legend { display:flex; flex-wrap:wrap; gap:8px 20px; margin:4px 0 16px; }
+  #rna-splicing-view .sp-legend span { display:inline-flex; align-items:center; gap:6px; }
+  #rna-splicing-view .sp-legend i { display:inline-block; width:17px; height:6px; border-radius:3px; }
+  #rna-splicing-view #sp-detail { min-height:4em; margin-top:14px; }

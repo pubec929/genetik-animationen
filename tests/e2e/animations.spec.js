@@ -4,6 +4,7 @@ const { test: base, expect } = require('@playwright/test');
 // waiting minutes for a cycle or changing the animations' private state.
 const test = base.extend({
   page: async ({ page }, use) => {
+    await page.route('https://cloud.umami.is/**', route => route.fulfill({ contentType: 'text/javascript', body: '' }));
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });

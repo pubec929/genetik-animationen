@@ -1,0 +1,6 @@
+#translation-view { color:var(--foreground); }
+  #translation-view #tr-scene { display:block; width:100%; height:472px; }
+  #translation-view svg text { fill:var(--foreground); font-family:inherit; }
+  #translation-view .tr-legend { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin:8px 0 16px; }
+  #translation-view .tr-legend>span { display:inline-flex; align-items:center; gap:5px; }
+  #translation-view #tr-detail { min-height:4em; margin-top:14px; }

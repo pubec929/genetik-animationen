@@ -2,6 +2,7 @@
   'use strict';
   const key = 'genetik-theme';
   const root = document.documentElement;
+  root.classList.add('js');
   const system = window.matchMedia('(prefers-color-scheme: dark)');
   let preference = null;
   function readPreference() {

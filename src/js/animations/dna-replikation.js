@@ -1,52 +1,3 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Verfolge die Replikationsgabel und das Zusammenspiel von Helikase, Polymerasen und Ligase.">
-  <meta name="theme-color" content="#f7f8f5">
-  <title>DNA-Replikation · Genetik in Bewegung</title>
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <script src="assets/theme.js?v=2"></script>
-  <link rel="stylesheet" href="assets/site.css?v=2">
-  <script>document.documentElement.classList.add('js');</script>
-  <script src="assets/site.js" defer></script>
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="103d1b3c-c3d6-4189-a997-11245b2e7e52"></script>
-</head>
-<body>
-<a class="skip-link" href="#main-content">Zum Inhalt springen</a>
-<header class="site-header"><div class="wrap header-inner">
-  <a class="brand" href="index.html" aria-label="Genetik in Bewegung – Startseite"><svg class="brand-mark" viewBox="0 0 28 34" fill="none" aria-hidden="true"><path d="M5 3c0 13 18 15 18 28M23 3C23 16 5 18 5 31" stroke="#285f4c" stroke-width="2.2" stroke-linecap="round"/><path d="M7 7h14M10 13h8M10 21h8M7 27h14" stroke="#8da487" stroke-width="1.7" stroke-linecap="round"/></svg><span>Genetik in Bewegung</span></a>
-  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Dunkelmodus" aria-pressed="false" hidden><svg class="theme-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><svg class="theme-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
-  <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-navigation"><span data-menu-label>Menü</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-  <nav class="site-nav" id="site-navigation" aria-label="Hauptnavigation"><ul class="nav-links"><li><a href="index.html">Übersicht</a></li><li><a href="dna-replikation.html" aria-current="page">Replikation</a></li><li><a href="mrna-translation.html">Translation</a></li><li><a href="rna-spleissen.html">Spleißen</a></li><li><a href="proteinbiosynthese-prokaryoten.html">Prokaryoten</a></li><li><a href="proteinbiosynthese-eukaryoten.html">Eukaryoten</a></li></ul></nav>
-</div></header>
-<main class="wrap page-main" id="main-content">
-<nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>Replikation</span></nav>
-<div class="page-heading"><div><p class="eyebrow">Bakterienmodell</p><h1>DNA-Replikation</h1><p>Verfolge die Replikationsgabel und das Zusammenspiel von Helikase, Polymerasen und Ligase.</p></div><span class="page-number" aria-hidden="true">01 / 05</span></div>
-<section class="animation-surface" aria-label="Interaktive Animation: DNA-Replikation">
-<noscript>Zum Abspielen der Animation muss JavaScript im Browser aktiviert sein.</noscript>
-<div id="dna-continuous">
-
-<div class="viz-controls"><button class="btn btn-primary" type="button" id="dc-play">Pause</button><label class="form-label" for="dc-speed">Tempo <select class="form-select" id="dc-speed"><option value="0.5">Langsam</option><option value="1" selected>Normal</option><option value="1.5">Schnell</option></select></label><span class="text-small">Mitbewegte Ansicht · Bakterienmodell</span></div>
-<svg id="dc-scene" role="img" aria-labelledby="dc-title dc-desc" viewBox="0 0 736 425"></svg>
-<div class="dc-base-legend text-small" id="dc-bases" aria-label="Farben der Basen"></div>
-<div class="dc-strands text-small">
-<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--muted-foreground)" stroke-width="3"/></svg>Alter Strang</span>
-<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--foreground)" stroke-width="3"/></svg>Neue DNA</span>
-<span><svg width="27" height="12" aria-hidden="true"><path d="M2 6H25" stroke="var(--viz-series-2)" stroke-width="6" stroke-dasharray="3 3"/></svg>RNA-Primer</span>
-</div>
-<div class="viz-controls" id="dc-proteins" aria-label="Enzyme und Gleitklammer auswählen"></div><div id="dc-detail" aria-live="polite"></div>
-</div>
-<style>
-#dna-continuous {color:var(--foreground);}
-#dna-continuous #dc-scene {display:block;width:100%;height:425px;}
-#dna-continuous svg text {fill:var(--foreground);font-family:inherit;}
-#dna-continuous .dc-base-legend,#dna-continuous .dc-strands {display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:10px 0 14px;}
-#dna-continuous .dc-base-legend>span,#dna-continuous .dc-strands>span {display:inline-flex;align-items:center;gap:5px;}
-#dna-continuous #dc-detail {margin-top:12px;min-height:4em;}
-</style>
-<script>
 (() => {
 const root=document.getElementById('dna-continuous'),scene=root.querySelector('#dc-scene'),play=root.querySelector('#dc-play'),speed=root.querySelector('#dc-speed'),details=root.querySelector('#dc-detail'),legend=root.querySelector('#dc-proteins');
 const protein={
@@ -104,12 +55,3 @@ function frame(now){if(!playing)return;if(last&&!document.hidden)time+=Math.min(
 function updatePlay(){play.textContent=playing?'Pause':'Weiterlaufen';}
 play.addEventListener('click',()=>{playing=!playing;last=0;cancelAnimationFrame(raf);if(playing)raf=requestAnimationFrame(frame);updatePlay();});speed.addEventListener('change',()=>{rate=Number(speed.value);});document.addEventListener('visibilitychange',()=>{last=0;});new ResizeObserver(draw).observe(root);refreshDetail();updatePlay();draw();play.disabled=false;speed.disabled=false;if(playing)raf=requestAnimationFrame(frame);
 })();
-</script>
-
-</section>
-<p class="animation-note"><span aria-hidden="true"></span>Bakterienmodell mit Leitstrang, Folgestrang und komplementären Basen als Puzzleteile.</p>
-<nav class="page-pagination" aria-label="Weitere Animationen"><a href="index.html"><span>← Zurück</span>Zur Übersicht</a><a href="mrna-translation.html"><span>Weiter →</span>mRNA-Translation</a></nav>
-</main>
-<footer class="site-footer"><div class="wrap footer-inner"><span>Genetik in Bewegung · Zum Lernen und Präsentieren</span><a href="index.html#animationen">Alle fünf Animationen ansehen</a></div></footer>
-</body>
-</html>
