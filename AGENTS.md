@@ -30,6 +30,8 @@ Follow adjacent formatting; use two-space indentation for new readable JavaScrip
 
 Use descriptive, lowercase, hyphenated filenames such as `proteinbiosynthese-uebung.html`. Keep scripts and styles external, load page scripts with `defer`, and preserve early theme initialization. Use shared CSS variables for dark mode, relative asset URLs, German interface text, and accessible labels.
 
+Follow the [shared page style guide](docs/style_page.md) for common page structure, layout, colors, themes, responsive behavior, and visual checks.
+
 ## Testing Guidelines
 
 Use Node's built-in test runner for builds and Playwright for interactions. Name browser tests `*.spec.js` under `tests/e2e/`. Run focused checks with `npm test -- tests/e2e/exercise.spec.js`.

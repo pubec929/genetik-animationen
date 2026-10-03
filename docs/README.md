@@ -1,6 +1,6 @@
 # Documentation
 
-Start with the [project guide](project.md) for architecture, local development, shared behavior, and deployment. The [testing guide](testing.md) covers browser setup and regression checks; the [contributor guide](../AGENTS.md) describes repository conventions.
+Start with the [project guide](project.md) for architecture, local development, shared behavior, and deployment. The [shared page style guide](style_page.md) records the layout, colors, themes, and responsive rules to follow on every page. The [testing guide](testing.md) covers browser setup and regression checks; the [contributor guide](../AGENTS.md) describes repository conventions.
 
 ## Page guides
 

@@ -58,7 +58,7 @@ Install Chromium with `npx playwright install chromium`, or use the executable o
 
 ## Shared interface and state
 
-The header, navigation links, and footer are repeated in each HTML document. Update all affected pages when changing their markup. `site.js` opens the mobile menu and closes it on navigation, outside clicks, or Escape; Escape also restores focus to the toggle.
+The header, navigation links, and footer are repeated in each HTML document. Follow the [shared page style guide](style_page.md) for their markup, layout, colors, and responsive behavior. Update all affected pages when changing their markup. `site.js` opens the mobile menu and closes it on navigation, outside clicks, or Escape; Escape also restores focus to the toggle.
 
 `theme.js` runs before styles to apply the saved `genetik-theme` preference from local storage. Without a saved choice it follows the system color scheme. It handles cross-tab changes and restored pages, and continues working if storage is unavailable. Use shared CSS variables for readable light and dark themes.
 
