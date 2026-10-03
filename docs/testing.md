@@ -1,5 +1,7 @@
 # Website regression tests
 
+[Documentation index](README.md) · [Project guide](project.md)
+
 Install Node.js 22 or newer, then run:
 
 ```sh
@@ -21,6 +23,8 @@ Build checks verify public page URLs, local asset references and cache versions,
 Theme tests cover the switch on all public pages, keyboard operation, responsive header layout, readable animation labels, persistence across navigation and reloads, system preferences, cross-tab synchronization, unavailable local storage, delayed script initialization, restored pages, and navigation through actual home/animation links.
 
 Exercise tests cover all three DNA tasks, correct mRNA and polypeptides, the three stop codons, empty and invalid answers, transcription errors carried into translation, correction and reset, the complete codon reference, and entry from the homepage. Expected answers are independent fixtures in `tests/e2e/exercise.spec.js`.
+
+DNA model tests cover component selection, chemical structure explanations, partner selection, strand separation, reset, and both themes. Zoom checks cover intermediate animation frames, atomic elements and bonds, mouse-wheel events, slider keyboard input, reduced motion, and desktop/mobile screenshots. Run just these checks with `npm test -- tests/e2e/dna-modell.spec.js`. The [DNA model guide](dna-model.md) documents coordinate regeneration, connectivity checks, and visual review.
 
 Animation tests control only the browser's requestAnimationFrame scheduler. They invoke production callbacks every 50 ms and interact with the actual controls; they do not expose or modify the animation's internal state. Expected stages and timings are independent fixtures in `tests/e2e/animations.spec.js`. Update them when intentionally changing the educational sequence. Pixel-perfect visual appearance and biological accuracy still require review.
 

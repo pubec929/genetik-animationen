@@ -8,7 +8,7 @@ A static, German-language learning website with six interactive SVG learning pag
 src/
   pages/                 HTML pages
   js/
-    animations/          One JavaScript file per animation
+    animations/          Page renderers and bundled DNA atomic data
     exercises/           Interactive exercise logic
     site.js              Shared navigation behavior
     theme.js             Early theme initialization and switching
@@ -23,6 +23,9 @@ scripts/
 tests/
   e2e/                   Playwright browser regression tests
 docs/
+  README.md              Documentation index and guides for all eight pages
+  project.md             Architecture, shared behavior, and deployment
+  animations.md          Shared playback and rendering conventions
   testing.md             Test setup and coverage
 dist/                    Generated output, ignored by Git
 .github/workflows/       CI tests and GitHub Pages deployment
@@ -57,3 +60,20 @@ npm test
 ```
 
 See [testing instructions](docs/testing.md) for coverage, browser setup, and debugging.
+
+## Documentation
+
+Start with the [documentation index](docs/README.md) or the [project guide](docs/project.md).
+
+| Page | Guide |
+| --- | --- |
+| Homepage | [Navigation and collection](docs/homepage.md) |
+| DNA model | [Zoom, atomic data, and regeneration](docs/dna-model.md) |
+| DNA replication | [Fork and protein interactions](docs/dna-replication.md) |
+| mRNA translation | [Ribosome and peptide growth](docs/mrna-translation.md) |
+| RNA splicing | [Intron removal and exon joining](docs/rna-splicing.md) |
+| Prokaryotic protein synthesis | [Coupled transcription and translation](docs/prokaryotic-protein-synthesis.md) |
+| Eukaryotic protein synthesis | [Processing, export, and translation](docs/eukaryotic-protein-synthesis.md) |
+| Exercise | [Inputs, live previews, and feedback](docs/protein-synthesis-exercise.md) |
+
+The [shared animation guide](docs/animations.md) explains playback behavior. Python is only needed when regenerating DNA coordinates; normal development and deployment use the checked-in JavaScript data.
