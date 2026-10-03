@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Erkunde DNA-Bausteine, Strukturformeln und komplementäre Basenpaarung.">
+  <meta name="description" content="Erkunde die drehbare DNA-Doppelhelix, ihre Bausteine, Strukturformeln und komplementäre Basenpaarung.">
   <meta name="theme-color" content="#f7f8f5">
   <title>DNA-Modell · Genetik in Bewegung</title>
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
   <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/styles/site.css">
   <script src="assets/js/site.js" defer></script>
-  <script src="assets/js/animations/dna-helix-data.js" defer></script>
   <script src="assets/js/animations/dna-modell.js" defer></script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="103d1b3c-c3d6-4189-a997-11245b2e7e52"></script>
   <link rel="stylesheet" href="assets/styles/animations/dna-modell.css">
@@ -26,89 +25,99 @@
 <main class="dna-model" id="main-content">
     <div class="shell">
         <nav class="breadcrumb" aria-label="Brotkrümelnavigation"><a href="index.html#animationen">Alle Animationen</a><span aria-hidden="true">/</span><span>DNA-Modell</span></nav>
-        <section class="intro" aria-labelledby="page-title">
+<section class="intro" aria-labelledby="page-title">
             <div>
+                <p class="eyebrow">Kleine Bausteine. Große Information.</p>
                 <h1 id="page-title">Das Molekül <span>des Lebens.</span></h1>
-                <p>Wähle einen Baustein aus und entdecke seine Struktur.</p>
+                <p>Zoome von der Doppelhelix bis zu ihren Bausteinen. Klicke sie an und entdecke ihren Aufbau.</p>
             </div>
+            <div class="intro-tag"><span class="tiny-square"></span>Interaktives DNA-Modell</div>
         </section>
         <div class="workspace">
             <section aria-labelledby="model-title">
                 <div class="model-card">
                     <div class="model-toolbar">
-                        <h2 id="model-title">DNA-Modell</h2><span id="view-stage" hidden>2D · aufgefaltet</span><button
-                            type="button" class="reset-btn" id="reset"><span aria-hidden="true">↺</span>
-                            Zurücksetzen</button>
+                        <div>
+                            <h2 id="model-title">Ein Blick in die DNA</h2>
+                            <p>Zwei Stränge, vier Basen – ein gemeinsamer Bauplan.</p>
+                        </div><span class="view-tag" id="view-stage">Kugel-Stab-Modell</span>
                     </div>
-                    <div class="zoom-controls" role="group" aria-label="DNA-Modell zoomen">
-                        <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
-                        <label for="model-zoom">Doppelhelix</label>
-                        <input id="model-zoom" type="range" min="0" max="100" value="100" aria-label="Zoom zwischen Doppelhelix und Detailansicht">
-                        <span>Details</span>
-                        <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+                    <div class="zoom-controls" role="group" aria-label="Detailgrad des DNA-Modells">
+                        <div class="zoom-heading"><label for="detail-zoom">Zoom &amp; Detailgrad</label><output
+                                id="zoom-state" for="detail-zoom">Doppelhelix</output></div>
+                        <div class="zoom-range-row"><button class="zoom-button" id="zoom-out" type="button"
+                                aria-label="Herauszoomen">−</button><input class="slider" id="detail-zoom" type="range"
+                                min="0" max="100" step="1" value="0" aria-label="Zoom und Detailgrad"><button
+                                class="zoom-button" id="zoom-in" type="button" aria-label="Hineinzoomen">+</button>
+                        </div>
+                        <div class="zoom-stops"><button class="zoom-stop" type="button" data-zoom-to="0"
+                                aria-pressed="true">Doppelhelix</button><button class="zoom-stop" type="button"
+                                data-zoom-to="100" aria-pressed="false">Bausteine</button></div>
                     </div>
-                    <div class="canvas-wrap"><svg id="helix-svg" viewBox="0 0 760 670" role="img" aria-label="DNA-Doppelhelix aus 30 Basenpaaren als atomares Kugel-Stab-Modell"></svg><svg id="dna-svg" viewBox="0 0 760 670" role="group"
+                    <div class="canvas-wrap"><svg id="dna-svg" viewBox="0 0 760 670" role="group"
                             aria-labelledby="dna-title dna-desc">
                             <title id="dna-title">Interaktiver DNA-Doppelstrang</title>
-                            <desc id="dna-desc">Aufgefalteter DNA-Ausschnitt mit acht komplementären Basenpaaren. Adenin
-                                ist
-                                korallfarben und spitz, Thymin türkis und eingekerbt, Guanin blau und abgerundet,
-                                Cytosin gelb und
-                                eingebuchtet. Zucker sind Fünfecke, Phosphate Kreise. Die Stränge verlaufen
-                                antiparallel. Bausteine mit
-                                Tab oder Pfeiltasten auswählen und mit Enter öffnen.</desc>
-                        </svg></div>
+                            <desc id="dna-desc">Zoombares DNA-Modell: zunächst eine drehbare Doppelhelix als
+                                Kugel-Stab-Modell, beim Hineinzoomen ein aufgefalteter Ausschnitt mit acht
+                                komplementären Basenpaaren. Mit gedrückter Maustaste oder einem Finger drehen,
+                                alternativ mit den Pfeiltasten. R setzt die Drehung zurück. Mit dem Regler, Mausrad,
+                                zwei Fingern oder den Tasten Plus und Minus zoomen. Adenin ist rot und spitz, Thymin
+                                grün und eingekerbt, Guanin blau und abgerundet, Cytosin gelb und eingebuchtet. Zucker
+                                sind Fünfecke, Phosphate Kreise. Die Stränge verlaufen antiparallel. Bausteine mit Tab
+                                oder Pfeiltasten auswählen und mit Enter öffnen.</desc>
+                        </svg><button type="button" class="rotation-reset" id="reset-rotation"
+                            aria-label="Drehung zurücksetzen" title="Drehung zurücksetzen (R)"><span
+                                aria-hidden="true">↺</span> Drehung zurücksetzen</button><span class="zoom-hint"
+                            id="model-hint">Ziehen: drehen · Mausrad / zwei Finger: zoomen</span></div>
                     <div class="model-caption" id="model-caption"><strong>Gestrichelt:</strong> Wasserstoffbrücken ·
-                        <strong>Durchgezogen:</strong> kovalente Bindungen
-                    </div>
-                    <div class="model-controls" id="separation-controls" hidden>
+                        <strong>Durchgezogen:</strong> kovalente Bindungen</div>
+                    <div class="model-controls">
                         <div>
                             <div class="range-heading"><label for="separation">Stränge auseinanderziehen</label><output
                                     id="separation-state" for="separation">Gepaart</output></div><input class="slider"
                                 id="separation" type="range" min="0" max="100" value="0"
                                 aria-label="DNA-Stränge auseinanderziehen" aria-valuetext="Gepaart">
-                        </div>
+                        </div><button type="button" class="reset-btn" id="reset"><span aria-hidden="true">↺</span>
+                            Zurücksetzen</button>
                     </div>
-                    <nav class="legend" id="legend" hidden aria-label="DNA-Bausteine auswählen"></nav>
+                    <nav class="legend" id="legend" aria-label="DNA-Bausteine auswählen"></nav>
                 </div>
                 <div class="under-model">
-                    <p>Vereinfachte Darstellung der DNA.</p><span class="count" id="view-count">8 Basenpaare · 16
-                        Nukleotide</span>
+                    <p>Die Formen und Farben sind Symbole.<br>In Wirklichkeit bildet die DNA eine räumliche Doppelhelix.
+                    </p><span class="count" id="view-count">20 Basenpaare · Übersicht</span>
                 </div>
+                <a href="#inspector" class="mobile-detail-link" id="mobile-detail" hidden><span id="mobile-detail-text">Doppelhelix verstehen</span><span aria-hidden="true">↓</span></a>
             </section>
-            <aside class="inspector" id="inspector" aria-labelledby="detail-title" inert>
-                <div class="drawer-toolbar"><button type="button" class="drawer-close" id="close-detail"
-                        aria-label="Details schließen">Schließen <span aria-hidden="true">×</span></button></div>
+            <aside class="inspector" id="inspector" aria-labelledby="detail-title">
                 <div id="detail"></div>
             </aside>
         </div>
         <footer class="footer">
             <div class="footer-top">
+                <p>Sehen. Anklicken. Verstehen.<br>Ein Lernmodell zum Aufbau der DNA.</p>
                 <details>
                     <summary>Über das Modell &amp; Quellen</summary>
                     <div class="source-content">
                         <p>Didaktisch vereinfachter Ausschnitt einer DNA. Die Beispielsequenz hat keine bestimmte
-                            biologische
-                            Funktion. Die aufgefaltete Zeichnung zeigt acht schematische Basenpaare und dient allein der
-                            Übersicht.
-                            Farben, Formen, Größen und das Auseinanderziehen sind schematisch. Das Öffnen ist keine
-                            Simulation eines
+                            biologische Funktion. Die Übersicht zeigt 20 schematische Basenpaare; beim Hineinzoomen wird
+                            ein Ausschnitt mit acht Basenpaaren vergrößert. Der Übergang zur aufgefalteten Zeichnung
+                            dient allein der Übersicht und bildet keine tatsächliche Entwindung durch das Zoomen ab. Die
+                            Kugel-Stab-Ansicht ist aus Atomvorlagen der Struktur 1BNA idealisiert aufgebaut und zeigt
+                            die Beispielsequenz, keine unveränderte Kristallstruktur. Wasserstoffatome sind
+                            ausgeblendet; Bindungsordnungen werden im Kugel-Stab-Modell nicht gesondert dargestellt. Die
+                            Atomfarben sind von den Symbolfarben für ganze Basen zu unterscheiden. Farben, Formen,
+                            Größen und das Auseinanderziehen sind schematisch. Das Öffnen ist keine Simulation eines
                             vollständigen biologischen Vorgangs. Basenstapelung trägt neben Wasserstoffbrücken zur
-                            Stabilität der
-                            Doppelhelix bei.</p>
-                        <p>Die atomare Übersicht zeigt eine idealisierte Verlängerung der B-DNA-Struktur
-                            <a href="https://www.rcsb.org/structure/1BNA" target="_blank" rel="noopener noreferrer">1BNA (RCSB PDB)</a>
-                            auf 30 Basenpaare. Die Kugeln stellen einzelne Atome dar; Wasserstoffatome und
-                            Wassermoleküle sind ausgeblendet. Die Detailansicht zeigt eine separate Beispielsequenz.</p>
+                            Stabilität der Doppelhelix bei.</p>
                         <p>Strukturformeln zeigen eine übliche Bindungsdarstellung; Elektronenverteilung und räumliche
-                            Gestalt sind
-                            vereinfacht. Bei den Basen kann zwischen freiem Molekül und Zuckerbindung in der DNA
-                            gewechselt werden.
-                            Die Summenformeln beziehen sich auf die freien Moleküle. Beim Phosphat wird zwischen einer
-                            inneren
-                            Phosphodiestergruppe und dem Phosphat am 5′-Ende unterschieden. P = Phosphatgruppe, Z =
-                            Desoxyribose.</p>
+                            Gestalt sind vereinfacht. Bei den Basen kann zwischen freiem Molekül und Zuckerbindung in
+                            der DNA gewechselt werden. Die Summenformeln beziehen sich auf die freien Moleküle. Beim
+                            Phosphat wird zwischen einer inneren Phosphodiestergruppe und dem Phosphat am 5′-Ende
+                            unterschieden. P = Phosphatgruppe, Z = Desoxyribose.</p>
                         <ul>
+                            <li><a href="https://www.rcsb.org/structure/1BNA" target="_blank"
+                                    rel="noopener noreferrer">RCSB PDB 1BNA: Atomvorlagen der B-DNA (Drew et al.,
+                                    1981)</a></li>
                             <li><a href="https://www.genome.gov/about-genomics/fact-sheets/Deoxyribonucleic-Acid-Fact-Sheet"
                                     target="_blank" rel="noopener noreferrer">NHGRI: Aufbau und Funktion der DNA</a>
                             </li>
@@ -131,8 +140,6 @@
             </div>
         </footer>
     </div>
-    <a href="#inspector" class="mobile-detail-link" id="mobile-detail" hidden><span id="mobile-detail-text">Adenin
-            entdecken</span><span aria-hidden="true">↓</span></a>
     <div class="sr-only" role="status" aria-live="polite" id="announcement"></div>
     <noscript>
         <p class="no-js">Bitte aktiviere JavaScript, um die Bausteine und ihre Strukturformeln zu erkunden.</p>

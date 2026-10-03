@@ -8,7 +8,7 @@ A static, German-language learning website with six interactive SVG learning pag
 src/
   pages/                 HTML pages
   js/
-    animations/          Page renderers and bundled DNA atomic data
+    animations/          Page renderers, including local DNA atom templates
     exercises/           Interactive exercise logic
     site.js              Shared navigation behavior
     theme.js             Early theme initialization and switching
@@ -59,7 +59,7 @@ npx playwright install chromium
 npm test
 ```
 
-`npm test` includes geometry checks and visual comparisons for all eight pages. Use `npm run test:unit` for DNA geometry or `npm run test:visual` for screenshot comparisons. See [testing instructions](docs/testing.md) for browser setup, baseline review, and debugging.
+`npm test` includes build checks, interaction tests, and visual comparisons for all eight pages. Use `npm run test:visual` for screenshot comparisons. See [testing instructions](docs/testing.md) for browser setup, baseline review, and debugging.
 
 ## Documentation
 
@@ -68,7 +68,7 @@ Start with the [documentation index](docs/README.md) or the [project guide](docs
 | Page | Guide |
 | --- | --- |
 | Homepage | [Navigation and collection](docs/homepage.md) |
-| DNA model | [Zoom, atomic data, and regeneration](docs/dna-model.md) |
+| DNA model | [Rotation, zoom, and model sources](docs/dna-model.md) |
 | DNA replication | [Fork and protein interactions](docs/dna-replication.md) |
 | mRNA translation | [Ribosome and peptide growth](docs/mrna-translation.md) |
 | RNA splicing | [Intron removal and exon joining](docs/rna-splicing.md) |
@@ -76,4 +76,4 @@ Start with the [documentation index](docs/README.md) or the [project guide](docs
 | Eukaryotic protein synthesis | [Processing, export, and translation](docs/eukaryotic-protein-synthesis.md) |
 | Exercise | [Inputs, live previews, and feedback](docs/protein-synthesis-exercise.md) |
 
-The [shared animation guide](docs/animations.md) explains playback behavior. Python is only needed when regenerating DNA coordinates; normal development and deployment use the checked-in JavaScript data.
+The [shared animation guide](docs/animations.md) explains playback behavior. The DNA model uses atom templates embedded in its page script and requires no coordinate generation during build.

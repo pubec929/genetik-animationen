@@ -2,51 +2,29 @@
 
 [Documentation index](README.md) · Public URL: `dna-modell.html`
 
-The public page is `dna-modell.html`. Run `npm run dev` from the repository root and open <http://127.0.0.1:4173/dna-modell.html>.
+The public page is built from `src/pages/dna-modell.html`. Run `npm run dev` and open <http://127.0.0.1:4173/dna-modell.html>.
 
-## Controls
+## Explore the model
 
-- Move the zoom slider toward **Doppelhelix** for the atomic overview or **Details** for the interactive schematic. The page starts in the detail view.
-- Use **+ / −**, the mouse wheel over the model, or arrow keys while the slider has focus to change zoom.
-- Select a base, sugar, or phosphate in the detail view or its legend to open an explanation. **Escape** closes the detail panel.
-- **Stränge auseinanderziehen** separates the schematic strands. Selecting a component or changing separation returns to the detail view.
-- **Zurücksetzen** restores paired strands, closes the panel, and returns zoom to the detail view.
+The page opens on a 20-base-pair atomic ball-and-stick double helix. Drag with a mouse or one finger to rotate it, or focus the drawing and use the arrow keys. **Drehung zurücksetzen** or **R** restores its orientation. The zoom slider, **+ / −** buttons, mouse wheel, two-finger pinch, and **+ / −** keys change the detail level. **0** returns to the helix. The **Doppelhelix** and **Bausteine** buttons jump to either end. Reduced-motion preferences make button zoom immediate.
 
-Zoom animates scale and opacity over 420 ms. With reduced motion enabled in the operating system or browser, the view updates without the animation.
+At the close end, the model becomes an eight-base-pair schematic with selectable bases, sugars, phosphates, and hydrogen bonds. Select a component or use the legend to open its explanation and structural formula. The detail panel can show a free base or sugar, the complementary base, and a highlighted nucleotide. Keyboard users can move between schematic components with arrows, **Home**, and **End**. **Stränge auseinanderziehen** separates the schematic strands and hides their hydrogen bonds while leaving the sugar-phosphate backbones connected. **Zurücksetzen** restores the paired helix, initial orientation, and overview.
 
-## Files and rendering
+The zoom transition is a teaching device: it reveals a separate schematic close-up, not a physical unwinding of DNA. The whole-base colors and shapes are symbolic. The atom colors distinguish C, N, O, and P; hydrogen atoms are omitted.
+
+## Source files
 
 | File | Purpose |
 | --- | --- |
-| [`src/pages/dna-modell.html`](../src/pages/dna-modell.html) | Controls, accessible descriptions, and scientific sources |
-| [`src/js/animations/dna-modell.js`](../src/js/animations/dna-modell.js) | SVG rendering, zoom, selection, and explanations |
-| [`src/styles/animations/dna-modell.css`](../src/styles/animations/dna-modell.css) | Layout, themes, and model controls |
-| [`src/js/animations/dna-helix-data.js`](../src/js/animations/dna-helix-data.js) | Generated atomic coordinates and covalent bonds |
-| [`scripts/build-dna-helix.py`](../scripts/build-dna-helix.py) | Offline generator and connectivity checks |
-| [`scripts/data/dna-1bna.pdb`](../scripts/data/dna-1bna.pdb) | Bundled source coordinates |
+| [`src/pages/dna-modell.html`](../src/pages/dna-modell.html) | Page markup, controls, accessible description, and scientific sources |
+| [`src/js/animations/dna-modell.js`](../src/js/animations/dna-modell.js) | Atomic templates, projection, rotation, zoom, selection, and explanations |
+| [`src/styles/animations/dna-modell.css`](../src/styles/animations/dna-modell.css) | Model layout, responsive behavior, and theme colors |
+| [`scripts/data/dna-1bna.pdb`](../scripts/data/dna-1bna.pdb) | Bundled reference structure used for the atom templates |
+| [`tests/e2e/dna-modell.spec.js`](../tests/e2e/dna-modell.spec.js) | Interaction and responsive regression tests |
 
-The data script loads before the renderer and defines `window.DNA_HELIX_DATA`. Each atom stores `[element, x, y, z]` in ångströms; each bond stores two atom indices. All data is served locally, with no molecular-data request at runtime.
+The renderer uses local heavy-atom templates from [RCSB PDB 1BNA](https://www.rcsb.org/structure/1BNA) for A–T and G–C pairs and repeats them to create an idealized 20-pair illustration. It draws atoms, covalent bonds, and hydrogen-bond guides into one SVG. No molecular-data request is made at runtime. The illustration is not an experimentally determined 20-pair structure or a molecular simulation; its spacing and unfolding are chosen for teaching clarity. The eight-pair schematic uses a separate example sequence. The page's **Über das Modell & Quellen** disclosure explains these limits to learners.
 
-`renderHelix()` projects the coordinates into SVG. Atoms and short bond sections are sorted by camera depth to show occlusion. The projection inverts the molecular y coordinate because SVG y increases downward; preserve that inversion when changing the camera to avoid mirroring the helix. Atomic colors are gray for carbon, blue for nitrogen, red for oxygen, and yellow for phosphorus.
-
-## Source and scope
-
-The overview is an idealized 30-base-pair extension derived from [RCSB PDB structure 1BNA](https://www.rcsb.org/structure/1BNA). The generator fits a rotation and translation between overlapping terminal pairs, then repeats a ten-pair block three times. It restores the terminal phosphate connection to keep the backbone continuous.
-
-The extended molecule is an illustration, not an experimentally determined 30-pair structure or a molecular simulation. Hydrogen atoms and solvent are omitted; the displayed sticks represent covalent bonds. The eight-pair detail view uses a separate teaching sequence. Zoom blends between these representations rather than mapping each overview atom onto a schematic component.
-
-## Regenerate the atomic data
-
-Normal builds use the checked-in data. To change or regenerate it, use Python 3 with NumPy. For an isolated environment, run from the repository root:
-
-```sh
-python3 -m venv /tmp/genetik-dna-venv
-/tmp/genetik-dna-venv/bin/python -m pip install numpy
-/tmp/genetik-dna-venv/bin/python scripts/build-dna-helix.py
-npm run build
-```
-
-The generator overwrites `src/js/animations/dna-helix-data.js`. Its assertions require exactly two connected strands and covalent bond lengths between 1 and 2.5 Å. The current output contains 1,230 atoms and 1,378 bonds, with 615 atoms per strand. Commit regenerated data alongside generator or source-coordinate changes.
+The root-level `dna_model.html` is the standalone design reference. Changes for the published site belong in `src/`; the build does not copy the reference file.
 
 ## Validate changes
 
@@ -54,6 +32,4 @@ The generator overwrites `src/js/animations/dna-helix-data.js`. Its assertions r
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/sbin/chromium npm test -- tests/e2e/dna-modell.spec.js
 ```
 
-Omit the environment variable when using Playwright's installed Chromium. See [test setup](testing.md) for installation details.
-
-Review the screenshots under `test-results/` in both themes and viewport sizes. Check helix shape, strand continuity, front/back overlap, clipping, and the transition to the detail view. Compare the atomic overview with the repository's `dna_model.png` reference. Automated interaction tests cannot establish biological or visual accuracy.
+The browser checks cover the initial helix, rotation and reset, zoom, keyboard controls, chemistry, strand separation, both themes, and mobile layout. The visual suite captures both ends of the zoom, a transition state, separated strands, and a chemistry panel. Review these images manually for strand winding, label clarity, clipping, and biological accuracy; interaction checks alone cannot prove those properties. See [test setup](testing.md) for browser installation and snapshot guidance.

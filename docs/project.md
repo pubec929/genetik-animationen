@@ -15,16 +15,16 @@ The site uses plain HTML, CSS, and JavaScript. Each learning page owns its rende
 | `src/pages/` | Public HTML documents and their local asset references |
 | `src/js/site.js` | Responsive navigation menu |
 | `src/js/theme.js` | Early theme selection and theme controls |
-| `src/js/animations/` | Page-specific SVG renderers and bundled DNA atomic data |
+| `src/js/animations/` | Page-specific SVG renderers, including DNA atom templates |
 | `src/js/exercises/` | Exercise tasks, answer validation, and live previews |
 | `src/styles/site.css` | Shared layout, typography, theme variables, and navigation |
 | `src/styles/animations/`, `src/styles/exercises/` | Page-specific presentation |
 | `src/assets/images/` | SVG illustrations and favicon |
-| `scripts/` | Static build, preview server, and optional DNA data generator |
+| `scripts/` | Static build and preview server |
 | `tests/` | Node build checks and Playwright browser checks |
 | `dist/` | Generated deployment output; ignored by Git |
 
-Edit `src/` for website changes. Root-level reference files such as `dna_model.png` are development material and are not copied into the published site. The checked-in atomic data is regenerated separately; see the [DNA guide](dna-model.md).
+Edit `src/` for website changes. The root-level `dna_model.html` is a standalone design reference and is not copied into the published site. The DNA atom templates used by the public page live in its animation script; see the [DNA guide](dna-model.md).
 
 ## Development commands
 
@@ -42,12 +42,11 @@ The preview is available at <http://127.0.0.1:4173>. `dev` builds once and start
 | `npm run build` | Recreates `dist/` from source |
 | `npm run dev` / `npm run preview` | Builds and serves `dist/` locally |
 | `npm run test:build` | Rebuilds and validates output and asset references |
-| `npm test` | Runs build, atomic-geometry, and desktop/mobile browser checks, including visual comparisons |
-| `npm run test:unit` | Validates the bundled atomic geometry without a browser |
+| `npm test` | Runs build and desktop/mobile browser checks, including visual comparisons |
 | `npm run test:visual` | Builds and compares fixed scenes with reviewed screenshot baselines |
 | `npm run test:ui` | Opens the Playwright test interface |
 
-Install Chromium with `npx playwright install chromium`, or use the executable override in the [testing guide](testing.md). Python and NumPy are optional tools for regenerating DNA coordinates; they are not required by the website or normal build.
+Install Chromium with `npx playwright install chromium`, or use the executable override in the [testing guide](testing.md). The DNA model needs no Python generation step.
 
 ## Build and deployment
 
@@ -63,7 +62,7 @@ The header, navigation links, and footer are repeated in each HTML document. Upd
 
 `theme.js` runs before styles to apply the saved `genetik-theme` preference from local storage. Without a saved choice it follows the system color scheme. It handles cross-tab changes and restored pages, and continues working if storage is unavailable. Use shared CSS variables for readable light and dark themes.
 
-Animation playback, selections, and exercise answers live in page memory and reset on reload. The exercise checks answers locally. Each public page includes the Umami analytics script; browser tests stub that request. The molecular model uses bundled data and does not fetch coordinates at runtime.
+Animation playback, selections, and exercise answers live in page memory and reset on reload. The exercise checks answers locally. Each public page includes the Umami analytics script; browser tests stub that request. The molecular model uses local atom templates and does not fetch coordinates at runtime.
 
 ## Accessibility and motion
 

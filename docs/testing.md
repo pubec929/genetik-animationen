@@ -16,7 +16,7 @@ npm test
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/sbin/chromium npm test
 ```
 
-`npm test` runs build checks, atomic-geometry checks, and browser tests at desktop and mobile sizes. Coverage includes SVG rendering and accessible descriptions, every labeled stage and cycle restart, pause/resume, all three speeds, term explanations, reduced-motion startup, hidden-document behavior, and resizing while paused. The animation fixture also fails on script, console, SVG, and HTTP errors. This describes behavioral coverage, not a measured line-coverage percentage.
+`npm test` runs build checks and browser tests at desktop and mobile sizes. Coverage includes SVG rendering and accessible descriptions, every labeled stage and cycle restart, pause/resume, all three speeds, term explanations, reduced-motion startup, hidden-document behavior, and resizing while paused. The animation fixture also fails on script, console, SVG, and HTTP errors. This describes behavioral coverage, not a measured line-coverage percentage.
 
 Build checks verify public page URLs, local asset references and cache versions, analytics inclusion, and animation script load order. Browser tests run against the generated `dist/` site. The test server automatically builds the site before starting. Umami requests are stubbed in tests to avoid sending test visits to the live analytics dashboard.
 
@@ -24,9 +24,7 @@ Theme tests cover the switch on all public pages, keyboard operation, responsive
 
 Exercise tests cover all three DNA tasks, correct mRNA and polypeptides, the three stop codons, empty and invalid answers, transcription errors carried into translation, correction and reset, all 64 codon-to-amino-acid mappings against an independent standard-code fixture, and entry from the homepage. Expected answers are independent fixtures in `tests/e2e/exercise.spec.js`.
 
-DNA model tests cover component selection, chemical structure explanations, partner selection, strand separation, reset, and both themes. Zoom checks cover intermediate animation frames, atomic elements and bonds, mouse-wheel events, slider keyboard input, and reduced motion. Added regression cases exercise base-pair keyboard navigation, preserve the atomic caption when closing a detail panel while zoomed out, and verify that separation hides hydrogen bonds without modifying the backbone. Run these checks with `npm test -- tests/e2e/dna-modell.spec.js`.
-
-`npm run test:unit` checks the **shipped** atomic coordinates for finite values, valid and unique covalent bonds, two connected strands, one phosphate per base pair, right-handed winding, and three-dimensional proportions. It requires Node only; the Python generator is not run. The [DNA model guide](dna-model.md) documents regeneration and scientific limitations. These invariants catch broken or mirrored geometry but are not a complete chemical validation.
+DNA model tests cover the new 20-pair atomic overview, mouse and keyboard rotation, zoom controls, the eight-pair close-up, component chemistry, base pairing, strand separation, reset, both themes, reduced motion, and mobile width. Run them with `npm test -- tests/e2e/dna-modell.spec.js`. The [DNA model guide](dna-model.md) documents the model's source and scientific limits; visual and biological accuracy still require manual review.
 
 Navigation tests exercise mobile menu keyboard operation, Escape focus restoration, outside clicks, the skip link, and homepage destinations. Additional exercise cases check stale-feedback removal after editing and ensure markup-like input cannot create HTML elements.
 

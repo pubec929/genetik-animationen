@@ -1,5 +1,6 @@
+@scope (.dna-model) {
 
-.dna-model {
+        :scope {
             color-scheme: light;
             --page: #f6f7f3;
             --paper: #fff;
@@ -8,61 +9,73 @@
             --line: #dfe6df;
             --green: #2e6150;
             --soft: #eaf0e9;
-            --A: #e8a18b;
-            --T: #83c5b5;
-            --G: #98b5df;
-            --C: #e9c477;
-            --Z: #efe1ca;
-            --P: #c9cdda;
+            --A: #df8c77;
+            --T: #a4bd80;
+            --G: #8bb4ce;
+            --C: #e7c66a;
+            --Z: #e7dac7;
+            --P: #cbc4da;
             --radius: 20px;
             font-family: Inter, "Avenir Next", Avenir, "Segoe UI", Arial, sans-serif
         }
-.dna-model * {
+
+        * {
             box-sizing: border-box
         }
-.dna-model {
+
+        body {
             margin: 0;
             background: var(--page);
             color: var(--ink);
             -webkit-font-smoothing: antialiased
         }
-.dna-model button,
-.dna-model input,
-.dna-model a {
+
+        button,
+        input,
+        a {
             -webkit-tap-highlight-color: transparent
         }
-.dna-model button,
-.dna-model input {
+
+        button,
+        input {
             font: inherit
         }
-.dna-model button {
+
+        button {
             cursor: pointer
         }
-.dna-model button:disabled {
+
+        button:disabled {
             cursor: default;
             opacity: .45
         }
-.dna-model a {
+
+        a {
             color: var(--green);
             text-underline-offset: 3px
         }
-.dna-model button:focus-visible,
-.dna-model a:focus-visible,
-.dna-model input:focus-visible,
-.dna-model summary:focus-visible {
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        summary:focus-visible {
             outline: 3px solid #48776a;
             outline-offset: 4px
         }
-.dna-model button {
+
+        button {
             color: inherit
         }
-.dna-model svg {
+
+        svg {
             display: block
         }
-.dna-model button svg {
+
+        button svg {
             pointer-events: none
         }
-.dna-model .sr-only {
+
+        .sr-only {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -70,19 +83,22 @@
             clip: rect(0, 0, 0, 0);
             white-space: nowrap
         }
-.dna-model .shell {
+
+        .shell {
             max-width: 1280px;
             margin: auto;
             padding: 0 40px
         }
-.dna-model .topbar {
+
+        .topbar {
             height: 82px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--line)
         }
-.dna-model .brand {
+
+        .brand {
             display: flex;
             gap: 12px;
             align-items: center;
@@ -90,31 +106,36 @@
             font-weight: 750;
             letter-spacing: .02em
         }
-.dna-model .brand-mark {
+
+        .brand-mark {
             width: 32px;
             height: 32px
         }
-.dna-model .top-meta {
+
+        .top-meta {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 12px;
             color: var(--muted)
         }
-.dna-model .top-meta .dot {
+
+        .top-meta .dot {
             width: 6px;
             height: 6px;
             background: var(--green);
             border-radius: 50%
         }
-.dna-model .intro {
+
+        .intro {
             display: flex;
             align-items: end;
             justify-content: space-between;
             gap: 30px;
             padding: 34px 0 28px
         }
-.dna-model .eyebrow {
+
+        .eyebrow {
             font-size: 10px;
             font-weight: 750;
             letter-spacing: .16em;
@@ -122,26 +143,30 @@
             color: var(--muted);
             margin: 0 0 10px
         }
-.dna-model .intro h1 {
+
+        .intro h1 {
             font-size: clamp(29px, 3.5vw, 45px);
             font-weight: 650;
             line-height: 1.15;
             letter-spacing: -.045em;
             margin: 0 0 12px
         }
-.dna-model .intro h1 span {
+
+        .intro h1 span {
             font-family: Georgia, serif;
             font-style: italic;
             font-weight: 400;
             color: var(--green)
         }
-.dna-model .intro p:not(.eyebrow) {
+
+        .intro p:not(.eyebrow) {
             font-size: 14px;
             line-height: 1.7;
             margin: 0;
             color: var(--muted)
         }
-.dna-model .intro-tag {
+
+        .intro-tag {
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -151,28 +176,36 @@
             border-radius: 30px;
             font-size: 11px;
             margin-bottom: 5px;
-            background: var(--paper)
+            background: #fcfdfb
         }
-.dna-model .tiny-square {
+
+        .tiny-square {
             width: 7px;
             height: 7px;
             background: var(--green);
             border-radius: 2px
         }
-.dna-model .workspace {
+
+        .workspace {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 365px;
             gap: 20px;
             align-items: start
         }
-.dna-model .model-card,
-.dna-model .inspector {
+
+        .workspace > * {
+            min-width: 0
+        }
+
+        .model-card,
+        .inspector {
             background: var(--paper);
             border: 1px solid var(--line);
             border-radius: var(--radius);
             overflow: hidden
         }
-.dna-model .model-toolbar {
+
+        .model-toolbar {
             padding: 20px 24px 17px;
             display: flex;
             align-items: center;
@@ -180,17 +213,20 @@
             gap: 15px;
             border-bottom: 1px solid var(--line)
         }
-.dna-model .model-toolbar h2 {
+
+        .model-toolbar h2 {
             font-size: 15px;
             font-weight: 650;
             margin: 0 0 5px
         }
-.dna-model .model-toolbar p {
+
+        .model-toolbar p {
             margin: 0;
             color: var(--muted);
             font-size: 11px
         }
-.dna-model .view-tag {
+
+        .view-tag {
             font-size: 10px;
             letter-spacing: .04em;
             color: var(--green);
@@ -199,53 +235,63 @@
             padding: 6px 8px;
             white-space: nowrap
         }
-.dna-model .canvas-wrap {
+
+        .canvas-wrap {
             position: relative;
-            background: radial-gradient(ellipse at 50% 45%, #f5f5fc 0%, #fcfcfe 55%, #fff 100%)
+            background: radial-gradient(circle at 50% 40%, #fff 0%, #fcfdfb 68%, #f8faf6 100%)
         }
-.dna-model #dna-svg {
+
+        #dna-svg {
             width: 100%;
             height: auto;
             max-height: 645px;
             touch-action: pan-y
         }
-.dna-model .dna-hit {
+
+        .dna-hit {
             cursor: pointer;
             outline: none
         }
-.dna-model .dna-hit .shape {
+
+        .dna-hit .shape {
             stroke: #455047;
             stroke-width: 1.5;
             stroke-opacity: .4;
             transition: stroke .15s, stroke-width .15s, filter .15s
         }
-.dna-model .dna-hit:hover .shape {
+
+        .dna-hit:hover .shape {
             stroke: var(--green);
             stroke-width: 2.5;
             stroke-opacity: 1;
             filter: brightness(1.03)
         }
-.dna-model .dna-hit.is-selected .shape,
-.dna-model .dna-hit:focus-visible .shape {
+
+        .dna-hit.is-selected .shape,
+        .dna-hit:focus-visible .shape {
             stroke: var(--ink);
             stroke-opacity: 1;
             stroke-width: 3.3;
             filter: drop-shadow(0 3px 4px #223c3420)
         }
-.dna-model .dna-hit.is-selected text {
+
+        .dna-hit.is-selected text {
             font-weight: 800
         }
-.dna-model .dna-hit:focus-visible .focus-ring {
+
+        .dna-hit:focus-visible .focus-ring {
             opacity: 1
         }
-.dna-model .focus-ring {
+
+        .focus-ring {
             fill: none;
             stroke: var(--green);
             stroke-width: 2;
             stroke-dasharray: 4 4;
             opacity: 0
         }
-.dna-model .base-letter {
+
+        .base-letter {
             font-size: 19px;
             font-weight: 650;
             fill: #253b33;
@@ -253,8 +299,9 @@
             dominant-baseline: central;
             pointer-events: none
         }
-.dna-model .sugar-letter,
-.dna-model .phosphate-letter {
+
+        .sugar-letter,
+        .phosphate-letter {
             font-size: 13px;
             font-weight: 600;
             fill: #3d4243;
@@ -262,80 +309,93 @@
             dominant-baseline: central;
             pointer-events: none
         }
-.dna-model .svg-small {
+
+        .svg-small {
             font-size: 11px;
             fill: #738279;
             text-anchor: middle;
             pointer-events: none
         }
-.dna-model .svg-end {
+
+        .svg-end {
             font-family: Georgia, serif;
             font-size: 24px;
-            font-weight: 400;
-            fill: #87908b;
-            text-anchor: middle;
-            dominant-baseline: middle
+            font-weight: 700;
+            fill: var(--ink);
+            text-anchor: middle
         }
-.dna-model .svg-strand {
+
+        .svg-strand {
             font-size: 11px;
             letter-spacing: .08em;
             fill: var(--muted);
             text-anchor: middle
         }
-.dna-model .backbone-line {
+
+        .backbone-line {
             stroke: #a7b2a8;
             stroke-width: 2;
             fill: none
         }
-.dna-model .covalent {
+
+        .covalent {
             stroke: #a7b2a8;
             stroke-width: 2
         }
-.dna-model .hbond {
+
+        .hbond {
             stroke: #88968b;
             stroke-width: 1.9;
             stroke-dasharray: 3.5 4;
             stroke-linecap: round;
             pointer-events: none
         }
-.dna-model .bridge-hit:hover .hbond,
-.dna-model .bridge-hit.is-selected .hbond,
-.dna-model .bridge-hit:focus-visible .hbond {
+
+        .bridge-hit:hover .hbond,
+        .bridge-hit.is-selected .hbond,
+        .bridge-hit:focus-visible .hbond {
             stroke: #224f3f;
             stroke-width: 3
         }
-.dna-model .bridge-hit {
+
+        .bridge-hit {
             outline: none
         }
-.dna-model .bridge-hit:focus-visible .bridge-focus {
+
+        .bridge-hit:focus-visible .bridge-focus {
             opacity: 1
         }
-.dna-model .bridge-focus {
+
+        .bridge-focus {
             fill: none;
             stroke: #224f3f;
             stroke-width: 1.5;
             stroke-dasharray: 3 4;
             opacity: 0
         }
-.dna-model .nucleotide-mark {
+
+        .nucleotide-mark {
             fill: #2e615009;
             stroke: #527f6d;
             stroke-width: 1.5;
             stroke-dasharray: 5 4;
             pointer-events: none
         }
-.dna-model .model-caption {
+
+        .model-caption {
             padding: 0 22px 15px;
             text-align: center;
             font-size: 11px;
             color: var(--muted);
             line-height: 1.6
         }
-.dna-model .model-caption strong {
+
+        .model-caption strong {
             font-weight: 600;
-            color: var(--muted)
+            color: #435e50
         }
-.dna-model .model-controls {
+
+        .model-controls {
             border-top: 1px solid var(--line);
             padding: 17px 22px;
             display: grid;
@@ -343,7 +403,8 @@
             gap: 18px;
             align-items: center
         }
-.dna-model .range-heading {
+
+        .range-heading {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -351,14 +412,17 @@
             font-size: 11px;
             margin-bottom: 9px
         }
-.dna-model .range-heading label {
+
+        .range-heading label {
             font-weight: 600
         }
-.dna-model .range-heading output {
+
+        .range-heading output {
             color: var(--muted);
             font-size: 10px
         }
-.dna-model .slider {
+
+        .slider {
             display: block;
             width: 100%;
             height: 5px;
@@ -366,7 +430,8 @@
             cursor: ew-resize;
             margin: 12px 0 6px
         }
-.dna-model .reset-btn {
+
+        .reset-btn {
             display: flex;
             gap: 6px;
             align-items: center;
@@ -376,18 +441,21 @@
             padding: 9px 10px;
             font-size: 11px
         }
-.dna-model .reset-btn:hover {
+
+        .reset-btn:hover {
             background: var(--page)
         }
-.dna-model .legend {
+
+        .legend {
             display: flex;
             flex-wrap: wrap;
             gap: 6px 10px;
             padding: 16px 20px;
             border-top: 1px solid var(--line);
-            background: var(--paper)
+            background: #fdfefc
         }
-.dna-model .legend button {
+
+        .legend button {
             background: none;
             border: 0;
             padding: 4px 2px;
@@ -398,78 +466,94 @@
             border-radius: 4px;
             white-space: nowrap
         }
-.dna-model .legend button:hover {
+
+        .legend button:hover {
             background: var(--soft)
         }
-.dna-model .legend svg {
+
+        .legend svg {
             width: 25px;
             height: 20px;
             overflow: visible
         }
-.dna-model .legend .legend-divider {
+
+        .legend .legend-divider {
             width: 1px;
             align-self: stretch;
             background: var(--line);
             margin: 0 2px
         }
-.dna-model .inspector {
+
+        .inspector {
             position: sticky;
             top: 18px;
             min-height: 675px
         }
-.dna-model .inspector-head {
+
+        .inspector-head {
             padding: 23px 24px 18px;
             border-bottom: 1px solid var(--line)
         }
-.dna-model .selection-line {
+
+        .selection-line {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 15px;
             gap: 8px
         }
-.dna-model .selection-line .eyebrow {
+
+        .selection-line .eyebrow {
             margin: 0;
             font-size: 9px
         }
-.dna-model .selection-position {
+
+        .selection-position {
             font-size: 10px;
             color: var(--muted)
         }
-.dna-model .selected-heading {
+
+        .selected-heading {
             display: flex;
             align-items: center;
             gap: 13px
         }
-.dna-model .selection-symbol {
+
+        .selection-symbol {
             width: 51px;
             flex-shrink: 0
         }
-.dna-model .selected-heading h2 {
+
+        .selected-heading h2 {
             margin: 0 0 4px;
             font-weight: 600;
             font-size: 27px;
             letter-spacing: -.03em;
             line-height: 1.2
         }
-.dna-model .selected-heading .category {
+
+        .selected-heading .category {
             font-size: 11px;
             color: var(--muted)
         }
-.dna-model .inspector-content {
+
+        .inspector-content {
             padding: 20px 24px 22px
         }
-.dna-model .description {
+
+        .description {
             margin: 0 0 18px;
             font-size: 13px;
             line-height: 1.8;
-            color: var(--muted)
+            color: #4b6055
         }
-.dna-model .description strong {
+
+        .description strong {
             color: var(--ink);
             font-weight: 650
         }
-.dna-model .pair-summary {
+
+        .pair-summary {
             display: flex;
             justify-content: space-between;
             gap: 14px;
@@ -479,14 +563,16 @@
             padding: 11px 13px;
             margin: 0 0 20px
         }
-.dna-model .pair-code {
+
+        .pair-code {
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 700;
             font-size: 14px
         }
-.dna-model .pair-base {
+
+        .pair-base {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -495,36 +581,42 @@
             border-radius: 6px;
             background: var(--base-color)
         }
-.dna-model .pair-lines {
+
+        .pair-lines {
             font-size: 16px;
             color: var(--muted);
             font-weight: 400;
             letter-spacing: 1px
         }
-.dna-model .pair-summary .pair-info {
+
+        .pair-summary .pair-info {
             font-size: 11px;
             line-height: 1.5;
             max-width: 150px;
             text-align: right
         }
-.dna-model .structure-heading {
+
+        .structure-heading {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
             margin-bottom: 12px
         }
-.dna-model .structure-heading h3 {
+
+        .structure-heading h3 {
             font-weight: 650;
             font-size: 12px;
             margin: 0
         }
-.dna-model .structure-heading .formula {
+
+        .structure-heading .formula {
             font-size: 14px;
             letter-spacing: .02em;
             font-family: Georgia, serif
         }
-.dna-model .structure-toggle {
+
+        .structure-toggle {
             display: flex;
             gap: 2px;
             background: #eef1eb;
@@ -533,7 +625,8 @@
             width: 100%;
             margin: 0 0 8px
         }
-.dna-model .structure-toggle button {
+
+        .structure-toggle button {
             border: 0;
             background: none;
             border-radius: 5px;
@@ -542,91 +635,105 @@
             flex: 1;
             color: var(--muted)
         }
-.dna-model .structure-toggle button[aria-pressed=true] {
-            background: var(--paper);
+
+        .structure-toggle button[aria-pressed=true] {
+            background: white;
             box-shadow: 0 1px 4px #1a392016;
             color: var(--ink);
             font-weight: 600
         }
-.dna-model .formula-figure {
+
+        .formula-figure {
             margin: 0;
             border: 1px solid var(--line);
             border-radius: 11px;
             overflow: hidden;
-            background: var(--paper)
+            background: #fcfdfb
         }
-.dna-model .formula-figure svg {
+
+        .formula-figure svg {
             width: 100%;
             height: auto;
             max-height: 215px
         }
-.dna-model .formula-caption {
+
+        .formula-caption {
             font-size: 10px;
             color: var(--muted);
             line-height: 1.55;
             padding: 10px 12px;
             border-top: 1px solid var(--line);
-            background: var(--paper)
+            background: #fff
         }
-.dna-model .atom-label {
+
+        .atom-label {
             font-family: Arial, sans-serif;
             font-weight: 500;
             font-size: 18px;
             dominant-baseline: central;
             text-anchor: middle;
             paint-order: stroke;
-            stroke: var(--paper);
+            stroke: #fcfdfb;
             stroke-width: 6px;
             stroke-linejoin: round;
             fill: #26372f
         }
-.dna-model .atom-label.n {
+
+        .atom-label.n {
             fill: #3f6394
         }
-.dna-model .atom-label.o {
+
+        .atom-label.o {
             fill: #b35043
         }
-.dna-model .atom-label.h {
+
+        .atom-label.h {
             fill: #526258;
             font-size: 16px
         }
-.dna-model .chemical-bond {
+
+        .chemical-bond {
             stroke: #34453b;
             stroke-width: 1.7;
             stroke-linecap: round;
             fill: none
         }
-.dna-model .atom-index {
+
+        .atom-index {
             font-family: Arial, sans-serif;
             font-size: 10px;
             fill: #7b8981;
             text-anchor: middle
         }
-.dna-model .sugar-stub {
+
+        .sugar-stub {
             font-size: 12px;
             fill: #557663;
             font-family: Arial, sans-serif;
             text-anchor: middle;
             dominant-baseline: central;
             paint-order: stroke;
-            stroke: var(--paper);
+            stroke: #fcfdfb;
             stroke-width: 4px
         }
-.dna-model .chem-note {
+
+        .chem-note {
             font-size: 10px;
             fill: #63766a;
             font-family: Arial, sans-serif;
             text-anchor: middle
         }
-.dna-model .fact {
+
+        .fact {
             display: flex;
             gap: 9px;
             font-size: 11px;
             line-height: 1.7;
-            color: var(--muted);
+            color: #546b5d;
             margin: 15px 0 0
         }
-.dna-model .fact-mark {
+
+        .fact-mark {
             width: 16px;
             height: 16px;
             flex-shrink: 0;
@@ -640,39 +747,46 @@
             margin-top: 2px;
             font-weight: bold
         }
-.dna-model .inspector-actions {
+
+        .inspector-actions {
             display: flex;
             gap: 8px;
             margin-top: 19px
         }
-.dna-model .action-button {
+
+        .action-button {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 7px;
             border: 1px solid var(--line);
             border-radius: 8px;
-            background: var(--paper);
+            background: #fff;
             padding: 10px;
             font-size: 11px;
             flex: 1
         }
-.dna-model .action-button:hover {
+
+        .action-button:hover {
             background: #f3f6f0
         }
-.dna-model .action-button.primary {
+
+        .action-button.primary {
             background: var(--green);
-            color: var(--paper);
+            color: white;
             border-color: var(--green)
         }
-.dna-model .action-button.primary:hover {
+
+        .action-button.primary:hover {
             background: #234e3f
         }
-.dna-model .action-button[aria-pressed=true] {
+
+        .action-button[aria-pressed=true] {
             box-shadow: inset 0 0 0 1px var(--green);
             background: #eaf1e6
         }
-.dna-model .nucleotide-note {
+
+        .nucleotide-note {
             margin-top: 13px;
             padding: 11px 12px;
             border-left: 2px solid var(--green);
@@ -680,81 +794,95 @@
             font-size: 11px;
             line-height: 1.7
         }
-.dna-model .nucleotide-note strong {
+
+        .nucleotide-note strong {
             display: block;
             margin-bottom: 3px
         }
-.dna-model .under-model {
+
+        .under-model {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 14px;
             margin: 16px 2px 0
         }
-.dna-model .under-model p {
+
+        .under-model p {
             margin: 0;
             font-size: 10px;
             line-height: 1.5;
             color: var(--muted)
         }
-.dna-model .under-model .count {
+
+        .under-model .count {
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
             font-size: 10px;
             color: var(--muted)
         }
-.dna-model .footer {
+
+        .footer {
             padding: 24px 0 22px;
             margin-top: 18px;
             border-top: 1px solid var(--line);
             font-size: 11px;
             color: var(--muted)
         }
-.dna-model .footer-top {
+
+        .footer-top {
             display: flex;
             justify-content: space-between;
             gap: 20px;
             align-items: start
         }
-.dna-model .footer-top>p {
+
+        .footer-top>p {
             margin: 0;
             line-height: 1.7
         }
-.dna-model .footer details {
-            width: 100%;
-            max-width: none
+
+        .footer details {
+            max-width: 580px
         }
-.dna-model .footer summary {
+
+        .footer summary {
             cursor: pointer;
             text-align: right;
             color: var(--green)
         }
-.dna-model .source-content {
+
+        .source-content {
             padding-top: 14px;
             font-size: 11px;
             line-height: 1.9
         }
-.dna-model .source-content p {
+
+        .source-content p {
             margin: 0 0 8px
         }
-.dna-model .source-content ul {
+
+        .source-content ul {
             margin: 0;
             padding-left: 18px
         }
-.dna-model .small-steps {
+
+        .small-steps {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin: 0 0 20px
         }
-.dna-model .small-step {
+
+        .small-step {
             display: flex;
             align-items: center;
             gap: 11px;
             font-size: 12px;
-            color: var(--muted)
+            color: #4b6055
         }
-.dna-model .small-step .step-icon {
+
+        .small-step .step-icon {
             width: 29px;
             height: 29px;
             border-radius: 8px;
@@ -765,257 +893,323 @@
             color: var(--green);
             font-weight: 650
         }
-.dna-model .bond-dash {
+
+        .bond-dash {
             width: 22px;
             border-top: 2px dashed #647d6b
         }
-.dna-model .mobile-detail-link {
+
+        .mobile-detail-link {
             display: none
         }
-.dna-model .no-js {
+
+        .no-js {
             margin: 20px;
             padding: 20px;
             border: 1px solid var(--line);
-            background: var(--paper)
+            background: white
         }
-body.reduced-motion *  {
+
+        body.reduced-motion * {
             transition: none !important
         }
 
         @media(min-width:1400px) {
-.dna-model .shell {
+            .shell {
                 max-width: 1360px
             }
-.dna-model .workspace {
+
+            .workspace {
                 grid-template-columns: minmax(0, 1fr) 390px
             }
-.dna-model .inspector-content {
+
+            .inspector-content {
                 padding: 23px 27px
             }
-.dna-model .inspector-head {
+
+            .inspector-head {
                 padding: 24px 27px
             }
-.dna-model .description {
+
+            .description {
                 font-size: 14px
             }
-.dna-model .formula-figure svg {
+
+            .formula-figure svg {
                 max-height: 230px
             }
-.dna-model #dna-svg {
+
+            #dna-svg {
                 max-height: 690px
             }
         }
 
         @media(max-width:1050px) {
-.dna-model .shell {
+            .shell {
                 padding: 0 24px
             }
-.dna-model .workspace {
+
+            .workspace {
                 grid-template-columns: minmax(0, 1fr) 330px;
                 gap: 14px
             }
-.dna-model .model-toolbar {
+
+            .model-toolbar {
                 padding: 18px
             }
-.dna-model .inspector-head {
+
+            .inspector-head {
                 padding: 20px
             }
-.dna-model .inspector-content {
+
+            .inspector-content {
                 padding: 18px 20px
             }
-.dna-model .selected-heading h2 {
+
+            .selected-heading h2 {
                 font-size: 25px
             }
-.dna-model .intro-tag {
+
+            .intro-tag {
                 display: none
             }
-.dna-model .legend {
+
+            .legend {
                 gap: 7px 12px;
                 padding: 14px 16px
             }
-.dna-model .legend button {
+
+            .legend button {
                 font-size: 10px
             }
-.dna-model .model-controls {
+
+            .model-controls {
                 padding: 15px 17px;
                 gap: 13px
             }
-.dna-model .model-caption {
+
+            .model-caption {
                 font-size: 10px
             }
-.dna-model .selection-position {
+
+            .selection-position {
                 font-size: 9px
             }
-.dna-model .inspector {
+
+            .inspector {
                 min-height: 0
             }
         }
 
         @media(max-width:800px) and (min-width:681px) {
-.dna-model .shell {
+            .shell {
                 padding: 0 16px
             }
-.dna-model .workspace {
+
+            .workspace {
                 grid-template-columns: minmax(0, 1fr) 298px;
                 gap: 12px
             }
-.dna-model .inspector-head {
+
+            .inspector-head {
                 padding: 18px 16px
             }
-.dna-model .inspector-content {
+
+            .inspector-content {
                 padding: 17px 16px
             }
-.dna-model .selection-line {
+
+            .selection-line {
                 gap: 5px
             }
-.dna-model .selection-line .eyebrow {
+
+            .selection-line .eyebrow {
                 font-size: 8px
             }
-.dna-model .selection-position {
+
+            .selection-position {
                 font-size: 8px
             }
-.dna-model .description {
+
+            .description {
                 font-size: 12px
             }
-.dna-model .model-toolbar {
+
+            .model-toolbar {
                 padding: 15px
             }
-.dna-model .model-toolbar h2 {
+
+            .model-toolbar h2 {
                 font-size: 13px
             }
-.dna-model .model-toolbar p {
+
+            .model-toolbar p {
                 font-size: 10px
             }
-.dna-model .view-tag {
+
+            .view-tag {
                 display: none
             }
-.dna-model .legend .legend-divider {
+
+            .legend .legend-divider {
                 display: none
             }
-.dna-model .legend {
+
+            .legend {
                 gap: 5px 9px
             }
-.dna-model .legend svg {
+
+            .legend svg {
                 width: 22px
             }
-.dna-model .model-controls {
+
+            .model-controls {
                 grid-template-columns: 1fr
             }
-.dna-model .reset-btn {
+
+            .reset-btn {
                 justify-self: end;
                 padding: 6px 8px
             }
-.dna-model .model-caption {
+
+            .model-caption {
                 padding: 0 14px 12px
             }
-.dna-model .inspector-actions {
+
+            .inspector-actions {
                 gap: 6px
             }
-.dna-model .action-button {
+
+            .action-button {
                 font-size: 10px;
                 padding: 9px 7px
             }
         }
 
         @media(max-width:680px) {
-.dna-model .shell {
+            .shell {
                 padding: 0 16px
             }
-.dna-model .topbar {
+
+            .topbar {
                 height: 68px
             }
-.dna-model .top-meta {
+
+            .top-meta {
                 font-size: 10px
             }
-.dna-model .brand {
+
+            .brand {
                 font-size: 13px;
                 gap: 8px
             }
-.dna-model .brand-mark {
+
+            .brand-mark {
                 width: 28px;
                 height: 28px
             }
-.dna-model .intro {
+
+            .intro {
                 padding: 26px 0 23px
             }
-.dna-model .intro h1 {
+
+            .intro h1 {
                 font-size: 31px
             }
-.dna-model .intro p:not(.eyebrow) {
+
+            .intro p:not(.eyebrow) {
                 font-size: 12px
             }
-.dna-model .workspace {
+
+            .workspace {
                 grid-template-columns: 1fr;
                 gap: 18px
             }
-.dna-model .model-toolbar {
+
+            .model-toolbar {
                 padding: 18px
             }
-.dna-model .model-toolbar h2 {
+
+            .model-toolbar h2 {
                 font-size: 14px
             }
-.dna-model .model-card {
+
+            .model-card {
                 border-radius: 16px
             }
-.dna-model .model-caption {
+
+            .model-caption {
                 font-size: 10px
             }
-.dna-model .inspector {
+
+            .inspector {
                 position: static;
-                scroll-margin-top: 14px;
+                scroll-margin-top: 84px;
                 min-height: 0
             }
-.dna-model .inspector-head {
+
+            .inspector-head {
                 padding: 20px
             }
-.dna-model .inspector-content {
+
+            .inspector-content {
                 padding: 20px
             }
-.dna-model .selection-line .eyebrow {
+
+            .selection-line .eyebrow {
                 font-size: 9px
             }
-.dna-model .selection-position {
+
+            .selection-position {
                 font-size: 10px
             }
-.dna-model .description {
+
+            .description {
                 font-size: 13px
             }
-.dna-model .formula-figure svg {
+
+            .formula-figure svg {
                 max-height: 245px
             }
-.dna-model .legend {
+
+            .legend {
                 gap: 8px 13px;
                 justify-content: center
             }
-.dna-model .legend button {
+
+            .legend button {
                 font-size: 11px
             }
-.dna-model .legend .legend-divider {
+
+            .legend .legend-divider {
                 display: none
             }
-.dna-model .under-model {
+
+            .under-model {
                 margin-top: 12px
             }
-.dna-model .footer {
+
+            .footer {
                 margin-top: 24px;
                 padding-top: 20px
             }
-.dna-model .footer-top {
+
+            .footer-top {
                 flex-direction: column;
                 gap: 12px
             }
-.dna-model .footer summary {
+
+            .footer summary {
                 text-align: left
             }
-.dna-model .mobile-detail-link {
+
+            .mobile-detail-link {
                 display: flex;
-                position: fixed;
-                bottom: 14px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 10;
+                width: max-content;
+                max-width: 100%;
+                margin: 16px auto 0;
                 background: #254f40;
-                color: var(--paper);
+                color: white;
                 border: 1px solid #ffffff36;
                 border-radius: 30px;
                 padding: 12px 19px;
@@ -1026,432 +1220,430 @@ body.reduced-motion *  {
                 gap: 10px;
                 white-space: nowrap
             }
-.dna-model .mobile-detail-link[hidden] {
+
+            .mobile-detail-link[hidden] {
                 display: none
             }
-.dna-model .footer {
-                padding-bottom: 75px
-            }
+
         }
 
         @media(max-width:900px) {
-.dna-model .strand-direction {
+            .strand-direction {
                 display: none
             }
-.dna-model .base-letter {
+
+            .base-letter {
                 font-size: 23px
             }
-.dna-model .sugar-letter,
-.dna-model .phosphate-letter {
+
+            .sugar-letter,
+            .phosphate-letter {
                 font-size: 18px
             }
         }
 
         @media(pointer:coarse) {
-.dna-model .legend button {
+            .legend button {
                 min-height: 40px;
                 padding: 6px 3px
             }
-.dna-model .action-button,
-.dna-model .structure-toggle button,
-.dna-model .reset-btn {
+
+            .action-button,
+            .structure-toggle button,
+            .reset-btn {
                 min-height: 42px
             }
         }
 
         @media(prefers-reduced-motion:reduce) {
-.dna-model * {
+            * {
                 transition: none !important;
                 scroll-behavior: auto !important
             }
         }
-.dna-model /* Feste Zeichenfläche für die Nahansicht. */
+
+        /* Die Zeichenfläche bleibt beim Wechsel des Detailgrads gleich groß. */
         #dna-svg {
             height: 560px;
             max-height: none;
             touch-action: pan-y;
             outline: none
         }
-.dna-model #dna-svg:focus-visible {
+
+        #dna-svg:focus-visible {
             box-shadow: inset 0 0 0 2px #69927b
         }
-.dna-model .model-caption {
+
+        .zoom-controls {
+            padding: 16px 23px 14px;
+            border-bottom: 1px solid var(--line);
+            background: #fcfdfb
+        }
+
+        .zoom-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 11px;
+            gap: 12px
+        }
+
+        .zoom-heading label {
+            font-weight: 650
+        }
+
+        .zoom-heading output {
+            color: var(--green);
+            font-weight: 600
+        }
+
+        .zoom-range-row {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .zoom-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: white;
+            font-size: 20px;
+            line-height: 1
+        }
+
+        .zoom-button:hover:not(:disabled) {
+            background: var(--soft)
+        }
+
+        .zoom-range-row .slider {
+            margin: 0;
+            height: 6px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .zoom-stops {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            margin: 10px 0 0;
+            padding: 0 41px
+        }
+
+        .zoom-stop {
+            background: none;
+            border: 0;
+            border-radius: 5px;
+            font-size: 10px;
+            padding: 5px 7px;
+            color: var(--muted)
+        }
+
+        .zoom-stop[aria-pressed=true] {
+            background: var(--soft);
+            color: var(--green);
+            font-weight: 650
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #6b8072;
+            white-space: nowrap;
+            pointer-events: none;
+            background: #fcfdfbea;
+            border: 1px solid #e4eae1;
+            border-radius: 20px;
+            padding: 6px 11px
+        }
+
+        .model-caption {
             min-height: 42px;
             padding-top: 8px
         }
-.dna-model .model-controls:has(input:disabled) label {
+
+        .model-controls:has(input:disabled) label {
             color: var(--muted)
         }
-.dna-model .slider:disabled {
+
+        .slider:disabled {
             cursor: default;
             opacity: .4
         }
-.dna-model .overview-pairs {
-            display: grid;
-            gap: 9px;
-            margin: 4px 0 22px
-        }
-.dna-model .overview-pairs>button {
-            display: flex;
-            gap: 13px;
-            align-items: center;
-            width: 100%;
-            text-align: left;
-            background: var(--page);
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            padding: 11px
-        }
-.dna-model .overview-pairs>button>span:nth-child(2) {
-            flex: 1;
-            font-size: 11px
-        }
-.dna-model .overview-pairs small {
-            display: block;
-            color: var(--muted);
-            font-size: 9px;
-            margin-top: 4px
-        }
-.dna-model .overview-pairs b {
-            font-weight: 400;
-            color: var(--green)
+
+        .zoom-guide {
+            margin: 22px 0 0
         }
 
+        .zoom-guide>.eyebrow {
+            font-size: 9px;
+            margin-bottom: 8px
+        }
+
+        .zoom-guide button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            text-align: left;
+            border: 0;
+            border-bottom: 1px solid var(--line);
+            background: transparent;
+            padding: 15px 3px
+        }
+
+        .zoom-guide button>span:nth-child(2) {
+            flex: 1
+        }
+
+        .zoom-guide button strong {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin-bottom: 5px
+        }
+
+        .zoom-guide button small {
+            display: block;
+            font-size: 10px;
+            line-height: 1.5;
+            color: var(--muted)
+        }
+
+        .zoom-guide button .zoom-step-number {
+            color: #8b9b8c;
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+            border: 1px solid var(--line);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .zoom-guide button[aria-current=step] .zoom-step-number {
+            background: var(--green);
+            color: white;
+            border-color: var(--green)
+        }
+
+        .zoom-guide button:hover {
+            background: var(--page)
+        }
+
+
         @media(min-width:1400px) {
-.dna-model #dna-svg {
+            #dna-svg {
                 height: 610px;
                 max-height: none
             }
         }
 
         @media(max-width:900px) {
-.dna-model #dna-svg {
+            #dna-svg {
                 height: 510px;
                 max-height: none
             }
+
+            .zoom-controls {
+                padding: 14px 15px
+            }
+
+            .zoom-stops {
+                padding: 0 24px
+            }
+
+            .zoom-stop {
+                font-size: 9px;
+                padding: 5px
+            }
+
+            .zoom-hint {
+                font-size: 9px
+            }
         }
 
         @media(max-width:680px) {
-.dna-model #dna-svg {
+            #dna-svg {
                 height: 430px;
                 max-height: none
             }
-.dna-model .inspector {
+
+            .zoom-stops {
+                padding: 0 33px
+            }
+
+            .zoom-stop {
+                font-size: 10px
+            }
+
+            .zoom-controls {
+                padding: 16px 18px
+            }
+
+            .zoom-hint {
+                font-size: 9px
+            }
+
+            .inspector {
                 min-height: 0
             }
         }
-.dna-model .strand .backbone-line {
-            stroke: #879fd7
+
+        @media(pointer:coarse) {
+            .zoom-button {
+                width: 40px;
+                height: 40px
+            }
+
+            .zoom-stop {
+                min-height: 38px
+            }
+
+            .zoom-guide button {
+                min-height: 62px
+            }
         }
-.dna-model /* A quieter layout with controls shown where they are useful. */
-        [hidden] {
-            display: none !important
+
+        .atom-color-legend {
+            margin: 0 0 20px;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fcfdfb
         }
-.dna-model .shell {
-            max-width: 1200px
+
+        .atom-color-legend>.eyebrow {
+            font-size: 9px;
+            margin-bottom: 11px
         }
-.dna-model .topbar {
-            height: 68px
+
+        .atom-color-legend>div {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 7px;
+            font-size: 10px;
+            color: #465d53
         }
-.dna-model .intro {
-            padding: 30px 0
+
+        .atom-color-legend span {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            white-space: nowrap
         }
-.dna-model .intro h1 {
-            font-size: 38px
+
+        .atom-color-legend i {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-radius: 50%;
+            flex-shrink: 0
         }
-.dna-model .workspace {
-            grid-template-columns: minmax(0, 1fr) 320px;
-            gap: 32px
-        }
-.dna-model .model-card {
-            border-radius: 14px
-        }
-.dna-model .model-toolbar {
-            border-bottom: 0;
-            padding: 18px 22px 0
-        }
-.dna-model .reset-btn {
-            border: 0;
-            color: var(--muted);
-            padding: 7px 0;
-            font-size: 11px
-        }
-.dna-model .canvas-wrap {
-            background: var(--paper)
-        }
-.dna-model #dna-svg {
-            height: 490px
-        }
-.dna-model .model-caption {
-            padding: 0 22px 18px;
-            min-height: 0
-        }
-.dna-model .model-controls {
-            grid-template-columns: 1fr;
-            padding: 18px 22px
-        }
-.dna-model .legend {
-            background: var(--paper);
-            justify-content: center;
-            padding: 12px 18px
-        }
-.dna-model .legend .legend-divider {
-            display: none
-        }
-.dna-model .inspector {
-            position: static;
-            min-height: 0;
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            margin-top: 24px
-        }
-.dna-model .inspector-head {
-            padding: 0 0 16px;
-            border-bottom: 0
-        }
-.dna-model .inspector-head>h2 {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -.03em;
-            margin: 0
-        }
-.dna-model .inspector-content {
-            padding: 0
-        }
-.dna-model .description {
-            font-size: 13px;
-            line-height: 1.8;
-            margin-bottom: 22px
-        }
-.dna-model .action-button {
-            border-radius: 7px;
-            padding: 11px 14px
-        }
-.dna-model .selection-line .eyebrow {
-            display: none
-        }
-.dna-model .selection-line {
-            margin-bottom: 12px
-        }
-.dna-model .selected-heading h2 {
-            font-size: 25px
-        }
-.dna-model .selection-symbol {
-            width: 40px
-        }
-.dna-model .selection-symbol svg {
-            width: 40px
-        }
-.dna-model .extra-detail {
-            font-size: 11px;
-            line-height: 1.7;
-            margin-top: 16px;
+
+        .atom-color-legend>p:last-child {
+            margin: 12px 0 0;
+            font-size: 10px;
+            line-height: 1.65;
             color: var(--muted)
         }
-.dna-model .extra-detail summary {
-            cursor: pointer
-        }
-.dna-model .extra-detail p {
-            margin: 8px 0 0
-        }
-.dna-model .under-model {
-            margin: 12px 2px 0
-        }
-.dna-model .under-model .count {
-            display: none
-        }
-.dna-model .footer {
-            margin-top: 26px;
-            padding-top: 16px
-        }
-.dna-model .footer-top {
-            justify-content: flex-end
-        }
-.dna-model .mobile-detail-link {
-            display: none !important
+
+        #dna-svg.can-rotate {
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none
         }
 
-        @media(max-width:900px) {
-.dna-model .workspace {
-                grid-template-columns: minmax(0, 1fr) 270px;
-                gap: 24px
-            }
-.dna-model .shell {
-                padding: 0 24px
-            }
-.dna-model #dna-svg {
-                height: 460px
-            }
+        #dna-svg.is-rotating {
+            cursor: grabbing
         }
 
-        @media(max-width:680px) {
-.dna-model .shell {
-                padding: 0 16px
-            }
-.dna-model .intro {
-                padding: 24px 0
-            }
-.dna-model .intro h1 {
-                font-size: 31px
-            }
-.dna-model .workspace {
-                grid-template-columns: 1fr;
-                gap: 24px
-            }
-.dna-model .inspector {
-                margin-top: 0;
-                padding: 0 4px
-            }
-.dna-model .inspector-head {
-                padding: 0 0 12px
-            }
-.dna-model .inspector-content {
-                padding: 0
-            }
-.dna-model #dna-svg {
-                height: 400px
-            }
-.dna-model .footer {
-                padding-bottom: 24px
-            }
-.dna-model .footer-top {
-                align-items: flex-start
-            }
-.dna-model .model-toolbar {
-                padding: 16px 18px 0
-            }
-        }
-.dna-model /* Centered molecule view with an on-demand detail drawer. */
-        .shell {
-            max-width: 1440px
-        }
-.dna-model .workspace {
-            display: block;
-            max-width: 1000px;
-            margin-inline: auto
-        }
-.dna-model #dna-svg {
-            height: 650px;
-            max-height: none
-        }
-.dna-model .inspector {
-            position: fixed;
-            inset: 0 0 0 auto;
-            width: 380px;
-            max-width: 100%;
-            margin: 0;
-            padding: 28px 24px;
-            overflow-y: auto;
-            background: var(--paper);
-            border-left: 1px solid var(--line);
-            box-shadow: -12px 0 40px #223c3420;
-            z-index: 20;
-            transform: translateX(100%);
-            visibility: hidden;
-            transition: transform .28s ease, visibility .28s
-        }
-.dna-model .inspector.is-open {
-            transform: translateX(0);
-            visibility: visible
-        }
-.dna-model .drawer-toolbar {
+        .rotation-reset {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            z-index: 2;
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 18px
-        }
-.dna-model .drawer-close {
+            gap: 6px;
+            align-items: center;
+            padding: 8px 10px;
             border: 1px solid var(--line);
             border-radius: 8px;
-            background: var(--paper);
-            padding: 8px 12px;
-            font-size: 12px
+            background: #ffffffed;
+            font-size: 10px;
+            color: var(--muted)
         }
 
-        @media(max-width:900px) {
-.dna-model .workspace {
-                display: block
-            }
-.dna-model #dna-svg {
-                height: 600px
+        .rotation-reset[hidden] {
+            display: none
+        }
+
+        .rotation-reset:hover:not(:disabled) {
+            background: var(--soft);
+            color: var(--green)
+        }
+
+        .rotation-reset span {
+            font-size: 15px
+        }
+
+        .rotation-reset:disabled {
+            opacity: .55
+        }
+
+        @media(pointer:coarse) {
+            .rotation-reset {
+                min-height: 40px
             }
         }
 
         @media(max-width:680px) {
-.dna-model #dna-svg {
-                height: 520px
-            }
-.dna-model .inspector {
-                width: 340px;
-                padding: 20px
-            }
-        }
-
-        @media(prefers-reduced-motion:reduce) {
-.dna-model .inspector {
-                transition: none
+            .rotation-reset {
+                top: 10px;
+                right: 10px
             }
         }
     
+}
+
+/* Keep the site theme switch and the model in sync. */
 :root[data-theme="dark"] .dna-model {
- color-scheme: dark; --page:#121212; --paper:#1e1e1e; --ink:#eeeeee;
- --muted:#b9c2bd; --line:#404740; --green:#a5d2b8; --soft:#29372f;
-}
-:root[data-theme="dark"] .dna-model :is(.structure-toggle,.fact-mark,.nucleotide-note,.small-step,.quiz-feedback) {background:var(--soft);color:var(--ink)}
-:root[data-theme="dark"] .dna-model :is(.action-button,.structure-toggle button,.quiz-option) {background:var(--paper);color:var(--ink)}
-:root[data-theme="dark"] .dna-model .action-button.primary {background:#37654e;color:#fff}
-:root[data-theme="dark"] .dna-model :is(.svg-small,.svg-end,.atom-index,.sugar-stub,.chem-note) {fill:var(--muted)}
-:root[data-theme="dark"] .dna-model .atom-label {fill:var(--ink);stroke:var(--paper)}
-:root[data-theme="dark"] .dna-model .atom-label.n {fill:#a9c7f4}
-:root[data-theme="dark"] .dna-model .atom-label.o {fill:#f1a295}
-:root[data-theme="dark"] .dna-model .atom-label.h {fill:var(--muted)}
-:root[data-theme="dark"] .dna-model .chemical-bond {stroke:var(--muted)}
-:root[data-theme="dark"] .dna-model :is(.bridge-focus,.bridge-hit:hover .hbond,.bridge-hit.is-selected .hbond) {stroke:var(--green)}
-.dna-model .shell {padding-top:24px}
-@media print {.dna-model {--page:#fff;--paper:#fff;--ink:#203831;--muted:#607069;--green:#285f4c;--line:#dfe6df;--soft:#eaf0e9;color:var(--ink);background:var(--paper)}}
-
-:root[data-theme="dark"] .dna-model .structure-toggle button[aria-pressed="true"] {background:var(--soft);box-shadow:inset 0 0 0 1px var(--green)}
-
-:root[data-theme="dark"] .dna-model .sugar-stub {stroke:var(--paper)}
-
-/* Both views share one stage; zoom animates scale and opacity continuously. */
-.dna-model .zoom-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 22px;
-  color: var(--muted);
-  font-size: 12px;
-}
-.dna-model .zoom-controls input { flex: 1; min-width: 35px; accent-color: var(--green); }
-.dna-model .zoom-controls button {
-  flex: 0 0 34px;
-  height: 34px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--paper);
+  color-scheme: dark;
+  --page: #121212;
+  --paper: #1e1e1e;
+  --ink: #eeeeee;
+  --muted: #bac5be;
+  --line: #424a44;
+  --green: #a5d2b8;
+  --soft: #29372f;
+  background: var(--page);
   color: var(--ink);
-  font-size: 22px;
-  cursor: pointer;
 }
-.dna-model .zoom-controls button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
-.dna-model .canvas-wrap { overflow: hidden; }
-.dna-model #helix-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  transform-origin: center;
-}
-.dna-model #dna-svg { position: relative; transform-origin: center; }
-.dna-model .helix-label { fill: var(--muted); font-size: 14px; }
-@media (max-width: 480px) {
-  .dna-model .zoom-controls { gap: 6px; padding: 12px; font-size: 10px; }
-}
-
-.dna-model .atom-key { font-size: 16px; }
-.dna-model .atom-c { color: #90959c; }
-.dna-model .atom-n { color: #6488df; }
-.dna-model .atom-o { color: #df4845; }
-.dna-model .atom-p { color: #d49a23; }
+:root[data-theme="dark"] .dna-model .canvas-wrap { background: radial-gradient(circle at 50% 40%, #272727 0%, #1e1e1e 70%, #181818 100%); }
+:root[data-theme="dark"] .dna-model :is(.zoom-controls,.atom-color-legend,.intro-tag,.legend,.formula-caption) { background: var(--paper); }
+:root[data-theme="dark"] .dna-model :is(.zoom-button,.rotation-reset,.action-button,.structure-toggle button) { background: #292929; color: var(--ink); }
+:root[data-theme="dark"] .dna-model .zoom-hint { background: #292929e8; border-color: var(--line); color: var(--muted); }
+:root[data-theme="dark"] .dna-model :is(.description,.fact,.model-caption strong,.atom-color-legend>div,.zoom-guide button small) { color: var(--muted); }
+:root[data-theme="dark"] .dna-model .description strong { color: var(--ink); }
+:root[data-theme="dark"] .dna-model :is(.formula-figure,.nucleotide-note,.pair-summary,.structure-toggle) { background: #252525; }
+:root[data-theme="dark"] .dna-model :is(.zoom-stop[aria-pressed=true],.structure-toggle button[aria-pressed=true],.fact-mark) { background: var(--soft); color: var(--ink); }
+:root[data-theme="dark"] .dna-model :is(.action-button.primary,.action-button.primary:hover) { background: #37654e; color: #fff; border-color: #37654e; }
+:root[data-theme="dark"] .dna-model :is(.svg-small,.svg-end,.atom-index,.sugar-stub,.chem-note) { fill: var(--muted); }
+:root[data-theme="dark"] .dna-model .atom-label { fill: var(--ink); stroke: #252525; }
+:root[data-theme="dark"] .dna-model .atom-label.n { fill: #a9c7f4; }
+:root[data-theme="dark"] .dna-model .atom-label.o { fill: #f1a295; }
+:root[data-theme="dark"] .dna-model .chemical-bond { stroke: var(--muted); }

@@ -31,14 +31,15 @@ for (const theme of ['light', 'dark']) {
       await page.goto('/dna-modell.html');
       await prepareVisual(page);
       for (const value of ['0', '55', '100']) {
-        await page.locator('#model-zoom').fill(value);
-        await expect(page.locator('#dna-svg')).toHaveCSS('opacity', value === '0' ? '0' : value === '100' ? '1' : '0.5');
+        await page.locator('#detail-zoom').fill(value);
+        await expect(page.locator('#model-root')).toHaveAttribute('opacity', value === '100' ? '1' : '0');
         await expect(page.locator('.canvas-wrap')).toHaveScreenshot(`dna-zoom-${value}-${theme}.png`);
       }
       await page.locator('#separation').fill('100');
       await expect(page.locator('#separation-state')).toHaveText('Getrennt');
       await expect(page.locator('.canvas-wrap')).toHaveScreenshot(`dna-separated-${theme}.png`);
       await page.locator('#reset').click();
+      await page.locator('#detail-zoom').fill('100');
       await page.locator('#dna-svg [data-type="G"]').first().click();
       await expect(page.locator('#detail-title')).toHaveText('Guanin');
       await expect(page.locator('#inspector')).toHaveScreenshot(`dna-chemistry-${theme}.png`);

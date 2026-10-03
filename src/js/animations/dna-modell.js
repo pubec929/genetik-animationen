@@ -1,9 +1,8 @@
-
-        /* Eigenständiges Lernmodell; sämtliche Formen und Formeln werden lokal als SVG gezeichnet. */
+/* DNA learning model; shapes and formulas are rendered locally as SVG. */
         (() => {
             'use strict';
             const NS = 'http://www.w3.org/2000/svg';
-            const COLORS = { A: '#e8a18b', T: '#83c5b5', G: '#98b5df', C: '#e9c477', Z: '#efe1ca', P: '#c9cdda' };
+            const COLORS = { A: '#df8c77', T: '#a4bd80', G: '#8bb4ce', C: '#e7c66a', Z: '#e7dac7', P: '#cbc4da' };
             const SEQUENCE = 'AGTCGACT'.split('');
             const COMPLEMENT = { A: 'T', T: 'A', G: 'C', C: 'G' };
             const DATA = {
@@ -14,47 +13,29 @@
                 Z: { name: 'Desoxyribose', category: 'Zucker · 2-Desoxy-D-ribose', formula: 'C₅H₁₀O₄', description: 'Dieser Zucker besitzt <strong>fünf Kohlenstoffatome</strong>. Sein Ring besteht aus vier C-Atomen und einem O-Atom. Am <strong>1′-C-Atom</strong> hängt die Base; über die 3′- und 5′-Positionen ist er mit dem Phosphat-Rückgrat verbunden.', note: '„Desoxy“ bedeutet: Am 2′-C-Atom sitzt ein H statt der OH-Gruppe der Ribose. Die Strichzeichen (′) kennzeichnen die Zuckerpositionen.' },
                 P: { name: 'Phosphat', category: 'Phosphatgruppe · Teil des Rückgrats', formula: '', description: 'Phosphat verbindet die Zucker benachbarter Nukleotide über <strong>3′–5′-Phosphodiesterbindungen</strong>. Zusammen bilden Zucker und Phosphat das stabile Rückgrat jedes DNA-Strangs.', note: 'Eine innere Phosphodiestergruppe trägt bei physiologischem pH ungefähr eine negative Ladung. Dadurch ist auch das DNA-Rückgrat negativ geladen.' }
             };
-            const state = { selection: null, separation: 0, free: false, nucleotide: false };
+            const state = { selection: { type: 'A', side: 0, index: 0 }, separation: 0, free: false, nucleotide: false, zoom: 0, rotation: [0, 0, 0, 1] };
             const svg = document.getElementById('dna-svg');
             const detail = document.getElementById('detail');
             const slider = document.getElementById('separation');
-            const inspector = document.getElementById('inspector');
-            let detailTrigger = null;
-            function openDetail() {
-                if (!inspector.classList.contains('is-open')) detailTrigger = document.activeElement;
-                inspector.inert = false;
-                inspector.classList.add('is-open');
-            }
-            function closeDetail() {
-                const restoreFocus = inspector.contains(document.activeElement) || svg.contains(document.activeElement);
-                inspector.classList.remove('is-open');
-                inspector.inert = true;
-                state.selection = null;
-                state.nucleotide = false;
-                renderModel();
-                if (restoreFocus) svg.focus({ preventScroll: true });
-                detailTrigger = null;
-            }
-            document.getElementById('close-detail').addEventListener('click', closeDetail);
-            document.addEventListener('keydown', e => { if (e.key === 'Escape' && inspector.classList.contains('is-open')) { e.preventDefault(); closeDetail(); } });
+            let mobileObserver;
             function el(tag, attrs = {}, textContent) { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, String(v)); if (textContent !== undefined) n.textContent = textContent; return n; }
             function add(parent, tag, attrs = {}, textContent) { const n = el(tag, attrs, textContent); parent.appendChild(n); return n; }
             function baseAt(side, index) { return side === 0 ? SEQUENCE[index] : COMPLEMENT[SEQUENCE[index]]; }
             function basePath(base) { if (base === 'A') return 'M0 -20H112L136 0L112 20H0Z'; if (base === 'G') return 'M0 -20H112Q137 -20 137 0Q137 20 112 20H0Z'; if (base === 'T') return 'M0 -20H125L103 0L125 20H0Z'; return 'M0 -20H125C96 -20 96 20 125 20H0Z'; }
             function sugarPath() { return 'M-21 -16L3 -25L25 0L3 25L-21 16Z'; }
-            function selected(type, side, index) { const s = state.selection; return s?.type === type && s.side === side && s.index === index; }
+            function selected(type, side, index) { const s = state.selection; return s.type === type && s.side === side && s.index === index; }
             function shapeIcon(type, width = 51) { let content; if ('ATGC'.includes(type)) { content = `<path d="${basePath(type)}" transform="translate(2 25) scale(.36 1)" fill="${COLORS[type]}" stroke="#46544655" stroke-width="1.3"/><text x="24" y="30" text-anchor="middle" font-size="17" font-weight="650" fill="#253b33">${type}</text>`; } else if (type === 'Z') { content = `<path d="${sugarPath()}" transform="translate(25 25) scale(.82)" fill="${COLORS.Z}" stroke="#8b817055"/><text x="25" y="30" text-anchor="middle" font-size="15" fill="#384333">Z</text>`; } else if (type === 'P') { content = `<circle cx="25" cy="25" r="20" fill="${COLORS.P}" stroke="#70667e55"/><text x="25" y="30" text-anchor="middle" font-size="15" fill="#384333">P</text>`; } else { content = '<path d="M5 17H45M5 25H45M5 33H45" stroke="#67816b" stroke-width="2" stroke-dasharray="4 5"/>'; } return `<svg width="${width}" viewBox="0 0 52 50" aria-hidden="true">${content}</svg>`; }
-            function makeHit(parent, type, side, index, label, transform) { const active = selected(type, side, index); const g = add(parent, 'g', { 'class': 'dna-hit' + (active ? ' is-selected' : ''), role: 'button', tabindex: active || (!state.selection && type === 'A' && side === 0 && index === 0) ? '0' : '-1', 'aria-label': label, 'aria-pressed': String(active), 'data-type': type, 'data-side': side, 'data-index': index, transform }); return g; }
+            function makeHit(parent, type, side, index, label, transform) { const active = selected(type, side, index); const g = add(parent, 'g', { 'class': 'dna-hit' + (active ? ' is-selected' : ''), role: 'button', tabindex: active ? '0' : '-1', 'aria-label': label, 'aria-pressed': String(active), 'data-type': type, 'data-side': side, 'data-index': index, transform }); return g; }
             function renderBuildingBlocks() {
                 svg.querySelectorAll(':scope > g,:scope > defs').forEach(n => n.remove());
                 const defs = add(svg, 'defs'); const marker = add(defs, 'marker', { id: 'direction-arrow', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' }); add(marker, 'path', { d: 'M0 0L10 5L0 10Z', fill: '#a8b5a7' });
-                const root = add(svg, 'g', { id: 'model-root' }); const offset = state.separation * .63;
+                const root = add(svg, 'g', { id: 'model-root' }); const offset = state.separation * .63 * smooth(78, 94, state.zoom);
                 const compact = window.matchMedia('(max-width: 900px)').matches;
                 svg.setAttribute('viewBox', compact ? `${115 - offset * 1.1} 0 ${530 + offset * 2.2} 670` : '0 0 760 670');
                 const bridges = add(root, 'g', { id: 'bridges' });
                 for (let i = 0; i < SEQUENCE.length; i++) {
                     const y = 126 + i * 62, base = SEQUENCE[i], n = base === 'A' || base === 'T' ? 2 : 3;
-                    const is = state.selection?.type === 'H' && state.selection.index === i;
+                    const is = state.selection.type === 'H' && state.selection.index === i;
                     const g = add(bridges, 'g', { class: 'dna-hit bridge-hit' + (is ? ' is-selected' : ''), role: 'button', tabindex: is ? '0' : '-1', 'data-type': 'H', 'data-side': '0', 'data-index': i, 'aria-label': `${n} Wasserstoffbrücken zwischen ${DATA[base].name} und ${DATA[COMPLEMENT[base]].name}, Basenpaar ${i + 1}`, 'aria-pressed': String(is) });
                     add(g, 'rect', { x: 351 - offset / 3, y: y - 22, width: 58 + offset * 2 / 3, height: 44, fill: 'transparent', rx: 7 });
                     add(g, 'rect', { x: 354 - offset / 3, y: y - 20, width: 52 + offset * 2 / 3, height: 40, rx: 6, class: 'bridge-focus' });
@@ -65,9 +46,10 @@
                 [0, 1].forEach(side => {
                     const shift = side === 0 ? -offset : offset;
                     const strand = add(root, 'g', { transform: `translate(${shift} 0)`, class: 'strand', 'data-strand': side });
-                    const bonds = add(strand, 'g', { class: 'strand-bonds', 'pointer-events': 'none' });
                     const sx = side === 0 ? 180 : 580, px = side === 0 ? 149 : 611, arrowx = side === 0 ? 90 : 670;
                     add(strand, 'text', { x: sx, y: 37, class: 'svg-strand' }, 'STRANG ' + (side + 1));
+                    add(strand, 'text', { x: px, y: 76, class: 'svg-end' }, side === 0 ? '5′' : '3′');
+                    add(strand, 'text', { x: px, y: 643, class: 'svg-end' }, side === 0 ? '3′' : '5′');
                     add(strand, 'line', { x1: arrowx, y1: side === 0 ? 181 : 507, x2: arrowx, y2: side === 0 ? 507 : 181, stroke: '#b9c6b6', 'stroke-width': 1.4, 'marker-end': 'url(#direction-arrow)', class: 'strand-direction' });
                     add(strand, 'text', { x: 0, y: 0, transform: `translate(${arrowx + (side === 0 ? -15 : 15)} 344) rotate(${side === 0 ? 90 : -90})`, class: 'svg-small strand-direction' }, '5′ → 3′');
                     for (let i = 0; i < SEQUENCE.length; i++) {
@@ -77,10 +59,10 @@
                             add(strand, 'path', { d: sugarPath(), transform: `translate(${sx} ${y}) scale(${side === 0 ? 1.18 : -1.18} 1.13)`, class: 'nucleotide-mark' });
                             add(strand, 'rect', { x: side === 0 ? 233 : 375, y: y - 25, width: 152, height: 50, rx: 7, class: 'nucleotide-mark' });
                         }
-                        if (side === 0 || i > 0) add(bonds, 'line', { x1: outer, y1: y - 16, x2: px, y2: y - 31, class: 'backbone-line' });
-                        if (side === 1 || i < SEQUENCE.length - 1) add(bonds, 'line', { x1: outer, y1: y + 16, x2: px, y2: y + 31, class: 'backbone-line' });
+                        add(strand, 'line', { x1: outer, y1: y - 16, x2: px, y2: y - 31, class: 'backbone-line' });
+                        add(strand, 'line', { x1: outer, y1: y + 16, x2: px, y2: y + 31, class: 'backbone-line' });
                         const glycoStart = side === 0 ? sx + 25 : sx - 25, glycoEnd = side === 0 ? 240 : 520;
-                        add(bonds, 'line', { x1: glycoStart, y1: y, x2: glycoEnd, y2: y, class: 'covalent' });
+                        add(strand, 'line', { x1: glycoStart, y1: y, x2: glycoEnd, y2: y, class: 'covalent' });
                         const z = makeHit(strand, 'Z', side, i, `Desoxyribose, Strang ${side + 1}, Position ${i + 1}`, `translate(${sx} ${y})`);
                         add(z, 'rect', { x: -28, y: -27, width: 56, height: 54, fill: 'transparent' }); add(z, 'path', { d: sugarPath(), transform: side === 0 ? '' : 'scale(-1 1)', fill: COLORS.Z, class: 'shape' }); add(z, 'text', { x: 0, y: 0, class: 'sugar-letter' }, 'Z'); add(z, 'rect', { x: -29, y: -29, width: 58, height: 58, rx: 8, class: 'focus-ring' });
                         const p = makeHit(strand, 'P', side, i, `Phosphatgruppe, Strang ${side + 1}, Nukleotid ${i + 1}`, `translate(${px} ${py})`);
@@ -88,6 +70,9 @@
                         const b = makeHit(strand, base, side, i, `${DATA[base].name}, Strang ${side + 1}, Position ${i + 1}`, `translate(${side === 0 ? 240 : 520} ${y})`);
                         add(b, 'path', { d: basePath(base), transform: side === 0 ? '' : 'scale(-1 1)', fill: COLORS[base], class: 'shape' }); add(b, 'text', { x: side === 0 ? 58 : -58, y: 0, class: 'base-letter' }, base); add(b, 'rect', { x: side === 0 ? -5 : -143, y: -25, width: 148, height: 50, rx: 5, class: 'focus-ring' });
                     }
+                    add(strand, 'text', { x: px, y: side === 0 ? 609 : 98, class: 'svg-small' }, 'OH');
+                    if (side === 0) add(strand, 'line', { x1: px, y1: 591, x2: px, y2: 598, class: 'backbone-line' });
+                    else add(strand, 'line', { x1: px, y1: 104, x2: px, y2: 95, class: 'backbone-line' });
                 });
             }
             function chemLine(svg, x1, y1, x2, y2, order = 1, shorten = 8) {
@@ -131,7 +116,7 @@
                     const p = { o: [205, 90], c1: [255, 135], c2: [205, 172], c3: [125, 172], c4: [75, 135] };
                     add(s, 'polygon', { points: '205,90 255,135 205,172 125,172 75,135', fill: COLORS.Z, opacity: .35 });
                     [['o', 'c1'], ['c1', 'c2'], ['c2', 'c3'], ['c3', 'c4'], ['c4', 'o']].forEach(([a, b]) => chemLine(s, ...p[a], ...p[b], 1, 10));
-                    add(s, 'line', { x1: 138, y1: 172, x2: 192, y2: 172, stroke: 'var(--ink)', 'stroke-width': 3.3 });
+                    add(s, 'line', { x1: 138, y1: 172, x2: 192, y2: 172, stroke: '#34453b', 'stroke-width': 3.3 });
                     chemLine(s, 75, 135, 75, 76); atom(s, 75, 66, 'CH₂'); add(s, 'text', { x: 103, y: 69, class: 'atom-index' }, '5′');
                     chemLine(s, 75, 66, 75, 30); atom(s, 75, 22, free ? 'OH' : 'O', 'o'); if (!free) { chemLine(s, 75, 22, 120, 22); add(s, 'text', { x: 161, y: 22, class: 'sugar-stub' }, 'Phosphat'); }
                     chemLine(s, 255, 135, 255, 86); add(s, 'text', { x: 255, y: 72, class: free ? 'atom-label o' : 'sugar-stub' }, free ? 'OH' : 'Base');
@@ -154,11 +139,11 @@
                 const s = el('svg', { viewBox: '0 0 340 217', role: 'img', 'aria-label': at ? 'Zwei Wasserstoffbrücken: N–H zu O und N zu H–N.' : 'Drei Wasserstoffbrücken: O zu H–N, N–H zu N und N–H zu O.' });
                 add(s, 'text', { x: 79, y: 31, class: 'chem-note' }, at ? 'Adenin' : 'Guanin'); add(s, 'text', { x: 259, y: 31, class: 'chem-note' }, at ? 'Thymin' : 'Cytosin');
                 const rows = at ? [[76, 'N', 'H', 'O', ''], [141, 'N', '', 'H', 'N']] : [[65, 'O', '', 'H', 'N'], [115, 'N', 'H', 'N', ''], [165, 'N', 'H', 'O', '']];
-                rows.forEach(([y, a, b, c, d]) => { atom(s, 71, y, a, a === 'O' ? 'o' : 'n'); if (b) { chemLine(s, 71, y, 127, y); atom(s, 127, y, b, 'h'); } add(s, 'line', { x1: b ? 141 : 90, y1: y, x2: c === 'H' ? 211 : 250, y2: y, stroke: 'var(--green)', 'stroke-width': 2, 'stroke-dasharray': '4 5' }); if (c === 'H') { atom(s, 224, y, 'H', 'h'); chemLine(s, 224, y, 281, y); atom(s, 281, y, d, 'n'); } else atom(s, 265, y, c, c === 'O' ? 'o' : 'n'); });
+                rows.forEach(([y, a, b, c, d]) => { atom(s, 71, y, a, a === 'O' ? 'o' : 'n'); if (b) { chemLine(s, 71, y, 127, y); atom(s, 127, y, b, 'h'); } add(s, 'line', { x1: b ? 141 : 90, y1: y, x2: c === 'H' ? 211 : 250, y2: y, stroke: '#597b65', 'stroke-width': 2, 'stroke-dasharray': '4 5' }); if (c === 'H') { atom(s, 224, y, 'H', 'h'); chemLine(s, 224, y, 281, y); atom(s, 281, y, d, 'n'); } else atom(s, 265, y, c, c === 'O' ? 'o' : 'n'); });
                 add(s, 'text', { x: 170, y: 202, class: 'chem-note' }, '··· = Wasserstoffbrücke'); return s;
             }
             function renderDetail() {
-                if (!state.selection) { detail.innerHTML = '<h2 id="detail-title">Baustein auswählen</h2>'; return; }
+                if (state.zoom < 82) { renderZoomOverview(); return; }
                 const { type, side, index } = state.selection;
                 if (type === 'H') { renderBridgeDetail(index); return; }
                 const terminal = type === 'P' && ((side === 0 && index === 0) || (side === 1 && index === 7));
@@ -166,7 +151,7 @@
                 const base = baseAt(side, index), isBase = 'ATGC'.includes(type), partner = COMPLEMENT[base], count = base === 'A' || base === 'T' ? 2 : 3;
                 const pair = isBase ? `<div class="pair-summary"><div class="pair-code"><span class="pair-base" style="--base-color:${COLORS[base]}">${base}</span><span class="pair-lines">${count === 2 ? '··' : '···'}</span><span class="pair-base" style="--base-color:${COLORS[partner]}">${partner}</span></div><span class="pair-info"><strong>${count} Wasserstoffbrücken</strong><br>zu ${DATA[partner].name}</span></div>` : '';
                 const caption = isBase ? (state.free ? `Freie Base. In der DNA wird das H am ${d.attachment} durch die Bindung zum Zucker ersetzt.` : `An ${d.attachment} ist der Zucker gebunden. Die Summenformel oben gilt für die freie Base.`) : type === 'Z' ? (state.free ? 'Freie β-D-2-Desoxyribofuranose (Haworth-Schema). Die dicke Ringkante liegt vorne.' : 'Beispiel im Stranginneren. Am 3′-Ende steht OH statt O–Phosphat an C3′. Summenformel oben: freier Zucker.') : terminal ? 'Am 5′-Ende ist nur ein Zucker mit dem Phosphat verbunden. Gezeigt ist eine bei physiologischem pH vorherrschende Ladungsform.' : 'Die beiden einfach gebundenen O-Atome links und rechts verbinden das Phosphat mit zwei Zuckern. Die negative Ladung ist vereinfacht an einem O dargestellt.';
-                detail.innerHTML = `<div class="inspector-head"><div class="selection-line"><p class="eyebrow">${isBase ? 'Ausgewählte Base' : 'Ausgewählter Baustein'}</p><span class="selection-position">Strang ${side + 1} · Position ${index + 1}</span></div><div class="selected-heading"><div class="selection-symbol">${shapeIcon(type)}</div><div><h2 id="detail-title">${d.name}</h2><span class="category">${d.category}</span></div></div></div><div class="inspector-content"><p class="description">${d.description}</p>${pair}<div class="structure-heading"><h3>Strukturformel</h3><span class="formula" title="Summenformel des freien Moleküls">${d.formula}</span></div>${type !== 'P' ? `<div class="structure-toggle" role="group" aria-label="Darstellung der Strukturformel"><button type="button" data-action="bound" aria-pressed="${!state.free}">In der DNA</button><button type="button" data-action="free" aria-pressed="${state.free}">${isBase ? 'Freie Base' : 'Freier Zucker'}</button></div>` : ''}<figure class="formula-figure"><div id="chemical-structure"></div><figcaption class="formula-caption">${caption}</figcaption></figure><details class="extra-detail"><summary>Mehr zu ${d.name}</summary><p>${d.note}</p></details><div class="inspector-actions">${isBase ? '<button type="button" class="action-button primary" data-action="partner">Partner zeigen <span aria-hidden="true">↔</span></button>' : ''}<button type="button" class="action-button" data-action="nucleotide" aria-pressed="${state.nucleotide}">${state.nucleotide ? 'Markierung lösen' : 'Nukleotid markieren'}</button></div>${state.nucleotide ? '<div class="nucleotide-note"><strong>Ein Nukleotid = Phosphat + Zucker + Base</strong>Die drei umrandeten Bausteine bilden zusammen ein Nukleotid. Die Phosphatgruppe gehört dabei zur 5′-Seite des Zuckers.</div>' : ''}</div>`;
+                detail.innerHTML = `<div class="inspector-head"><div class="selection-line"><p class="eyebrow">${isBase ? 'Ausgewählte Base' : 'Ausgewählter Baustein'}</p><span class="selection-position">Strang ${side + 1} · Position ${index + 1}</span></div><div class="selected-heading"><div class="selection-symbol">${shapeIcon(type)}</div><div><h2 id="detail-title">${d.name}</h2><span class="category">${d.category}</span></div></div></div><div class="inspector-content"><p class="description">${d.description}</p>${pair}<div class="structure-heading"><h3>Strukturformel</h3><span class="formula" title="Summenformel des freien Moleküls">${d.formula}</span></div>${type !== 'P' ? `<div class="structure-toggle" role="group" aria-label="Darstellung der Strukturformel"><button type="button" data-action="bound" aria-pressed="${!state.free}">In der DNA</button><button type="button" data-action="free" aria-pressed="${state.free}">${isBase ? 'Freie Base' : 'Freier Zucker'}</button></div>` : ''}<figure class="formula-figure"><div id="chemical-structure"></div><figcaption class="formula-caption">${caption}</figcaption></figure><p class="fact"><span class="fact-mark" aria-hidden="true">i</span><span>${d.note}</span></p><div class="inspector-actions">${isBase ? '<button type="button" class="action-button primary" data-action="partner">Partner zeigen <span aria-hidden="true">↔</span></button>' : ''}<button type="button" class="action-button" data-action="nucleotide" aria-pressed="${state.nucleotide}">${state.nucleotide ? 'Markierung lösen' : 'Nukleotid markieren'}</button></div>${state.nucleotide ? '<div class="nucleotide-note"><strong>Ein Nukleotid = Phosphat + Zucker + Base</strong>Die drei umrandeten Bausteine bilden zusammen ein Nukleotid. Die Phosphatgruppe gehört dabei zur 5′-Seite des Zuckers.</div>' : ''}</div>`;
                 document.getElementById('chemical-structure').appendChild(structureSVG(type, state.free, terminal));
                 document.getElementById('mobile-detail-text').textContent = d.name + ' entdecken';
             }
@@ -176,136 +161,359 @@
                 document.getElementById('chemical-structure').appendChild(hydrogenSVG(index)); document.getElementById('mobile-detail-text').textContent = 'Wasserstoffbrücken entdecken';
             }
             function announce() { const { type, side, index } = state.selection; document.getElementById('announcement').textContent = type === 'H' ? `Basenpaar ${index + 1}: ${SEQUENCE[index] === 'A' || SEQUENCE[index] === 'T' ? 'zwei' : 'drei'} Wasserstoffbrücken. Erklärung und Bindungsschema im Detailbereich.` : `${DATA[type].name}, Strang ${side + 1}, Position ${index + 1}. Erklärung und Strukturformel im Detailbereich.`; }
-            function select(type, side, index, { focus = false } = {}) { setZoom(100); state.selection = { type, side, index }; if (type === 'H') state.nucleotide = false; renderModel(); renderDetail(); openDetail(); announce(); if (focus) focusSelected(); }
-            function focusSelected() { if (!state.selection) { svg.querySelector('[tabindex="0"]')?.focus({ preventScroll: true }); return; } const { type, side, index } = state.selection; svg.querySelector(`[data-type="${type}"][data-side="${side}"][data-index="${index}"]`)?.focus({ preventScroll: true }); }
+            function select(type, side, index, { focus = false } = {}) { stopRotationDrag(); if (zoomFrame) { window.cancelAnimationFrame(zoomFrame); zoomFrame = 0; } state.zoom = 100; state.selection = { type, side, index }; if (type === 'H') state.nucleotide = false; renderModel(); renderDetail(); announce(); if (focus) focusSelected(); }
+            function focusSelected() { const { type, side, index } = state.selection; svg.querySelector(`[data-type="${type}"][data-side="${side}"][data-index="${index}"]`)?.focus({ preventScroll: true }); }
             function handleDiagramKey(e) {
                 const hit = e.target.closest('[data-type]'); if (!hit) return; const type = hit.dataset.type, side = +hit.dataset.side, index = +hit.dataset.index; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(type, side, index, { focus: true }); return; } if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return; e.preventDefault(); let i = index, s = side, t = type; if (e.key === 'ArrowUp') i = Math.max(0, i - 1); if (e.key === 'ArrowDown') i = Math.min(SEQUENCE.length - 1, i + 1); if (e.key === 'Home') i = 0; if (e.key === 'End') i = SEQUENCE.length - 1; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                     const row = [['P', 0], ['Z', 0], [baseAt(0, i), 0], ['H', 0], [baseAt(1, i), 1], ['Z', 1], ['P', 1]];
                     let k = row.findIndex(([bt, bs]) => bt === t && bs === s); k = Math.max(0, Math.min(row.length - 1, k + (e.key === 'ArrowRight' ? 1 : -1)));[t, s] = row[k];
                 } else if ('ATGC'.includes(t)) t = baseAt(s, i); select(t, s, i, { focus: true });
             }
-            svg.addEventListener('click', e => { const hit = e.target.closest('[data-type]'); if (hit) select(hit.dataset.type, +hit.dataset.side, +hit.dataset.index); });
+            svg.addEventListener('click', e => { if (state.zoom < 82 || Date.now() < suppressClickUntil) return; const hit = e.target.closest('[data-type]'); if (hit) select(hit.dataset.type, +hit.dataset.side, +hit.dataset.index); });
             svg.addEventListener('keydown', handleDiagramKey);
             detail.addEventListener('click', e => { const button = e.target.closest('button[data-action]'); if (!button) return; const action = button.dataset.action; if (action === 'free' || action === 'bound') { state.free = action === 'free'; renderDetail(); detail.querySelector(`[data-action="${action}"]`)?.focus({ preventScroll: true }); } else if (action === 'partner') { const { side, index } = state.selection; select(baseAt(1 - side, index), 1 - side, index); detail.querySelector('[data-action="partner"]')?.focus({ preventScroll: true }); } else if (action === 'nucleotide') { state.nucleotide = !state.nucleotide; renderModel(); renderDetail(); detail.querySelector('[data-action="nucleotide"]')?.focus({ preventScroll: true }); } else if (action === 'base') { const i = state.selection.index; select(SEQUENCE[i], 0, i); } });
-            function updateSeparation() { state.separation = +slider.value; slider.setAttribute('aria-valuetext', state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt'); renderModel(); if (state.selection?.type === 'H') renderDetail(); }
-            slider.addEventListener('input', () => { setZoom(100); updateSeparation(); });
-            document.getElementById('reset').addEventListener('click', () => { state.selection = null; state.free = false; state.nucleotide = false; slider.value = 0; updateSeparation(); renderDetail(); closeDetail(); document.getElementById('announcement').textContent = 'DNA-Modell zurückgesetzt.'; });
+            function updateSeparation() { state.separation = +slider.value; slider.setAttribute('aria-valuetext', state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt'); renderModel(); if (state.selection.type === 'H') renderDetail(); }
+            slider.addEventListener('input', updateSeparation);
+            document.getElementById('reset').addEventListener('click', () => { stopRotationDrag(); if (rotationFrame) { window.cancelAnimationFrame(rotationFrame); rotationFrame = 0; } state.rotation = [0, 0, 0, 1]; state.selection = { type: 'A', side: 0, index: 0 }; if (zoomFrame) { window.cancelAnimationFrame(zoomFrame); zoomFrame = 0; } state.free = false; state.nucleotide = false; state.zoom = 0; slider.value = 0; updateSeparation(); renderDetail(); document.getElementById('announcement').textContent = 'Zurück zur Übersicht der Doppelhelix.'; });
             const legend = document.getElementById('legend');
-            ['A', 'T', 'G', 'C', 'Z', 'P'].forEach((type, i) => { if (i === 4) { const div = document.createElement('span'); div.className = 'legend-divider'; div.setAttribute('aria-hidden', 'true'); legend.appendChild(div); } const b = document.createElement('button'); b.type = 'button'; b.innerHTML = shapeIcon(type, 25) + `<span>${type === 'Z' ? 'Zucker' : DATA[type].name}</span>`; b.setAttribute('aria-label', DATA[type].name + ' auswählen'); b.addEventListener('click', () => { const side = state.selection?.side ?? 0; let index = state.selection?.index ?? 0; if ('ATGC'.includes(type) && baseAt(side, index) !== type) index = SEQUENCE.findIndex((_, i) => baseAt(side, i) === type); select(type, side, index); }); legend.appendChild(b); });
+            ['A', 'T', 'G', 'C', 'Z', 'P'].forEach((type, i) => { if (i === 4) { const div = document.createElement('span'); div.className = 'legend-divider'; div.setAttribute('aria-hidden', 'true'); legend.appendChild(div); } const b = document.createElement('button'); b.type = 'button'; b.innerHTML = shapeIcon(type, 25) + `<span>${type === 'Z' ? 'Zucker' : DATA[type].name}</span>`; b.setAttribute('aria-label', DATA[type].name + ' auswählen'); b.addEventListener('click', () => { const side = state.selection.side; let index = state.selection.index; if ('ATGC'.includes(type) && baseAt(side, index) !== type) index = SEQUENCE.findIndex((_, i) => baseAt(side, i) === type); select(type, side, index); }); legend.appendChild(b); });
+            // Stufenloser didaktischer Zoom: Kugel-Stab-Helix -> Bausteine.
+            // Die Auffaltung ist eine Darstellungsänderung, kein biologischer Vorgang.
+            const zoomInput = document.getElementById('detail-zoom');
+            let zoomFrame = 0;
+            let pinch = null;
+            let suppressClickUntil = 0;
+            function clamp(v, min = 0, max = 100) { return Math.max(min, Math.min(max, v)); }
+            function smooth(a, b, value) { const t = clamp((value - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+            function zoomStage() { return state.zoom < 82 ? 0 : 1; }
+            // Drehung im Raum; die Orientierung bleibt beim Wechsel der Ansicht erhalten.
+            let rotationDrag = null;
+            let rotationFrame = 0;
+            const identityRotation = () => [0, 0, 0, 1];
+            function multiplyRotation(a, b) {
+                const [ax, ay, az, aw] = a, [bx, by, bz, bw] = b;
+                const q = [aw * bx + ax * bw + ay * bz - az * by, aw * by - ax * bz + ay * bw + az * bx, aw * bz + ax * by - ay * bx + az * bw, aw * bw - ax * bx - ay * by - az * bz];
+                const length = Math.hypot(...q) || 1;
+                return q.map(v => v / length);
+            }
+            function rotatedPoint(x, y, z, q) {
+                const [qx, qy, qz, qw] = q;
+                const tx = 2 * (qy * z - qz * y), ty = 2 * (qz * x - qx * z), tz = 2 * (qx * y - qy * x);
+                return { x: x + qw * tx + qy * tz - qz * ty, y: y + qw * ty + qz * tx - qx * tz, z: z + qw * tz + qx * ty - qy * tx };
+            }
+            function displayedRotation() {
+                const blend = smooth(68, 82, state.zoom), q = state.rotation;
+                if (blend === 0) return q;
+                // Zur flachen, anklickbaren Darstellung richtet sich die Ansicht sanft aus.
+                const sign = q[3] < 0 ? -1 : 1;
+                const mixed = q.map((v, i) => v * sign * (1 - blend) + (i === 3 ? blend : 0));
+                const length = Math.hypot(...mixed) || 1;
+                return mixed.map(v => v / length);
+            }
+            function updateRotationUI() {
+                const available = state.zoom < 82;
+                svg.classList.toggle('can-rotate', available);
+                svg.classList.toggle('is-rotating', available && rotationDrag !== null);
+                svg.style.touchAction = available ? 'none' : 'pan-y';
+                const reset = document.getElementById('reset-rotation');
+                reset.hidden = !available;
+                reset.disabled = Math.hypot(...state.rotation.slice(0, 3)) < .00001;
+                document.getElementById('model-hint').textContent = available ? 'Ziehen: drehen · Mausrad / zwei Finger: zoomen' : 'Anklicken: entdecken · Mausrad / zwei Finger: zoomen';
+            }
+            function renderRotation() {
+                if (state.zoom < 82) {
+                    const helix = document.getElementById('helix-overview');
+                    if (helix) { helix.replaceChildren(); renderHelix(helix); }
+                }
+                updateRotationUI();
+            }
+            function scheduleRotationRender() {
+                if (rotationFrame) return;
+                rotationFrame = window.requestAnimationFrame(() => { rotationFrame = 0; renderRotation(); });
+            }
+            function rotateModel(dx, dy, sensitivity) {
+                const distance = Math.hypot(dx, dy);
+                if (distance === 0 || state.zoom >= 82) return;
+                const angle = distance * sensitivity, s = Math.sin(angle / 2) / distance;
+                state.rotation = multiplyRotation([-dy * s, dx * s, 0, Math.cos(angle / 2)], state.rotation);
+                scheduleRotationRender();
+            }
+            function stopRotationDrag() {
+                const previous = rotationDrag;
+                rotationDrag = null;
+                svg.classList.remove('is-rotating');
+                if (previous?.moved) suppressClickUntil = Date.now() + 400;
+                if (previous?.kind === 'pointer' && svg.hasPointerCapture?.(previous.id)) svg.releasePointerCapture(previous.id);
+            }
+            function beginRotationDrag(x, y, kind, id) {
+                if (state.zoom >= 82) return;
+                if (zoomFrame) { window.cancelAnimationFrame(zoomFrame); zoomFrame = 0; }
+                const rect = svg.getBoundingClientRect();
+                const span = Math.max(240, Math.min(rect.width || 500, rect.height || 500));
+                rotationDrag = { x, y, startX: x, startY: y, kind, id, moved: false, sensitivity: Math.PI / span };
+                svg.classList.add('is-rotating');
+            }
+            function moveRotationDrag(x, y) {
+                const drag = rotationDrag;
+                if (!drag || state.zoom >= 82) return;
+                if (Math.hypot(x - drag.startX, y - drag.startY) > 3) drag.moved = true;
+                rotateModel(x - drag.x, y - drag.y, drag.sensitivity);
+                drag.x = x; drag.y = y;
+            }
+            function resetRotation() {
+                stopRotationDrag();
+                if (rotationFrame) { window.cancelAnimationFrame(rotationFrame); rotationFrame = 0; }
+                state.rotation = identityRotation();
+                renderRotation();
+                document.getElementById('announcement').textContent = 'Drehung zurückgesetzt.';
+            }
+            document.getElementById('reset-rotation').addEventListener('click', resetRotation);
+            svg.addEventListener('pointerdown', e => {
+                if (e.pointerType === 'touch' || e.button !== 0 || state.zoom >= 82) return;
+                e.preventDefault();
+                svg.focus({ preventScroll: true });
+                beginRotationDrag(e.clientX, e.clientY, 'pointer', e.pointerId);
+                svg.setPointerCapture?.(e.pointerId);
+            });
+            svg.addEventListener('pointermove', e => {
+                if (rotationDrag?.kind !== 'pointer' || rotationDrag.id !== e.pointerId) return;
+                e.preventDefault(); moveRotationDrag(e.clientX, e.clientY);
+            });
+            const endPointerRotation = e => { if (rotationDrag?.kind === 'pointer' && rotationDrag.id === e.pointerId) stopRotationDrag(); };
+            svg.addEventListener('pointerup', endPointerRotation);
+            svg.addEventListener('pointercancel', endPointerRotation);
+            svg.addEventListener('lostpointercapture', endPointerRotation);
+            window.addEventListener('blur', () => { stopRotationDrag(); pinch = null; });
+
+            const ATOM_TEMPLATES = { "G": { "atoms": [["P", "P", 0, -8.752, -0.129, -1.921], ["OP1", "O", 0, -10.158, -0.552, -2.002], ["OP2", "O", 0, -8.447, 1.063, -1.112], ["O5'", "O", 0, -7.868, -1.346, -1.428], ["C5'", "C", 0, -7.951, -2.613, -2.09], ["C4'", "C", 0, -7.002, -3.536, -1.386], ["O4'", "O", 0, -5.664, -3.022, -1.497], ["C3'", "C", 0, -7.243, -3.713, 0.107], ["O3'", "O", 0, -6.723, -4.942, 0.571], ["C2'", "C", 0, -6.427, -2.553, 0.65], ["C1'", "C", 0, -5.174, -2.8, -0.174], ["N9", "N", 0, -4.288, -1.613, -0.219], ["C8", "C", 0, -4.608, -0.287, -0.089], ["N7", "N", 0, -3.536, 0.514, -0.176], ["C5", "C", 0, -2.515, -0.347, -0.363], ["C6", "C", 0, -1.123, -0.085, -0.502], ["O6", "O", 0, -0.537, 0.994, -0.489], ["N1", "N", 0, -0.411, -1.248, -0.636], ["C2", "C", 0, -0.91, -2.519, -0.655], ["N2", "N", 0, -0.021, -3.546, -0.761], ["N3", "N", 0, -2.213, -2.766, -0.533], ["C4", "C", 0, -2.939, -1.645, -0.391], ["P", "P", 1, 9.438, -0.37, 2.178], ["OP1", "O", 1, 10.598, -1.18, 2.613], ["OP2", "O", 1, 9.736, 0.719, 1.221], ["O5'", "O", 1, 8.319, -1.35, 1.612], ["C5'", "C", 1, 7.84, -2.417, 2.452], ["C4'", "C", 1, 6.905, -3.198, 1.596], ["O4'", "O", 1, 5.738, -2.4, 1.411], ["C3'", "C", 1, 7.469, -3.454, 0.204], ["O3'", "O", 1, 7.803, -4.84, -0.004], ["C2'", "C", 1, 6.395, -2.903, -0.727], ["C1'", "C", 1, 5.174, -2.8, 0.174], ["N1", "N", 1, 4.347, -1.617, -0.152], ["C2", "C", 1, 2.999, -1.747, -0.185], ["O2", "O", 1, 2.528, -2.877, -0.029], ["N3", "N", 1, 2.23, -0.663, -0.357], ["C4", "C", 1, 2.781, 0.545, -0.491], ["N4", "N", 1, 1.987, 1.643, -0.625], ["C5", "C", 1, 4.164, 0.719, -0.467], ["C6", "C", 1, 4.959, -0.408, -0.282]], "bonds": [[0, 1], [0, 2], [0, 3], [3, 4], [4, 5], [5, 6], [5, 7], [6, 10], [7, 8], [7, 9], [9, 10], [10, 11], [11, 12], [11, 21], [12, 13], [13, 14], [14, 15], [14, 21], [15, 16], [15, 17], [17, 18], [18, 19], [18, 20], [20, 21], [22, 23], [22, 24], [22, 25], [25, 26], [26, 27], [27, 28], [27, 29], [28, 32], [29, 30], [29, 31], [31, 32], [32, 33], [33, 34], [33, 40], [34, 35], [34, 36], [36, 37], [37, 38], [37, 39], [39, 40]], "hydrogen": [[16, 38], [17, 36], [19, 35]], "anchors": [[10, 8, 0], [32, 30, 22]] }, "A": { "atoms": [["P", "P", 0, -9.49, -0.409, -1.871], ["OP1", "O", 0, -10.69, -1.193, -2.226], ["OP2", "O", 0, -9.597, 0.566, -0.769], ["O5'", "O", 0, -8.347, -1.46, -1.52], ["C5'", "C", 0, -8.198, -2.638, -2.321], ["C4'", "C", 0, -7.049, -3.366, -1.712], ["O4'", "O", 0, -6.013, -2.388, -1.599], ["C3'", "C", 0, -7.26, -3.907, -0.302], ["O3'", "O", 0, -7.085, -5.337, -0.239], ["C2'", "C", 0, -6.281, -3.073, 0.521], ["C1'", "C", 0, -5.206, -2.8, -0.507], ["N9", "N", 0, -4.4, -1.602, -0.167], ["C8", "C", 0, -4.844, -0.334, 0.087], ["N7", "N", 0, -3.846, 0.545, 0.259], ["C5", "C", 0, -2.731, -0.198, 0.101], ["C6", "C", 0, -1.343, 0.153, 0.113], ["N6", "N", 0, -0.91, 1.434, 0.293], ["N1", "N", 0, -0.463, -0.822, -0.111], ["C2", "C", 0, -0.9, -2.064, -0.326], ["N3", "N", 0, -2.152, -2.515, -0.366], ["C4", "C", 0, -3.025, -1.51, -0.141], ["P", "P", 1, 9.894, -0.843, 1.874], ["OP1", "O", 1, 11.053, -1.736, 2.056], ["OP2", "O", 1, 10.064, 0.311, 0.972], ["O5'", "O", 1, 8.695, -1.774, 1.396], ["C5'", "C", 1, 8.325, -2.908, 2.201], ["C4'", "C", 1, 7.083, -3.466, 1.567], ["O4'", "O", 1, 6.106, -2.425, 1.534], ["C3'", "C", 1, 7.251, -3.921, 0.122], ["O3'", "O", 1, 7.2, -5.351, 0.015], ["C2'", "C", 1, 6.163, -3.15, -0.619], ["C1'", "C", 1, 5.206, -2.8, 0.507], ["N1", "N", 1, 4.425, -1.573, 0.22], ["C2", "C", 1, 3.065, -1.639, 0.156], ["O2", "O", 1, 2.481, -2.722, 0.259], ["N3", "N", 1, 2.364, -0.48, 0.006], ["C4", "C", 1, 2.977, 0.732, -0.126], ["O4", "O", 1, 2.263, 1.724, -0.254], ["C5", "C", 1, 4.374, 0.78, -0.11], ["C7", "C", 1, 5.086, 2.089, -0.287], ["C6", "C", 1, 5.098, -0.395, 0.094]], "bonds": [[0, 1], [0, 2], [0, 3], [3, 4], [4, 5], [5, 6], [5, 7], [6, 10], [7, 8], [7, 9], [9, 10], [10, 11], [11, 12], [11, 20], [12, 13], [13, 14], [14, 15], [14, 20], [15, 16], [15, 17], [17, 18], [18, 19], [19, 20], [21, 22], [21, 23], [21, 24], [24, 25], [25, 26], [26, 27], [26, 28], [27, 31], [28, 29], [28, 30], [30, 31], [31, 32], [32, 33], [32, 40], [33, 34], [33, 35], [35, 36], [36, 37], [36, 38], [38, 39], [38, 40]], "hydrogen": [[17, 35], [16, 37]], "anchors": [[10, 8, 0], [31, 29, 21]] } };
+            // Atomvorlagen: schwere Atome eines A–T- und G–C-Paars aus RCSB PDB 1BNA.
+            // Die Vorlagen werden idealisiert gestapelt; Wasserstoffatome bleiben ausgeblendet.
+            const ATOM_PALETTE = { C: '#394550', N: '#2859ce', O: '#d43b41', P: '#d68c13' };
+            const HELIX_FIRST = -6, HELIX_LAST = 13;
+            function makeHelixAtoms() {
+                const atoms = [], bonds = [], hydrogen = [], anchors = [];
+                for (let row = HELIX_FIRST; row <= HELIX_LAST; row++) {
+                    const base = SEQUENCE[(row % 8 + 8) % 8], reverse = base === 'T' || base === 'C';
+                    const template = ATOM_TEMPLATES[base === 'A' || base === 'T' ? 'A' : 'G'];
+                    const offset = atoms.length, indices = [{}, {}];
+                    template.atoms.forEach(([name, element, side, x, y, z]) => {
+                        if (reverse) { side = 1 - side; x = -x; z = -z; }
+                        indices[side][name] = atoms.length;
+                        atoms.push({ name, element, side, row, x, y, z });
+                    });
+                    template.bonds.forEach(([a, b]) => bonds.push([offset + a, offset + b]));
+                    template.hydrogen.forEach(([a, b]) => hydrogen.push([offset + a, offset + b]));
+                    anchors.push(indices);
+                }
+                for (let i = 0; i < anchors.length - 1; i++) {
+                    bonds.push([anchors[i][0]["O3'"], anchors[i + 1][0].P]);
+                    bonds.push([anchors[i][1].P, anchors[i + 1][1]["O3'"]]);
+                }
+                // Das jeweils freie 5′-Phosphat erhält ein zusätzliches terminales O-Atom.
+                [[0, 0], [anchors.length - 1, 1]].forEach(([i, side]) => {
+                    const id = anchors[i][side].P, p = atoms[id], a = atoms[anchors[i][side].OP1], b = atoms[anchors[i][side].OP2], c = atoms[anchors[i][side]["O5'"]];
+                    let x = 3 * p.x - a.x - b.x - c.x, y = 3 * p.y - a.y - b.y - c.y, z = 3 * p.z - a.z - b.z - c.z;
+                    const length = Math.hypot(x, y, z) || 1;
+                    const oxygen = atoms.length;
+                    atoms.push({ ...p, name: 'OP3', element: 'O', x: p.x + x / length * 1.5, y: p.y + y / length * 1.5, z: p.z + z / length * 1.5 });
+                    bonds.push([id, oxygen]);
+                });
+                return { atoms, bonds, hydrogen, anchors };
+            }
+            const HELIX_ATOMS = makeHelixAtoms();
+            function renderAtomicHelix(parent, spacing, radius, twist, contextOpacity) {
+                const z = state.zoom;
+                const group = add(parent, 'g', { 'data-atomic-helix': 'true' });
+                const tilt = .19, lean = -.05 * twist, sx = radius / 10, sy = spacing / 3.4;
+                const orientation = displayedRotation();
+                const project = (atom) => {
+                    const angle = (atom.row - 3.5) * Math.PI * 2 / 10.5 * twist;
+                    const x = atom.x * Math.cos(angle) - atom.y * Math.sin(angle);
+                    const y = atom.x * Math.sin(angle) + atom.y * Math.cos(angle);
+                    const height = (atom.row - 3.5) * 3.4 + atom.z;
+                    const dx = x * sx, dy = (height * Math.cos(tilt) - y * Math.sin(tilt)) * sy;
+                    const dz = (y * Math.cos(tilt) + height * Math.sin(tilt)) * sx;
+                    const rotated = rotatedPoint(dx * Math.cos(lean) - dy * Math.sin(lean), dx * Math.sin(lean) + dy * Math.cos(lean), dz, orientation);
+                    const depth = rotated.z / sx;
+                    const visible = atom.row >= 0 && atom.row < 8 ? 1 : contextOpacity;
+                    const size = (atom.element === 'P' ? .64 : .46) * sx * (.90 + .10 * clamp((depth + 14) / 28, 0, 1));
+                    return { x: 380 + rotated.x, y: 343 + rotated.y, depth, r: size, visible, element: atom.element };
+                };
+                const points = HELIX_ATOMS.atoms.map(project), parts = [];
+                // Die gesamte Helix passt in der Übersicht auch quer auf schmale Displays.
+                let fit = 1;
+                if (z < 28) {
+                    const maxX = Math.max(...points.map(p => Math.abs(p.x - 380) + p.r));
+                    const maxY = Math.max(...points.map(p => Math.abs(p.y - 343) + p.r));
+                    const availableX = window.matchMedia('(max-width: 900px)').matches ? 235 : 350;
+                    fit = 1 - (1 - Math.min(1, availableX / maxX, 285 / maxY)) * (1 - smooth(0, 28, z));
+                    points.forEach(p => { p.x = 380 + (p.x - 380) * fit; p.y = 343 + (p.y - 343) * fit; p.r *= fit; });
+                }
+                const fadeColor = (hex, depth) => {
+                    const amount = .29 * (1 - clamp((depth + 14) / 28, 0, 1));
+                    return '#' + [1, 3, 5].map(i => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - amount) + 250 * amount).toString(16).padStart(2, '0')).join('');
+                };
+                const n = v => v.toFixed(2);
+                const addBond = (ids, dashed = false) => {
+                    const [a, b] = ids.map(i => points[i]), visibility = Math.min(a.visible, b.visible);
+                    if (visibility <= 0 || Math.max(a.y, b.y) < -20 || Math.min(a.y, b.y) > 690) return;
+                    const dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy);
+                    if (length <= a.r + b.r + .5) return;
+                    const p = { x: a.x + dx * a.r / length, y: a.y + dy * a.r / length }, q = { x: b.x - dx * b.r / length, y: b.y - dy * b.r / length };
+                    const depth = (a.depth + b.depth) / 2;
+                    const color = fadeColor(dashed ? '#708376' : '#64717c', depth);
+                    parts.push({ depth, svg: `<line x1="${n(p.x)}" y1="${n(p.y)}" x2="${n(q.x)}" y2="${n(q.y)}" stroke="${color}" stroke-width="${n((dashed ? .11 : .19) * sx * fit)}" stroke-linecap="round"${dashed ? ' stroke-dasharray="2 3"' : ''} opacity="${n(visibility * (dashed ? .65 : 1))}"></line>` });
+                };
+                HELIX_ATOMS.bonds.forEach(ids => addBond(ids));
+                HELIX_ATOMS.hydrogen.forEach(ids => addBond(ids, true));
+                points.forEach((p, i) => {
+                    if (p.visible <= 0 || p.y < -15 || p.y > 685) return;
+                    const color = fadeColor(ATOM_PALETTE[p.element], p.depth);
+                    parts.push({ depth: p.depth + .04, svg: `<circle data-atom="${p.element}" cx="${n(p.x)}" cy="${n(p.y)}" r="${n(p.r)}" fill="${color}" stroke="${fadeColor('#25323c', p.depth)}" stroke-width=".45" opacity="${n(p.visible)}"></circle>` });
+                });
+                parts.sort((a, b) => a.depth - b.depth);
+                group.innerHTML = parts.map(p => p.svg).join('');
+                const labelOpacity = 1 - smooth(0, 24, z);
+                if (labelOpacity > 0) {
+                    for (let side = 0; side < 2; side++) {
+                        const first = points[HELIX_ATOMS.anchors[0][side][side === 0 ? 'P' : "O3'"]];
+                        const last = points[HELIX_ATOMS.anchors.at(-1)[side][side === 0 ? "O3'" : 'P']];
+                        [first, last].forEach((p, end) => {
+                            const dx = p.x - 380, dy = p.y - 343, length = Math.max(1, Math.hypot(dx, dy));
+                            add(parent, 'text', { x: p.x + dx / length * 23, y: p.y + dy / length * 23 + 5, fill: '#526174', 'font-size': 19, 'font-family': 'Georgia,serif', 'text-anchor': 'middle', opacity: labelOpacity }, side === end ? '5′' : '3′');
+                        });
+                    }
+                }
+            }
+            function renderHelix(parent) {
+                const z = state.zoom, spacing = 25.2 + 36.8 * smooth(0, 76, z), radius = 95 + 105 * smooth(0, 76, z);
+                const unfold = smooth(39, 78, z), contextOpacity = 1 - smooth(49, 76, z);
+                renderAtomicHelix(parent, spacing, radius, 1 - unfold, contextOpacity);
+            }
+
             function renderModel() {
                 renderBuildingBlocks();
-                svg.setAttribute('tabindex', '-1');
-                document.getElementById('separation-controls').hidden = false;
-                document.getElementById('legend').hidden = false;
-                document.getElementById('separation-state').textContent = state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt';
-                paintZoom();
-            }
-
-            const zoomSlider = document.getElementById('model-zoom');
-            const helix = document.getElementById('helix-svg');
-            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-            let displayedZoom = 100;
-            let zoomFrame = 0;
-
-            // Atomic overview: extended B-DNA coordinates, with bonds and atoms
-            // sorted by camera depth so the two backbones occlude correctly.
-            function renderHelix() {
-                const molecule = window.DNA_HELIX_DATA;
-                const atomColors = { C: '#90959c', N: '#426dcc', O: '#df4845', P: '#e9ad32' };
-                const defs = add(helix, 'defs');
-                Object.entries(atomColors).forEach(([element, color]) => {
-                    const gradient = add(defs, 'radialGradient', { id: 'helix-' + element, cx: '30%', cy: '25%', r: '75%' });
-                    add(gradient, 'stop', { offset: '0%', 'stop-color': '#ffffff' });
-                    add(gradient, 'stop', { offset: '32%', 'stop-color': color });
-                    add(gradient, 'stop', { offset: '100%', 'stop-color': color });
-                });
-                const scale = 5.05;
-                const angle = -.65;
-                const tilt = .065;
-                const points = molecule.atoms.map(([element, x, y, z]) => {
-                    const horizontal = x * Math.cos(angle) + z * Math.sin(angle);
-                    const depth = z * Math.cos(angle) - x * Math.sin(angle);
-                    return {
-                        element,
-                        x: 380 + scale * (horizontal * Math.cos(tilt) - y * Math.sin(tilt)),
-                        // SVG y points down; invert the molecular y axis to preserve handedness.
-                        y: 335 - scale * (y * Math.cos(tilt) + horizontal * Math.sin(tilt)),
-                        z: depth,
-                        radius: element === 'P' ? 3.9 : element === 'O' ? 3.25 : 3
-                    };
-                });
-                const elements = [];
-                molecule.bonds.forEach(([first, second]) => {
-                    const a = points[first];
-                    const b = points[second];
-                    // Short sections avoid drawing an entire bond over a nearer atom.
-                    for (let segment = 0; segment < 4; segment++) {
-                        const from = segment / 4;
-                        const to = (segment + 1) / 4;
-                        elements.push({ z: a.z + (b.z - a.z) * (from + to) / 2, draw: () => add(helix, 'line', {
-                            x1: a.x + (b.x - a.x) * from, y1: a.y + (b.y - a.y) * from,
-                            x2: a.x + (b.x - a.x) * to, y2: a.y + (b.y - a.y) * to,
-                            stroke: atomColors[segment < 2 ? a.element : b.element],
-                            'stroke-width': 1.6, 'stroke-linecap': 'round'
-                        }) });
-                    }
-                });
-                points.forEach(point => elements.push({ z: point.z, draw: () => add(helix, 'circle', {
-                    cx: point.x, cy: point.y, r: point.radius,
-                    fill: 'url(#helix-' + point.element + ')',
-                    stroke: atomColors[point.element], 'stroke-width': .35,
-                    'data-element': point.element
-                }) }));
-                elements.sort((a, b) => a.z - b.z).forEach(item => item.draw());
-                helix.setAttribute('viewBox', '210 0 340 670');
-            }
-            function paintZoom() {
-                const fraction = displayedZoom / 100;
-                const transition = Math.max(0, Math.min(1, (fraction - .3) / .5));
-                const blend = transition * transition * (3 - 2 * transition);
-                svg.style.opacity = blend;
-                svg.style.transform = `scale(${.68 + .32 * fraction})`;
-                helix.style.opacity = 1 - blend;
-                helix.style.transform = `scale(${1 + .45 * fraction})`;
-                const detailed = Number(zoomSlider.value) >= 55;
-                svg.inert = !detailed;
-                svg.style.pointerEvents = detailed ? '' : 'none';
-                svg.setAttribute('aria-hidden', String(!detailed));
-                helix.setAttribute('aria-hidden', String(detailed));
-                document.getElementById('view-stage').textContent = detailed ? '2D · aufgefaltet' : 'Doppelhelix · Kugel-Stab-Modell';
-                document.getElementById('view-count').textContent = detailed ? '8 Basenpaare · 16 Nukleotide' : '30 Basenpaare · atomare Übersicht';
-                document.getElementById('model-caption').innerHTML = detailed
-                    ? (state.separation === 0 ? '<strong>Gestrichelt:</strong> Wasserstoffbrücken · <strong>Durchgezogen:</strong> kovalente Bindungen' : '<strong>Die Wasserstoffbrücken lösen sich.</strong> Das Rückgrat bleibt verbunden.')
-                    : '<span class="atom-key atom-c">●</span> Kohlenstoff · <span class="atom-key atom-n">●</span> Stickstoff · <span class="atom-key atom-o">●</span> Sauerstoff · <span class="atom-key atom-p">●</span> Phosphor';
-            }
-            function setZoom(value) {
-                zoomSlider.value = Math.max(0, Math.min(100, value));
-                zoomSlider.setAttribute('aria-valuetext', zoomSlider.value + '% · ' + (zoomSlider.value >= 55 ? 'Detailansicht' : 'Doppelhelix'));
-                cancelAnimationFrame(zoomFrame);
-                const start = displayedZoom;
-                const target = Number(zoomSlider.value);
-                const startTime = performance.now();
-                function animate(time) {
-                    const progress = reducedMotion.matches ? 1 : Math.min(1, (time - startTime) / 420);
-                    displayedZoom = start + (target - start) * (1 - Math.pow(1 - progress, 3));
-                    paintZoom();
-                    if (progress < 1) zoomFrame = requestAnimationFrame(animate);
+                const blocks = document.getElementById('model-root');
+                const detailAmount = smooth(68, 94, state.zoom);
+                const interactive = state.zoom >= 82;
+                blocks.setAttribute('opacity', detailAmount);
+                blocks.setAttribute('aria-hidden', String(!interactive));
+                blocks.style.pointerEvents = interactive ? 'auto' : 'none';
+                if (detailAmount === 0) blocks.setAttribute('display', 'none');
+                if (!interactive) blocks.querySelectorAll('[tabindex]').forEach(n => n.setAttribute('tabindex', '-1'));
+                svg.setAttribute('tabindex', interactive ? '-1' : '0');
+                if (detailAmount < 1) {
+                    const helix = el('g', { id: 'helix-overview', opacity: 1 - detailAmount, 'aria-hidden': 'true', 'pointer-events': 'none' });
+                    svg.insertBefore(helix, blocks);
+                    renderHelix(helix);
                 }
-                zoomFrame = requestAnimationFrame(animate);
+                updateZoomUI();
+                updateRotationUI();
             }
-            zoomSlider.addEventListener('input', () => setZoom(Number(zoomSlider.value)));
-            document.getElementById('zoom-out').addEventListener('click', () => setZoom(Number(zoomSlider.value) - 25));
-            document.getElementById('zoom-in').addEventListener('click', () => setZoom(Number(zoomSlider.value) + 25));
-            document.querySelector('.canvas-wrap').addEventListener('wheel', event => {
-                event.preventDefault();
-                setZoom(Number(zoomSlider.value) - Math.sign(event.deltaY) * 10);
+            function updateZoomUI() {
+                const stage = zoomStage();
+                const labels = ['Doppelhelix', 'Bausteine'];
+                zoomInput.value = String(state.zoom);
+                zoomInput.setAttribute('aria-valuetext', labels[stage] + ', Detailgrad ' + Math.round(state.zoom) + ' von 100');
+                document.getElementById('zoom-state').textContent = labels[stage];
+                document.getElementById('zoom-out').disabled = state.zoom <= 0;
+                document.getElementById('zoom-in').disabled = state.zoom >= 100;
+                document.querySelectorAll('.zoom-stop').forEach((b, i) => b.setAttribute('aria-pressed', String(i === stage)));
+                document.getElementById('view-stage').textContent = stage === 0 ? 'Kugel-Stab-Modell' : '2D · aufgefaltet';
+                slider.disabled = stage === 0;
+                document.getElementById('separation-state').textContent = stage === 0 ? 'In der Nahansicht verfügbar' : state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt';
+                document.getElementById('view-count').textContent = stage === 0 ? '20 Basenpaare · Übersicht' : '8 Basenpaare · 16 Nukleotide';
+                const caption = document.getElementById('model-caption');
+                caption.innerHTML = stage === 0 ? '<strong>Kugeln:</strong> Atome · <strong>Stäbe:</strong> Bindungen · H-Atome ausgeblendet' : state.separation === 0 ? '<strong>Gestrichelt:</strong> Wasserstoffbrücken · <strong>Durchgezogen:</strong> kovalente Bindungen' : '<strong>Die Wasserstoffbrücken lösen sich.</strong> Das Rückgrat bleibt verbunden.';
+            }
+            function renderZoomOverview() {
+                detail.innerHTML = `<div class="inspector-head">
+    <div class="selection-line"><p class="eyebrow">Der große Zusammenhang</p><span class="selection-position">Übersicht</span></div>
+    <div class="selected-heading"><div class="selection-symbol"><svg viewBox="0 0 52 58" aria-hidden="true"><path d="M12 5L20 14L33 23L40 33L30 43L13 54M40 5L32 14L19 23L12 33L22 43L39 54M12 5H40M20 14H32M19 23H33M12 33H40M22 43H30M13 54H39" fill="none" stroke="#97a0a9" stroke-width="1.6" stroke-linecap="round"/><g fill="#394550"><circle cx="20" cy="14" r="3"/><circle cx="33" cy="23" r="3"/><circle cx="30" cy="43" r="3"/><circle cx="32" cy="14" r="3"/><circle cx="19" cy="23" r="3"/><circle cx="22" cy="43" r="3"/></g><g fill="#d43b41"><circle cx="12" cy="5" r="3.6"/><circle cx="40" cy="33" r="3.6"/><circle cx="13" cy="54" r="3.6"/></g><g fill="#2859ce"><circle cx="40" cy="5" r="3.6"/><circle cx="12" cy="33" r="3.6"/><circle cx="39" cy="54" r="3.6"/></g></svg></div><div><h2 id="detail-title">Doppelhelix</h2><span class="category">Kugel-Stab-Modell · Atome und Bindungen</span></div></div>
+  </div><div class="inspector-content">
+    <p class="description">Die <strong>Kugeln zeigen Atome</strong>, die Stäbe ihre Bindungen. Die beiden DNA-Stränge winden sich umeinander. Außen verläuft das <strong>Zucker-Phosphat-Rückgrat</strong>, innen liegen die Basenpaare. Die Stränge verlaufen in <strong>entgegengesetzter Richtung</strong>.</p>
+    <div class="atom-color-legend"><p class="eyebrow">Farben der Atome</p><div><span><i style="background:#394550"></i>C · Kohlenstoff</span><span><i style="background:#2859ce"></i>N · Stickstoff</span><span><i style="background:#d43b41"></i>O · Sauerstoff</span><span><i style="background:#d68c13"></i>P · Phosphor</span></div><p>Wasserstoffatome sind für die Übersicht ausgeblendet. Gestrichelte Linien zeigen Wasserstoffbrücken.</p></div>
+    <div class="zoom-guide"><p class="eyebrow">Eine DNA · zwei Ansichten</p>
+      <button type="button" data-zoom-to="0" aria-current="step"><span class="zoom-step-number">01</span><span><strong>Doppelhelix</strong><small>Drehen und die Doppelspirale erkunden</small></span><span aria-hidden="true">↗</span></button>
+      <button type="button" data-zoom-to="100"><span class="zoom-step-number">02</span><span><strong>Einzelne Bausteine</strong><small>Anklicken und Strukturformeln ansehen</small></span><span aria-hidden="true">↗</span></button>
+    </div>
+    <p class="fact"><span class="fact-mark" aria-hidden="true">i</span><span>Beim Hineinzoomen geht die Doppelhelix direkt in den schematisch aufgefalteten Ausschnitt über. So werden die Bausteine anklickbar. Die echte DNA verändert sich durch das Zoomen natürlich nicht.</span></p>
+    <div class="inspector-actions"><button type="button" class="action-button primary" data-zoom-to="100">Bausteine entdecken <span aria-hidden="true">＋</span></button></div>
+  </div>`;
+                document.getElementById('mobile-detail-text').textContent = 'Doppelhelix verstehen';
+            }
+            function applyZoom(value) {
+                const previousStage = zoomStage();
+                state.zoom = clamp(Number(value) || 0);
+                if (state.zoom >= 82) stopRotationDrag();
+                renderModel();
+                if (previousStage !== zoomStage()) renderDetail();
+            }
+            function setZoom(value, animate = false) {
+                if (zoomFrame) { window.cancelAnimationFrame(zoomFrame); zoomFrame = 0; }
+                const target = clamp(Number(value) || 0);
+                if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { applyZoom(target); return; }
+                const from = state.zoom;
+                let started = null;
+                const frame = time => {
+                    if (started === null) started = time;
+                    const t = clamp((time - started) / 360, 0, 1);
+                    applyZoom(from + (target - from) * (1 - (1 - t) ** 3));
+                    if (t < 1) zoomFrame = window.requestAnimationFrame(frame); else zoomFrame = 0;
+                };
+                zoomFrame = window.requestAnimationFrame(frame);
+            }
+            zoomInput.addEventListener('input', () => setZoom(zoomInput.value));
+            document.getElementById('zoom-out').addEventListener('click', () => setZoom(state.zoom - 20, true));
+            document.getElementById('zoom-in').addEventListener('click', () => setZoom(state.zoom + 20, true));
+            document.querySelectorAll('.zoom-stop').forEach(b => b.addEventListener('click', () => setZoom(+b.dataset.zoomTo, true)));
+            detail.addEventListener('click', e => {
+                const jump = e.target.closest('[data-zoom-to]');
+                if (jump) setZoom(+jump.dataset.zoomTo, true);
+            });
+            svg.addEventListener('wheel', e => {
+                const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 600 : 1;
+                const delta = clamp(e.deltaY * unit * (e.ctrlKey ? 0.7 : 0.085), -22, 22);
+                const next = clamp(state.zoom - delta);
+                if (next !== state.zoom) { e.preventDefault(); setZoom(next); }
             }, { passive: false });
-            document.getElementById('reset').addEventListener('click', () => setZoom(100));
-            renderHelix();
-            renderModel();
-            renderDetail();
+            svg.addEventListener('keydown', e => {
+                if (e.key === '+' || e.key === '=') { e.preventDefault(); setZoom(state.zoom + 15, true); }
+                else if (e.key === '-') { e.preventDefault(); setZoom(state.zoom - 15, true); }
+                else if (e.key === '0') { e.preventDefault(); setZoom(0, true); }
+                else if (state.zoom < 82 && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                    const dx = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+                    const dy = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+                    rotateModel(dx, dy, Math.PI / 12);
+                } else if (state.zoom < 82 && e.key.toLowerCase() === 'r') { e.preventDefault(); resetRotation(); }
+            });
+            const touchDistance = touches => Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+            svg.addEventListener('touchstart', e => {
+                if (e.touches.length === 2) {
+                    e.preventDefault(); stopRotationDrag();
+                    pinch = { distance: Math.max(1, touchDistance(e.touches)), zoom: state.zoom };
+                } else if (e.touches.length === 1 && state.zoom < 82) {
+                    e.preventDefault();
+                    beginRotationDrag(e.touches[0].clientX, e.touches[0].clientY, 'touch', null);
+                }
+            }, { passive: false });
+            svg.addEventListener('touchmove', e => {
+                if (pinch && e.touches.length === 2) {
+                    e.preventDefault(); const scale = Math.max(1, touchDistance(e.touches)) / pinch.distance;
+                    setZoom(pinch.zoom + Math.log2(scale) * 65); suppressClickUntil = Date.now() + 400;
+                } else if (rotationDrag?.kind === 'touch' && e.touches.length === 1) {
+                    e.preventDefault(); moveRotationDrag(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: false });
+            const endTouch = e => {
+                if (pinch && e.touches.length < 2) { pinch = null; stopRotationDrag(); }
+                if (e.touches.length === 0) stopRotationDrag();
+            };
+            svg.addEventListener('touchend', endTouch);
+            svg.addEventListener('touchcancel', () => { pinch = null; stopRotationDrag(); });
 
+            renderModel(); renderDetail();
             window.matchMedia('(max-width: 900px)').addEventListener('change', renderModel);
-
+            if ('IntersectionObserver' in window) { mobileObserver = new IntersectionObserver(entries => { document.getElementById('mobile-detail').hidden = entries[0].isIntersecting; }, { threshold: .15 }); mobileObserver.observe(document.getElementById('inspector')); }
         })();
-    

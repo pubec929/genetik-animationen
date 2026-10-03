@@ -7,7 +7,7 @@ Start with the [project guide](project.md) for architecture, local development, 
 | Public page | Guide | Purpose |
 | --- | --- | --- |
 | `index.html` | [Homepage](homepage.md) | Navigation and learning collection |
-| `dna-modell.html` | [DNA model](dna-model.md) | Atomic helix and interactive components |
+| `dna-modell.html` | [DNA model](dna-model.md) | Rotatable atomic helix and interactive components |
 | `dna-replikation.html` | [DNA replication](dna-replication.md) | Moving replication fork |
 | `mrna-translation.html` | [mRNA translation](mrna-translation.md) | Ribosome, tRNAs, and peptide growth |
 | `rna-spleissen.html` | [RNA splicing](rna-splicing.md) | Intron removal and exon joining |
