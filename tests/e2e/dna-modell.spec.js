@@ -28,3 +28,56 @@ test('DNA model preserves selection, chemistry, separation and reset in both the
   }
   expect(errors).toEqual([]);
 });
+
+test('DNA zoom smoothly blends the helix and detail views and resets', async ({ page }) => {
+  await page.route('https://cloud.umami.is/**', route => route.fulfill({ body: '' }));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/dna-modell.html');
+  const zoom = page.locator('#model-zoom');
+  const detailed = page.locator('#dna-svg');
+  const helix = page.locator('#helix-svg');
+  await expect(helix).toHaveAttribute('aria-label', /30 Basenpaaren.*atomares/);
+  // The reference has individual atoms, rather than one large bead per base.
+  for (const element of ['C', 'N', 'O', 'P']) {
+    expect(await helix.locator(`[data-element="${element}"]`).count()).toBeGreaterThan(40);
+  }
+  expect(await helix.locator('line').count()).toBeGreaterThan(1000);
+  await detailed.evaluate(node => {
+    window.zoomSamples = [];
+    window.zoomObserver = new MutationObserver(() => window.zoomSamples.push(Number(node.style.opacity)));
+    window.zoomObserver.observe(node, { attributes: true, attributeFilter: ['style'] });
+  });
+  await zoom.fill('0');
+  await expect(detailed).toHaveCSS('opacity', '0');
+  const samples = await page.evaluate(() => {
+    window.zoomObserver.disconnect();
+    return window.zoomSamples;
+  });
+  expect(samples.some(opacity => opacity > 0 && opacity < 1)).toBe(true);
+  await expect(helix).toHaveCSS('opacity', '1');
+  await expect(detailed).toHaveAttribute('aria-hidden', 'true');
+  await page.screenshot({ path: test.info().outputPath('helix-model.png'), fullPage: true });
+  await page.locator('[data-theme-toggle]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.screenshot({ path: test.info().outputPath('dark-helix-model.png'), fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const canvas = page.locator('.canvas-wrap');
+  await canvas.dispatchEvent('wheel', { deltaY: -100 });
+  await expect(zoom).toHaveValue('10');
+  await canvas.dispatchEvent('wheel', { deltaY: 100 });
+  await expect(zoom).toHaveValue('0');
+  await page.getByRole('button', { name: 'Herauszoomen', exact: true }).click();
+  await expect(zoom).toHaveValue('0');
+  await page.getByRole('button', { name: 'Hineinzoomen', exact: true }).click();
+  await expect(zoom).toHaveValue('25');
+  await zoom.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(zoom).toHaveValue('26');
+  await page.locator('#reset').click();
+  await expect(zoom).toHaveValue('100');
+  await expect(detailed).toHaveCSS('opacity', '1');
+  await expect(detailed).toHaveAttribute('aria-hidden', 'false');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await zoom.fill('0');
+  await expect(detailed).toHaveCSS('opacity', '0');
+});

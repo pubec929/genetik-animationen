@@ -1413,3 +1413,45 @@ body.reduced-motion *  {
 :root[data-theme="dark"] .dna-model .structure-toggle button[aria-pressed="true"] {background:var(--soft);box-shadow:inset 0 0 0 1px var(--green)}
 
 :root[data-theme="dark"] .dna-model .sugar-stub {stroke:var(--paper)}
+
+/* Both views share one stage; zoom animates scale and opacity continuously. */
+.dna-model .zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dna-model .zoom-controls input { flex: 1; min-width: 35px; accent-color: var(--green); }
+.dna-model .zoom-controls button {
+  flex: 0 0 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+}
+.dna-model .zoom-controls button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.dna-model .canvas-wrap { overflow: hidden; }
+.dna-model #helix-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform-origin: center;
+}
+.dna-model #dna-svg { position: relative; transform-origin: center; }
+.dna-model .helix-label { fill: var(--muted); font-size: 14px; }
+@media (max-width: 480px) {
+  .dna-model .zoom-controls { gap: 6px; padding: 12px; font-size: 10px; }
+}
+
+.dna-model .atom-key { font-size: 16px; }
+.dna-model .atom-c { color: #90959c; }
+.dna-model .atom-n { color: #6488df; }
+.dna-model .atom-o { color: #df4845; }
+.dna-model .atom-p { color: #d49a23; }

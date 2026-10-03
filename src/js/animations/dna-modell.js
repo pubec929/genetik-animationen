@@ -176,7 +176,7 @@
                 document.getElementById('chemical-structure').appendChild(hydrogenSVG(index)); document.getElementById('mobile-detail-text').textContent = 'Wasserstoffbrücken entdecken';
             }
             function announce() { const { type, side, index } = state.selection; document.getElementById('announcement').textContent = type === 'H' ? `Basenpaar ${index + 1}: ${SEQUENCE[index] === 'A' || SEQUENCE[index] === 'T' ? 'zwei' : 'drei'} Wasserstoffbrücken. Erklärung und Bindungsschema im Detailbereich.` : `${DATA[type].name}, Strang ${side + 1}, Position ${index + 1}. Erklärung und Strukturformel im Detailbereich.`; }
-            function select(type, side, index, { focus = false } = {}) { state.selection = { type, side, index }; if (type === 'H') state.nucleotide = false; renderModel(); renderDetail(); openDetail(); announce(); if (focus) focusSelected(); }
+            function select(type, side, index, { focus = false } = {}) { setZoom(100); state.selection = { type, side, index }; if (type === 'H') state.nucleotide = false; renderModel(); renderDetail(); openDetail(); announce(); if (focus) focusSelected(); }
             function focusSelected() { if (!state.selection) { svg.querySelector('[tabindex="0"]')?.focus({ preventScroll: true }); return; } const { type, side, index } = state.selection; svg.querySelector(`[data-type="${type}"][data-side="${side}"][data-index="${index}"]`)?.focus({ preventScroll: true }); }
             function handleDiagramKey(e) {
                 const hit = e.target.closest('[data-type]'); if (!hit) return; const type = hit.dataset.type, side = +hit.dataset.side, index = +hit.dataset.index; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(type, side, index, { focus: true }); return; } if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return; e.preventDefault(); let i = index, s = side, t = type; if (e.key === 'ArrowUp') i = Math.max(0, i - 1); if (e.key === 'ArrowDown') i = Math.min(SEQUENCE.length - 1, i + 1); if (e.key === 'Home') i = 0; if (e.key === 'End') i = SEQUENCE.length - 1; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -188,7 +188,7 @@
             svg.addEventListener('keydown', handleDiagramKey);
             detail.addEventListener('click', e => { const button = e.target.closest('button[data-action]'); if (!button) return; const action = button.dataset.action; if (action === 'free' || action === 'bound') { state.free = action === 'free'; renderDetail(); detail.querySelector(`[data-action="${action}"]`)?.focus({ preventScroll: true }); } else if (action === 'partner') { const { side, index } = state.selection; select(baseAt(1 - side, index), 1 - side, index); detail.querySelector('[data-action="partner"]')?.focus({ preventScroll: true }); } else if (action === 'nucleotide') { state.nucleotide = !state.nucleotide; renderModel(); renderDetail(); detail.querySelector('[data-action="nucleotide"]')?.focus({ preventScroll: true }); } else if (action === 'base') { const i = state.selection.index; select(SEQUENCE[i], 0, i); } });
             function updateSeparation() { state.separation = +slider.value; slider.setAttribute('aria-valuetext', state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt'); renderModel(); if (state.selection?.type === 'H') renderDetail(); }
-            slider.addEventListener('input', updateSeparation);
+            slider.addEventListener('input', () => { setZoom(100); updateSeparation(); });
             document.getElementById('reset').addEventListener('click', () => { state.selection = null; state.free = false; state.nucleotide = false; slider.value = 0; updateSeparation(); renderDetail(); closeDetail(); document.getElementById('announcement').textContent = 'DNA-Modell zurückgesetzt.'; });
             const legend = document.getElementById('legend');
             ['A', 'T', 'G', 'C', 'Z', 'P'].forEach((type, i) => { if (i === 4) { const div = document.createElement('span'); div.className = 'legend-divider'; div.setAttribute('aria-hidden', 'true'); legend.appendChild(div); } const b = document.createElement('button'); b.type = 'button'; b.innerHTML = shapeIcon(type, 25) + `<span>${type === 'Z' ? 'Zucker' : DATA[type].name}</span>`; b.setAttribute('aria-label', DATA[type].name + ' auswählen'); b.addEventListener('click', () => { const side = state.selection?.side ?? 0; let index = state.selection?.index ?? 0; if ('ATGC'.includes(type) && baseAt(side, index) !== type) index = SEQUENCE.findIndex((_, i) => baseAt(side, i) === type); select(type, side, index); }); legend.appendChild(b); });
@@ -204,7 +204,111 @@
             }
 
             renderModel(); renderDetail();
-            window.matchMedia('(max-width: 900px)').addEventListener('change', renderModel);
+
+            const zoomSlider = document.getElementById('model-zoom');
+            const helix = document.getElementById('helix-svg');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            let displayedZoom = 100;
+            let zoomFrame = 0;
+
+            // Atomic overview: extended B-DNA coordinates, with bonds and atoms
+            // sorted by camera depth so the two backbones occlude correctly.
+            function renderHelix() {
+                const molecule = window.DNA_HELIX_DATA;
+                const atomColors = { C: '#90959c', N: '#426dcc', O: '#df4845', P: '#e9ad32' };
+                const defs = add(helix, 'defs');
+                Object.entries(atomColors).forEach(([element, color]) => {
+                    const gradient = add(defs, 'radialGradient', { id: 'helix-' + element, cx: '30%', cy: '25%', r: '75%' });
+                    add(gradient, 'stop', { offset: '0%', 'stop-color': '#ffffff' });
+                    add(gradient, 'stop', { offset: '32%', 'stop-color': color });
+                    add(gradient, 'stop', { offset: '100%', 'stop-color': color });
+                });
+                const scale = 5.05;
+                const angle = -.65;
+                const tilt = .065;
+                const points = molecule.atoms.map(([element, x, y, z]) => {
+                    const horizontal = x * Math.cos(angle) + z * Math.sin(angle);
+                    const depth = z * Math.cos(angle) - x * Math.sin(angle);
+                    return {
+                        element,
+                        x: 380 + scale * (horizontal * Math.cos(tilt) - y * Math.sin(tilt)),
+                        // SVG y points down; invert the molecular y axis to preserve handedness.
+                        y: 335 - scale * (y * Math.cos(tilt) + horizontal * Math.sin(tilt)),
+                        z: depth,
+                        radius: element === 'P' ? 3.9 : element === 'O' ? 3.25 : 3
+                    };
+                });
+                const elements = [];
+                molecule.bonds.forEach(([first, second]) => {
+                    const a = points[first];
+                    const b = points[second];
+                    // Short sections avoid drawing an entire bond over a nearer atom.
+                    for (let segment = 0; segment < 4; segment++) {
+                        const from = segment / 4;
+                        const to = (segment + 1) / 4;
+                        elements.push({ z: a.z + (b.z - a.z) * (from + to) / 2, draw: () => add(helix, 'line', {
+                            x1: a.x + (b.x - a.x) * from, y1: a.y + (b.y - a.y) * from,
+                            x2: a.x + (b.x - a.x) * to, y2: a.y + (b.y - a.y) * to,
+                            stroke: atomColors[segment < 2 ? a.element : b.element],
+                            'stroke-width': 1.6, 'stroke-linecap': 'round'
+                        }) });
+                    }
+                });
+                points.forEach(point => elements.push({ z: point.z, draw: () => add(helix, 'circle', {
+                    cx: point.x, cy: point.y, r: point.radius,
+                    fill: 'url(#helix-' + point.element + ')',
+                    stroke: atomColors[point.element], 'stroke-width': .35,
+                    'data-element': point.element
+                }) }));
+                elements.sort((a, b) => a.z - b.z).forEach(item => item.draw());
+                helix.setAttribute('viewBox', '210 0 340 670');
+            }
+            function paintZoom() {
+                const fraction = displayedZoom / 100;
+                const transition = Math.max(0, Math.min(1, (fraction - .3) / .5));
+                const blend = transition * transition * (3 - 2 * transition);
+                svg.style.opacity = blend;
+                svg.style.transform = `scale(${.68 + .32 * fraction})`;
+                helix.style.opacity = 1 - blend;
+                helix.style.transform = `scale(${1 + .45 * fraction})`;
+                const detailed = Number(zoomSlider.value) >= 55;
+                svg.inert = !detailed;
+                svg.style.pointerEvents = detailed ? '' : 'none';
+                svg.setAttribute('aria-hidden', String(!detailed));
+                helix.setAttribute('aria-hidden', String(detailed));
+                document.getElementById('view-stage').textContent = detailed ? '2D · aufgefaltet' : 'Doppelhelix · Kugel-Stab-Modell';
+                document.getElementById('view-count').textContent = detailed ? '8 Basenpaare · 16 Nukleotide' : '30 Basenpaare · atomare Übersicht';
+                document.getElementById('model-caption').innerHTML = detailed
+                    ? (state.separation === 0 ? '<strong>Gestrichelt:</strong> Wasserstoffbrücken · <strong>Durchgezogen:</strong> kovalente Bindungen' : '<strong>Die Wasserstoffbrücken lösen sich.</strong> Das Rückgrat bleibt verbunden.')
+                    : '<span class="atom-key atom-c">●</span> Kohlenstoff · <span class="atom-key atom-n">●</span> Stickstoff · <span class="atom-key atom-o">●</span> Sauerstoff · <span class="atom-key atom-p">●</span> Phosphor';
+            }
+            function setZoom(value) {
+                zoomSlider.value = Math.max(0, Math.min(100, value));
+                zoomSlider.setAttribute('aria-valuetext', zoomSlider.value + '% · ' + (zoomSlider.value >= 55 ? 'Detailansicht' : 'Doppelhelix'));
+                cancelAnimationFrame(zoomFrame);
+                const start = displayedZoom;
+                const target = Number(zoomSlider.value);
+                const startTime = performance.now();
+                function animate(time) {
+                    const progress = reducedMotion.matches ? 1 : Math.min(1, (time - startTime) / 420);
+                    displayedZoom = start + (target - start) * (1 - Math.pow(1 - progress, 3));
+                    paintZoom();
+                    if (progress < 1) zoomFrame = requestAnimationFrame(animate);
+                }
+                zoomFrame = requestAnimationFrame(animate);
+            }
+            zoomSlider.addEventListener('input', () => setZoom(Number(zoomSlider.value)));
+            document.getElementById('zoom-out').addEventListener('click', () => setZoom(Number(zoomSlider.value) - 25));
+            document.getElementById('zoom-in').addEventListener('click', () => setZoom(Number(zoomSlider.value) + 25));
+            document.querySelector('.canvas-wrap').addEventListener('wheel', event => {
+                event.preventDefault();
+                setZoom(Number(zoomSlider.value) - Math.sign(event.deltaY) * 10);
+            }, { passive: false });
+            document.getElementById('reset').addEventListener('click', () => setZoom(100));
+            renderHelix();
+            paintZoom();
+
+            window.matchMedia('(max-width: 900px)').addEventListener('change', () => { renderModel(); paintZoom(); });
 
         })();
     

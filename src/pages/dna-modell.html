@@ -10,6 +10,7 @@
   <script src="assets/js/theme.js"></script>
   <link rel="stylesheet" href="assets/styles/site.css">
   <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/animations/dna-helix-data.js" defer></script>
   <script src="assets/js/animations/dna-modell.js" defer></script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="103d1b3c-c3d6-4189-a997-11245b2e7e52"></script>
   <link rel="stylesheet" href="assets/styles/animations/dna-modell.css">
@@ -39,7 +40,14 @@
                             type="button" class="reset-btn" id="reset"><span aria-hidden="true">↺</span>
                             Zurücksetzen</button>
                     </div>
-                    <div class="canvas-wrap"><svg id="dna-svg" viewBox="0 0 760 670" role="group"
+                    <div class="zoom-controls" role="group" aria-label="DNA-Modell zoomen">
+                        <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
+                        <label for="model-zoom">Doppelhelix</label>
+                        <input id="model-zoom" type="range" min="0" max="100" value="100" aria-label="Zoom zwischen Doppelhelix und Detailansicht">
+                        <span>Details</span>
+                        <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+                    </div>
+                    <div class="canvas-wrap"><svg id="helix-svg" viewBox="0 0 760 670" role="img" aria-label="DNA-Doppelhelix aus 30 Basenpaaren als atomares Kugel-Stab-Modell"></svg><svg id="dna-svg" viewBox="0 0 760 670" role="group"
                             aria-labelledby="dna-title dna-desc">
                             <title id="dna-title">Interaktiver DNA-Doppelstrang</title>
                             <desc id="dna-desc">Aufgefalteter DNA-Ausschnitt mit acht komplementären Basenpaaren. Adenin
@@ -88,6 +96,10 @@
                             vollständigen biologischen Vorgangs. Basenstapelung trägt neben Wasserstoffbrücken zur
                             Stabilität der
                             Doppelhelix bei.</p>
+                        <p>Die atomare Übersicht zeigt eine idealisierte Verlängerung der B-DNA-Struktur
+                            <a href="https://www.rcsb.org/structure/1BNA" target="_blank" rel="noopener noreferrer">1BNA (RCSB PDB)</a>
+                            auf 30 Basenpaare. Die Kugeln stellen einzelne Atome dar; Wasserstoffatome und
+                            Wassermoleküle sind ausgeblendet. Die Detailansicht zeigt eine separate Beispielsequenz.</p>
                         <p>Strukturformeln zeigen eine übliche Bindungsdarstellung; Elektronenverteilung und räumliche
                             Gestalt sind
                             vereinfacht. Bei den Basen kann zwischen freiem Molekül und Zuckerbindung in der DNA
