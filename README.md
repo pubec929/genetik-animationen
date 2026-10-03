@@ -59,7 +59,7 @@ npx playwright install chromium
 npm test
 ```
 
-See [testing instructions](docs/testing.md) for coverage, browser setup, and debugging.
+`npm test` includes geometry checks and visual comparisons for all eight pages. Use `npm run test:unit` for DNA geometry or `npm run test:visual` for screenshot comparisons. See [testing instructions](docs/testing.md) for browser setup, baseline review, and debugging.
 
 ## Documentation
 

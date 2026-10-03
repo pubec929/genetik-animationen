@@ -195,15 +195,11 @@
             function renderModel() {
                 renderBuildingBlocks();
                 svg.setAttribute('tabindex', '-1');
-                document.getElementById('view-stage').textContent = '2D · aufgefaltet';
                 document.getElementById('separation-controls').hidden = false;
                 document.getElementById('legend').hidden = false;
                 document.getElementById('separation-state').textContent = state.separation === 0 ? 'Gepaart' : state.separation >= 60 ? 'Getrennt' : 'Wird getrennt';
-                document.getElementById('view-count').textContent = '8 Basenpaare · 16 Nukleotide';
-                document.getElementById('model-caption').innerHTML = state.separation === 0 ? '<strong>Gestrichelt:</strong> Wasserstoffbrücken · <strong>Durchgezogen:</strong> kovalente Bindungen' : '<strong>Die Wasserstoffbrücken lösen sich.</strong> Das Rückgrat bleibt verbunden.';
+                paintZoom();
             }
-
-            renderModel(); renderDetail();
 
             const zoomSlider = document.getElementById('model-zoom');
             const helix = document.getElementById('helix-svg');
@@ -306,9 +302,10 @@
             }, { passive: false });
             document.getElementById('reset').addEventListener('click', () => setZoom(100));
             renderHelix();
-            paintZoom();
+            renderModel();
+            renderDetail();
 
-            window.matchMedia('(max-width: 900px)').addEventListener('change', () => { renderModel(); paintZoom(); });
+            window.matchMedia('(max-width: 900px)').addEventListener('change', renderModel);
 
         })();
     

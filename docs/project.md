@@ -42,7 +42,9 @@ The preview is available at <http://127.0.0.1:4173>. `dev` builds once and start
 | `npm run build` | Recreates `dist/` from source |
 | `npm run dev` / `npm run preview` | Builds and serves `dist/` locally |
 | `npm run test:build` | Rebuilds and validates output and asset references |
-| `npm test` | Runs build checks and desktop/mobile browser tests |
+| `npm test` | Runs build, atomic-geometry, and desktop/mobile browser checks, including visual comparisons |
+| `npm run test:unit` | Validates the bundled atomic geometry without a browser |
+| `npm run test:visual` | Builds and compares fixed scenes with reviewed screenshot baselines |
 | `npm run test:ui` | Opens the Playwright test interface |
 
 Install Chromium with `npx playwright install chromium`, or use the executable override in the [testing guide](testing.md). Python and NumPy are optional tools for regenerating DNA coordinates; they are not required by the website or normal build.

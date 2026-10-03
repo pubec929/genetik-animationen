@@ -1,3 +1,4 @@
+const { installAnimationClock } = require('../helpers/animation-clock');
 const { test: base, expect } = require('@playwright/test');
 
 // Exercise the production frame callbacks at realistic 50 ms intervals, without
@@ -9,21 +10,7 @@ const test = base.extend({
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
-    await page.addInitScript(() => {
-      let now = 1000, next = 0;
-      const callbacks = new Map();
-      window.requestAnimationFrame = callback => { callbacks.set(++next, callback); return next; };
-      window.cancelAnimationFrame = id => callbacks.delete(id);
-      window.pendingAnimationFrames = () => callbacks.size;
-      window.advanceAnimation = milliseconds => {
-        for (let elapsed = 0; elapsed < milliseconds; elapsed += 50) {
-          now += Math.min(50, milliseconds - elapsed);
-          const pending = [...callbacks.values()];
-          callbacks.clear();
-          pending.forEach(callback => callback(now));
-        }
-      };
-    });
+    await installAnimationClock(page);
     await use(page);
     expect(errors, 'No script, SVG parser, console, or HTTP errors').toEqual([]);
   },

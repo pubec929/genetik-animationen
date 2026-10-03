@@ -3,6 +3,10 @@ const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{projectName}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { animations: 'disabled', caret: 'hide', scale: 'css', threshold: 0.15, maxDiffPixels: 40 },
+  },
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 2,

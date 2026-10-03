@@ -275,3 +275,50 @@ test('single sequence rejects missing and extra bases and accepts formatted past
   await expect(input).toHaveAttribute('aria-invalid', 'false');
   await expect(page.locator('#feedback')).toContainText('Alles richtig!');
 });
+
+test('editing a checked solution clears stale feedback and preserves editable answers', async ({ page }) => {
+  await page.goto(file);
+  await answer(page, tasks[0]);
+  await page.getByRole('button', { name: 'Lösung prüfen' }).click();
+  await expect(page.locator('#feedback')).toBeFocused();
+  await page.locator('#solution summary').click();
+  await expect(page.locator('#solution-content')).toBeVisible();
+  await page.locator('#aa-1').selectOption('G');
+  await expect(page.locator('#feedback')).toBeHidden();
+  await expect(page.locator('#solution')).toBeHidden();
+  await expect(page.locator('[aria-invalid]')).toHaveCount(0);
+  await expect(page.locator('#rna-sequence')).toHaveValue(tasks[0].rna.join(''));
+  await expect(page.locator('.peptide-bead').nth(1)).toHaveAttribute('data-amino', 'G');
+  await page.getByRole('button', { name: 'Lösung prüfen' }).click();
+  await expect(page.locator('#aa-1')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#feedback')).not.toContainText('Alles richtig!');
+});
+
+test('typing markup remains plain input and cannot insert elements into feedback or RNA', async ({ page }) => {
+  await page.goto(file);
+  await page.locator('#rna-sequence').fill('<img src=x onerror="window.injected=true">');
+  await page.getByRole('button', { name: 'Lösung prüfen' }).click();
+  await expect(page.locator('#rna-sequence')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#rna-drawing img, #feedback img, #rna-feedback-list img')).toHaveCount(0);
+  expect(await page.evaluate(() => window.injected)).toBeUndefined();
+});
+
+test('every codon has the correct standard-code amino-acid assignment', async ({ page }) => {
+  // Independent grouped fixture, NCBI table 1, transcribed with RNA U:
+  // https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1
+  const expected = {
+    Ala: 'GCU GCC GCA GCG', Arg: 'CGU CGC CGA CGG AGA AGG', Asn: 'AAU AAC',
+    Asp: 'GAU GAC', Cys: 'UGU UGC', Gln: 'CAA CAG', Glu: 'GAA GAG',
+    Gly: 'GGU GGC GGA GGG', His: 'CAU CAC', Ile: 'AUU AUC AUA',
+    Leu: 'UUA UUG CUU CUC CUA CUG', Lys: 'AAA AAG', Met: 'AUG',
+    Phe: 'UUU UUC', Pro: 'CCU CCC CCA CCG', Ser: 'UCU UCC UCA UCG AGU AGC',
+    Thr: 'ACU ACC ACA ACG', Trp: 'UGG', Tyr: 'UAU UAC', Val: 'GUU GUC GUA GUG',
+    Stopp: 'UAA UAG UGA',
+  };
+  await page.goto(file);
+  await page.getByText('Codontabelle öffnen', { exact: true }).click();
+  const actual = await page.locator('#codon-table tr').evaluateAll(rows => Object.fromEntries(rows.map(row => [
+    row.cells[1].textContent, row.cells[2].textContent.split(' · ').sort(),
+  ])));
+  expect(actual).toEqual(Object.fromEntries(Object.entries(expected).map(([amino, codons]) => [amino, codons.split(' ').sort()])));
+});
