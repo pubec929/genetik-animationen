@@ -4,6 +4,8 @@
 
 The public page is built from `src/pages/dna-modell.html`. Run `npm run dev` and open <http://127.0.0.1:4173/dna-modell.html>.
 
+The page uses the site's shared learning-page heading, number **06 / 06**, and previous/next navigation. The two-column model and explanation area stacks on small screens.
+
 ## Explore the model
 
 The page opens on a 20-base-pair atomic ball-and-stick double helix. Drag with a mouse or one finger to rotate it, or focus the drawing and use the arrow keys. **Drehung zurücksetzen** or **R** restores its orientation. The zoom slider, **+ / −** buttons, mouse wheel, two-finger pinch, and **+ / −** keys change the detail level. **0** returns to the helix. The **Doppelhelix** and **Bausteine** buttons jump to either end. Reduced-motion preferences make button zoom immediate.

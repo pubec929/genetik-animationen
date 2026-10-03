@@ -30,6 +30,7 @@ for (const theme of ['light', 'dark']) {
     test('DNA zoom levels, separation and chemical detail', async ({ page }) => {
       await page.goto('/dna-modell.html');
       await prepareVisual(page);
+      await expect(page).toHaveScreenshot(`dna-page-${theme}.png`, { fullPage: true });
       for (const value of ['0', '55', '100']) {
         await page.locator('#detail-zoom').fill(value);
         await expect(page.locator('#model-root')).toHaveAttribute('opacity', value === '100' ? '1' : '0');

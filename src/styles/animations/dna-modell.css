@@ -2,21 +2,19 @@
 
         :scope {
             color-scheme: light;
-            --page: #f6f7f3;
-            --paper: #fff;
-            --ink: #223c34;
-            --muted: #63746b;
-            --line: #dfe6df;
-            --green: #2e6150;
-            --soft: #eaf0e9;
+            --page: #f7f8f5;
+            --paper: var(--surface);
+            --muted: var(--subtle);
+            --green: var(--accent);
+            --soft: var(--accent-soft);
             --A: #df8c77;
             --T: #a4bd80;
             --G: #8bb4ce;
             --C: #e7c66a;
             --Z: #e7dac7;
             --P: #cbc4da;
-            --radius: 20px;
-            font-family: Inter, "Avenir Next", Avenir, "Segoe UI", Arial, sans-serif
+            --radius: 14px;
+            font-family: inherit
         }
 
         * {
@@ -1624,12 +1622,6 @@
 :root[data-theme="dark"] .dna-model {
   color-scheme: dark;
   --page: #121212;
-  --paper: #1e1e1e;
-  --ink: #eeeeee;
-  --muted: #bac5be;
-  --line: #424a44;
-  --green: #a5d2b8;
-  --soft: #29372f;
   background: var(--page);
   color: var(--ink);
 }
@@ -1641,9 +1633,24 @@
 :root[data-theme="dark"] .dna-model .description strong { color: var(--ink); }
 :root[data-theme="dark"] .dna-model :is(.formula-figure,.nucleotide-note,.pair-summary,.structure-toggle) { background: #252525; }
 :root[data-theme="dark"] .dna-model :is(.zoom-stop[aria-pressed=true],.structure-toggle button[aria-pressed=true],.fact-mark) { background: var(--soft); color: var(--ink); }
-:root[data-theme="dark"] .dna-model :is(.action-button.primary,.action-button.primary:hover) { background: #37654e; color: #fff; border-color: #37654e; }
+:root[data-theme="dark"] .dna-model .action-button.primary { background: var(--accent); color: var(--primary-ink); border-color: var(--accent); }
+:root[data-theme="dark"] .dna-model .action-button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+:root[data-theme="dark"] .dna-model .zoom-guide button[aria-current=step] .zoom-step-number { color: var(--primary-ink); }
+:root[data-theme="dark"] .dna-model .mobile-detail-link { background: var(--accent); color: var(--primary-ink); border-color: var(--accent); }
 :root[data-theme="dark"] .dna-model :is(.svg-small,.svg-end,.atom-index,.sugar-stub,.chem-note) { fill: var(--muted); }
 :root[data-theme="dark"] .dna-model .atom-label { fill: var(--ink); stroke: #252525; }
 :root[data-theme="dark"] .dna-model .atom-label.n { fill: #a9c7f4; }
 :root[data-theme="dark"] .dna-model .atom-label.o { fill: #f1a295; }
 :root[data-theme="dark"] .dna-model .chemical-bond { stroke: var(--muted); }
+
+/* Use the same page rhythm and source placement as the other learning pages. */
+.dna-model .footer {
+  margin: 0 0 28px;
+  padding: 0;
+  border-top: 0;
+  font-size: 12px;
+}
+.dna-model .footer-top { display: block; }
+.dna-model .footer details { width: 100%; max-width: none; }
+.dna-model .footer summary { text-align: left; font-size: 13px; font-weight: 550; }
+.dna-model .source-content { max-width: 760px; }

@@ -34,12 +34,12 @@ Navigation tests exercise mobile menu keyboard operation, Escape focus restorati
 npm run test:visual
 ```
 
-The visual suite uses `toHaveScreenshot()` to compare against 76 committed PNGs in `tests/e2e/__screenshots__/visual.spec.js/`. Every scenario runs on desktop and mobile, in light and dark themes:
+The visual suite uses `toHaveScreenshot()` to compare against 80 committed PNGs in `tests/e2e/__screenshots__/visual.spec.js/`. Every scenario runs on desktop and mobile, in light and dark themes:
 
 | Area | Captured states |
 | --- | --- |
 | Homepage | Full page, including loaded card images |
-| DNA model | Drawing at zoom 0, 55, and 100; separated strands; guanine chemistry panel |
+| DNA model | Full page; drawing at zoom 0, 55, and 100; separated strands; guanine chemistry panel |
 | Replication | Fragment copying and ligation |
 | Translation | Translocation and peptide release |
 | Splicing | First reaction/lariat and joined exons |
